@@ -66,8 +66,7 @@ def myNormalizedDate(dateString):
            .replace('Jun','6').replace('Jul','7').replace('Aug','8') \
            .replace('Sep','9').replace('Oct','10').replace('Nov','11') \
            .replace('Dec','12')
-           
-         
+                    
 if __name__ == '__main__':
     import doctest
     print doctest.testmod()

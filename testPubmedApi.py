@@ -14,8 +14,7 @@ import sys
 import httplib2
 import xml.etree.ElementTree as et
 import MySQLdb
-# from lxml import etree
-import myTools
+import phTools
 import time
 
 def testPubmed():
@@ -28,12 +27,12 @@ def testPubmed():
     '  tmp'
     base='http://eutils.ncbi.nlm.nih.gov/entrez/eutils/'
     db='pubmed'
-    retmax=100
+    retmax=1
     retstart=1
 
 #     query='Science[Journal]+AND+(2005/07/01[PDAT]+:+2010/07/12[PDAT])'
 #     query='Cell[Journal]+AND+(2008/07/01[PDAT]+:+2010/07/12[PDAT])'
-    query='Nature[Journal]+AND+(2009/07/01[PDAT]+:+2009/07/12[PDAT])'
+    query='Nature[Journal]+AND+(2012/07/01[PDAT]+:+2012/07/12[PDAT])'
 #     query='Molecular+Cell[Journal]+AND+(2010/05/01[PDAT]+:+2010/07/12[PDAT])'
 #     query='Molecular+and+cellular+biology[Journal]+AND+(2010/05/01[PDAT]+:+2011/07/12[PDAT])'
     
@@ -62,18 +61,18 @@ def testPubmed():
     try:
         searchRoot=et.fromstring(searchContent)
         n=searchRoot
-        c=myTools.findAllAndAssert(n,'IdList','?')
+        c=phTools.findAllAndAssert(n,'IdList','?')
         if len(c)==0:
-            raise myTools.MyException("cannot parse IdList.")
+            raise phTools.MyException("cannot parse IdList.")
             
         n=c[0]
-        c=myTools.findAllAndAssert(n,'Id','*')
+        c=phTools.findAllAndAssert(n,'Id','*')
         if not c: #empyty list, no article found
-            raise myTools.MyException("no article found.")
+            raise phTools.MyException("no article found.")
 
         listId=[n.text for n in c]
         print '    returned ID: '+str(listId)
-    except myTools.MyException as e:
+    except phTools.MyException as e:
         print e
         return 0
     except Exception as e:
@@ -140,7 +139,8 @@ def testPubmed():
     try:
         #dbAddr="ec2-54-193-189-136.us-west-1.compute.amazonaws.com"
         #db=MySQLdb.connect(dbAddr,"root","abc1234","pubhub")        
-        dbAddr="ec2-54-187-100-110.us-west-2.compute.amazonaws.com"
+
+        dbAddr="54.187.112.65"
         db=MySQLdb.connect(dbAddr,"root","lymanDelmedio123","pubhub")
 
     except Exception as e:
@@ -150,7 +150,7 @@ def testPubmed():
     
     fetchRoot=et.fromstring(fetchContent)
     nPubmedArticleSet=fetchRoot
-    cPubmedArticle=myTools.findAllAndAssert(nPubmedArticleSet, 'PubmedArticle', '+')
+    cPubmedArticle=phTools.findAllAndAssert(nPubmedArticleSet, 'PubmedArticle', '+')
     nArticleTotal=0
     nArticleSuccess=0
     nAuthorTotal=0
@@ -178,91 +178,91 @@ def testPubmed():
         
         'notation convention: c for children, n for node'
         
-        cMedlineCitation=myTools.findAllAndAssert(nPubmedArticle,'MedlineCitation','?')
+        cMedlineCitation=phTools.findAllAndAssert(nPubmedArticle,'MedlineCitation','?')
         if len(cMedlineCitation)==1:
             nMedlineCitation=cMedlineCitation[0]
                     
-            cPMID=myTools.findAllAndAssert(nMedlineCitation,'PMID','?')
+            cPMID=phTools.findAllAndAssert(nMedlineCitation,'PMID','?')
             if len(cPMID)==1:
                 nPMID=cPMID[0]
                 PMID+=nPMID.text
             
-            cDateCreated=myTools.findAllAndAssert(nMedlineCitation,'DateCreated','?')
+            cDateCreated=phTools.findAllAndAssert(nMedlineCitation,'DateCreated','?')
             if len(cDateCreated)==1:
                 nDateCreated=cDateCreated[0]
                 
-                cYear=myTools.findAllAndAssert(nDateCreated,'Year','?')
+                cYear=phTools.findAllAndAssert(nDateCreated,'Year','?')
                 if len(cYear)==1:
                     nYear=cYear[0]
                     DateCreated+=nYear.text
                             
-                cMonth=myTools.findAllAndAssert(nDateCreated,'Month','?')
+                cMonth=phTools.findAllAndAssert(nDateCreated,'Month','?')
                 if len(cMonth)==1:
                     nMonth=cMonth[0]
                     DateCreated+='-'+nMonth.text
 
-                cDay=myTools.findAllAndAssert(nDateCreated,'Day','?')
+                cDay=phTools.findAllAndAssert(nDateCreated,'Day','?')
                 if len(cDay)==1:
                     nDay=cDay[0]
                     DateCreated+='-'+nDay.text
                                 
-            cArticle=myTools.findAllAndAssert(nMedlineCitation,'Article','?')
+            cArticle=phTools.findAllAndAssert(nMedlineCitation,'Article','?')
             if len(cArticle)==1:
                 nArticle=cArticle[0]
                 
-                cJournal=myTools.findAllAndAssert(nArticle,'Journal','?')
+                cJournal=phTools.findAllAndAssert(nArticle,'Journal','?')
                 if len(cJournal)==1:
                     nJournal=cJournal[0]
                     
-                    cJournalIssue=myTools.findAllAndAssert(nJournal,'JournalIssue','?')
+                    cJournalIssue=phTools.findAllAndAssert(nJournal,'JournalIssue','?')
                     if len(cJournalIssue)==1:
                         nJournalIssue=cJournalIssue[0]
                         
-                        cVolume=myTools.findAllAndAssert(nJournalIssue,'Volume','?')
+                        cVolume=phTools.findAllAndAssert(nJournalIssue,'Volume','?')
                         if len(cVolume)==1:
                             nVolume=cVolume[0]
                             JournalVolume+=nVolume.text
                             
-                        cIssue=myTools.findAllAndAssert(nJournalIssue,'Issue','?')
+                        cIssue=phTools.findAllAndAssert(nJournalIssue,'Issue','?')
                         if len(cIssue)==1:
                             nIssue=cIssue[0]
                             JournalIssue+=nIssue.text
 
-                        cPubDate=myTools.findAllAndAssert(nJournalIssue,'PubDate','?')
+                        cPubDate=phTools.findAllAndAssert(nJournalIssue,'PubDate','?')
                         if len(cPubDate)==1:
                             nPubDate=cPubDate[0]
 
-                            cYear=myTools.findAllAndAssert(nPubDate,'Year','?')
+                            cYear=phTools.findAllAndAssert(nPubDate,'Year','?')
                             if len(cYear)==1:
                                 nYear=cYear[0]
                                 PubDate+=nYear.text
                                         
-                            cMonth=myTools.findAllAndAssert(nPubDate,'Month','?')
+                            cMonth=phTools.findAllAndAssert(nPubDate,'Month','?')
                             if len(cMonth)==1:
                                 nMonth=cMonth[0]
                                 PubDate+='-'+nMonth.text
             
-                            cDay=myTools.findAllAndAssert(nPubDate,'Day','?')
+                            cDay=phTools.findAllAndAssert(nPubDate,'Day','?')
                             if len(cDay)==1:
                                 nDay=cDay[0]
                                 PubDate+='-'+nDay.text
                     
-                    cTitle=myTools.findAllAndAssert(nJournal,'Title','?')
+                    cTitle=phTools.findAllAndAssert(nJournal,'Title','?')
                     if len(cTitle)==1:
                         nTitle=cTitle[0]
                         JournalTitle+=nTitle.text
 
-                    cISOAbbreviation=myTools.findAllAndAssert(nJournal,'ISOAbbreviation','?')
+                    cISOAbbreviation=phTools.findAllAndAssert(nJournal,'ISOAbbreviation','?')
                     if len(cISOAbbreviation)==1:
                         nISOAbbreviation=cISOAbbreviation[0]
                         JournalISOAbbreviation+=nISOAbbreviation.text
         
-                cArticleTitle=myTools.findAllAndAssert(nArticle,'ArticleTitle','?')
+                cArticleTitle=phTools.findAllAndAssert(nArticle,'ArticleTitle','?')
                 if len(cArticleTitle)==1:
                     nArticleTitle=cArticleTitle[0]
                     ArticleTitle+=nArticleTitle.text
                 
-                cELocationID=myTools.findAllAndAssert(nArticle,'ELocationID','?')
+                cELocationID=phTools.findAllAndAssert(nArticle,'ELocationID','?')
                 if len(cELocationID)==1:
                     nELocationID=cELocationID[0]
                     aElocationID=nELocationID.attrib
@@ -272,23 +272,23 @@ def testPubmed():
                         aElocationID['ValidYN']=='Y':
                         DoiId+=nELocationID.text
         
-                cAbstract=myTools.findAllAndAssert(nArticle,'Abstract','?')
+                cAbstract=phTools.findAllAndAssert(nArticle,'Abstract','?')
                 if len(cAbstract)==1:
                     nAbstract=cAbstract[0]
                     
-                    cAbstractText=myTools.findAllAndAssert(nAbstract,'AbstractText','?')
+                    cAbstractText=phTools.findAllAndAssert(nAbstract,'AbstractText','?')
                     if len(cAbstractText)==1:
                         nAbstractText=cAbstractText[0]
                         Abstract+=nAbstractText.text
                     
-                cAuthorList=myTools.findAllAndAssert(nArticle,'AuthorList','?')
+                cAuthorList=phTools.findAllAndAssert(nArticle,'AuthorList','?')
                 if len(cAuthorList)==1:
                     nAuthorList=cAuthorList[0]
                     
-                    cAuthor=myTools.findAllAndAssert(nAuthorList,'Author','+')
+                    cAuthor=phTools.findAllAndAssert(nAuthorList,'Author','+')
                     for snAuthor,nAuthor in enumerate(cAuthor):
                         try:                        
-                            cForeName=myTools.findAllAndAssert(nAuthor,'ForeName','?')                        
+                            cForeName=phTools.findAllAndAssert(nAuthor,'ForeName','?')                        
                             if len(cForeName)==1:
                                 nForeName=cForeName[0]
                                 foreNameText=nForeName.text.encode(sys.stdout.encoding, errors='replace').replace("\"","'")
@@ -296,7 +296,7 @@ def testPubmed():
                             else:
                                 ListAuthorForeName.append("")
     
-                            cInitials=myTools.findAllAndAssert(nAuthor,'Initials','?')                        
+                            cInitials=phTools.findAllAndAssert(nAuthor,'Initials','?')                        
                             if len(cInitials)==1:
                                 nInitials=cInitials[0]
                                 initialsText=nInitials.text.encode(sys.stdout.encoding, errors='replace').replace("\"","'")
@@ -304,7 +304,7 @@ def testPubmed():
                             else:
                                 ListAuthorInitials.append("")
                                                         
-                            cLastName=myTools.findAllAndAssert(nAuthor,'LastName','?')                        
+                            cLastName=phTools.findAllAndAssert(nAuthor,'LastName','?')                        
                             if len(cLastName)==1:
                                 nLastName=cLastName[0]
                                 lastNameText=nLastName.text.encode(sys.stdout.encoding, errors='replace').replace("\"","'")
@@ -312,7 +312,7 @@ def testPubmed():
                             else:
                                 ListAuthorLastName.append("")
                     
-                            cAffiliation=myTools.findAllAndAssert(nAuthor,'Affiliation','?')                        
+                            cAffiliation=phTools.findAllAndAssert(nAuthor,'Affiliation','?')                        
                             if len(cAffiliation)==1:
                                 nAffiliation=cAffiliation[0]
                                 affiliationText=nAffiliation.text.encode(sys.stdout.encoding, errors='replace').replace("\"","'")
@@ -327,7 +327,7 @@ def testPubmed():
             JournalISOAbbreviation=JournalISOAbbreviation.encode(sys.stdout.encoding, errors='replace').replace("\"","'")
             ArticleTitle=ArticleTitle.encode(sys.stdout.encoding, errors='replace').replace("\"","'")
             Abstract=Abstract.encode(sys.stdout.encoding, errors='replace').replace("\"","'")
-            PubDate=myTools.myNormalizedDate(PubDate)
+            PubDate=phTools.myNormalizedDate(PubDate)
         except Exception as e:
             print e
             continue
@@ -422,9 +422,9 @@ def testPubmed():
             cursor.execute(sql)
             results=cursor.fetchall()
             if len(results)==0:
-                raise myTools.MyException("cannot retrieve article just inserted.")
+                raise phTools.MyException("cannot retrieve article just inserted.")
             elif len(results)>1:
-                raise myTools.MyException("should have one article with given PMID.")
+                raise phTools.MyException("should have one article with given PMID.")
         except Exception as e:
             print e
         else:
