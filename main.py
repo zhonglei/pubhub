@@ -85,7 +85,7 @@ if __name__ == '__main__':
     'query pubmed and store in pubhub'
     '================================'
     
-#     queryStr = 'Nature[Journal]+AND+(2010/11/01[PDAT]+:+2012/11/12[PDAT])'
+    queryStr = 'Nature[Jour]+AND+(2010/11/01[PDAT]+:+2012/11/12[PDAT])'
 #     queryStr = 'Nature[Journal]+AND+(2008/11/01[PDAT]+:+2012/11/12[PDAT])'
 #     queryStr = 'Science[Journal]+AND+(2008/11/01[PDAT]+:+2012/11/12[PDAT])'
 #     queryStr = 'Science[Journal]+AND+(2005/07/01[PDAT]+:+2010/07/12[PDAT])'
@@ -93,11 +93,11 @@ if __name__ == '__main__':
 #     queryStr = 'Nature[Journal]+AND+(2012/07/01[PDAT]+:+2012/07/12[PDAT])'
 #     queryStr = 'Molecular+Cell[Journal]+AND+(2010/05/01[PDAT]+:+2010/07/12[PDAT])'
 #     queryStr = 'Molecular+and+cellular+biology[Journal]+AND+(2010/05/01[PDAT]+:+2011/07/12[PDAT])'
-    queryStr = '(telomere+and+DNA+replication)+AND+(2010/05/01[PDAT]+:+2011/07/12[PDAT])'
+#     queryStr = '(telomere+and+DNA+replication)+AND+(2010/05/01[PDAT]+:+2011/07/12[PDAT])'
           
     'query pubmed'
     pa = PubmedApi()
-    ldArticle, ldAuthor = pa.query(queryStr, 10)
+    ldArticle, ldAuthor = pa.query(queryStr, 3)
   
     'connect pubhub database'    
     phdb = PhDatabase(MysqlConnection('pubhub', '54.187.112.65', 'root', 'lymanDelmedio123'))    
@@ -105,17 +105,9 @@ if __name__ == '__main__':
     'record article'
     phdb.insertMany('article', ldArticle)    
   
-    'record author'
+    'record author'    
     #Need to look up articleId in article, replace key PMID with articleID
-
-    
-    _,res = phdb.selectDistinct('article',['PMID','articleId'])    
-    dictPmid2Articleid = dict(res)
-    for d in ldAuthor:
-        d['articleId'] = dictPmid2Articleid[long(d['PMID'])]
-        d.pop('PMID',None)
-        logging.debug(d)
-
+    phdb.replaceKeyValuePair(ldAuthor, 'article', 'PMID', 'articleId')
     phdb.insertMany('author', ldAuthor)
   
     'close pubhub database'    

@@ -336,14 +336,29 @@ class PubmedApi(object):
                                 print e
                                 continue
             try:
-                JournalTitle=JournalTitle.encode(sys.stdout.encoding, errors='replace')
-                JournalISOAbbreviation=JournalISOAbbreviation.encode(sys.stdout.encoding, errors='replace')
-                ArticleTitle=ArticleTitle.encode(sys.stdout.encoding, errors='replace')
-                Abstract=Abstract.encode(sys.stdout.encoding, errors='replace')
-                for t in ListAuthorForeName: t=t.encode(sys.stdout.encoding, errors='replace')
-                for t in ListAuthorInitials: t=t.encode(sys.stdout.encoding, errors='replace')
-                for t in ListAuthorLastName: t=t.encode(sys.stdout.encoding, errors='replace')
-                for t in ListAuthorAffiliation: t=t.encode(sys.stdout.encoding, errors='replace')
+#                 JournalTitle=JournalTitle.encode(sys.stdout.encoding, errors='replace')
+#                 JournalISOAbbreviation=JournalISOAbbreviation.encode(sys.stdout.encoding, errors='replace')
+#                 ArticleTitle=ArticleTitle.encode(sys.stdout.encoding, errors='replace')
+#                 Abstract=Abstract.encode(sys.stdout.encoding, errors='replace')
+#                 for t in ListAuthorForeName: t=t.encode(sys.stdout.encoding, errors='replace')
+#                 for t in ListAuthorInitials: t=t.encode(sys.stdout.encoding, errors='replace')
+#                 for t in ListAuthorLastName: t=t.encode(sys.stdout.encoding, errors='replace')
+#                 for t in ListAuthorAffiliation: t=t.encode(sys.stdout.encoding, errors='replace')
+                'FIXME'
+                
+                JournalTitle=JournalTitle
+                JournalISOAbbreviation=JournalISOAbbreviation
+                ArticleTitle=ArticleTitle
+                Abstract=Abstract
+                for t in ListAuthorForeName: t=t
+                for t in ListAuthorInitials: t=t
+                for t in ListAuthorLastName: t=t
+                for t in ListAuthorAffiliation: t=t
+            except Exception as e:
+                logging.warning(e)
+                continue
+
+            try:
                 PubDate=phTools.myNormalizedDate(PubDate)
             except Exception as e:
                 logging.warning(e)
