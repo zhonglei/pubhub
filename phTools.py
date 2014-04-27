@@ -4,11 +4,13 @@ Created on Apr 12, 2014
 @author: zhil2
 '''
 
+import logging
+
 def findAllAndAssert(node,tag,reSymbol):
     '''
     Find in current node\'s children with tag, and assert if the regular
-    expression symbol reSymbol is satisfied. 
-    node must be a node in xml.etree.ElementTree constructed from an xml file.
+    expression symbol reSymbol is satisfied. Node should be a node in 
+    xml.etree.ElementTree constructed from an XML file.
     reSymbol:
     * -- 0 or more
     + -- 1 or more
@@ -17,14 +19,24 @@ def findAllAndAssert(node,tag,reSymbol):
     '''
     l=node.findall(tag)
     ll=len(l)
+    wf = False # warning flag
     if reSymbol=='*':
-        assert(ll>=0)
+        #assert(ll>=0)
+        if ll < 0:
+            wf = True
     elif reSymbol=='+':
-        assert(ll>=1)
+        #assert(ll>=1)
+        if ll < 1:
+            wf = True
     elif reSymbol=='?':
-        assert(ll==0 or ll==1)
+        #assert(ll==0 or ll==1)
+        if ll != 0 and ll != 1:
+            wf = True            
     else:
-        assert(False) #FIXME: add {n} later
+        #assert(False) #FIXME: add {n} later
+        wf = True
+    if wf == True:
+        logging.warning('unexpected number of nodes: %d.' % ll)            
     return l
 
 class MyException(Exception):

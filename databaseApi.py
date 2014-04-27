@@ -8,7 +8,7 @@ import MySQLdb
 import logging
 import pprint
 
-# logging.basicConfig(format='%(name)s-%(levelname)s: %(message)s',
+# logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
 #                     level=logging.DEBUG)
 
 class DbConnection(object):
@@ -119,10 +119,10 @@ class Database(object):
     def close(self):
         self.conn.close()
                 
-class phDatabase(Database):
+class PhDatabase(Database):
     '''
     Example:
-    >>> phdb = phDatabase(MysqlConnection('testdb','54.187.112.65','root','lymanDelmedio123'))
+    >>> phdb = PhDatabase(MysqlConnection('testdb','54.187.112.65','root','lymanDelmedio123'))
     >>> phdb.conn.execute("DROP TABLE author")
     0
     >>> phdb.conn.execute("DROP TABLE article")
@@ -139,6 +139,12 @@ class phDatabase(Database):
     >>> phdb.close()
     '''
 
+    def createTables(self):
+        self.createTableArticle()
+        self.createTableAuthor()
+        self.createTableSubscriber()
+        self.createTableInterest()
+        'add all the table creation funcs...'
     
     def createTableArticle(self):
         query='''CREATE TABLE article(
@@ -266,7 +272,30 @@ class phDatabase(Database):
         logging.debug('fetched result:\n'+ pprint.pformat(res))
         
         return (ret, res)
-            
+    
+    def replaceKeyValuePair(self, listDict, tableName, keyOld, keyNew):
+        '''
+        Replace a old key-value pair (keyOld) in a dictionary list (listDict)
+        with a new pair (keyNew), based on the old/new key lookup in a database
+        table (tableName). Commonly used because there are many cases one needs 
+        to lookup the id column of a table based on another column (for example, 
+        look up and replace PMID with articleId in table article).
+        '''
+        return 0
+    
+    def constructPubmedQueryList(self):
+        '''
+        Return a list of Pubmed queries and their corresponding subscriberIds 
+        based on information in the interest table.
+        Rules to construct the list:
+        1) All categorized as general_journal (category = 1) should be queried 
+        with no specific keyword.
+        2) All categorized as expert_journal (category = 2) should be queried 
+        with keywords (category = 3) for a specific subscriber.
+        category: 0 - area, 1- general_journal, 2 - expert_journal, 3 - keyword, 
+        4 - author
+        '''
+        return 0
                         
 if __name__ == '__main__':
     import doctest

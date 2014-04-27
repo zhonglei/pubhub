@@ -14,10 +14,10 @@ import phTools
 import pprint
 
 '''
-format '%(asctime)s-%(name)s-%(levelname)s: %(message)s'
+format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
 '''
-# logging.basicConfig(format='%(name)s-%(levelname)s: %(message)s',
+# logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
 #                     level=logging.DEBUG)
 
 class PubmedApi(object):
@@ -94,7 +94,7 @@ class PubmedApi(object):
     
     def getArticleAndAuthorDetails(self, listPmid):
         '''
-        Query database with input a list of PMIDs.
+        Query database with input of a list of PMIDs.
         Return a list of dictionaries of article details and a list of 
         dictionaries of author details.
         '''
@@ -118,6 +118,10 @@ class PubmedApi(object):
         return res
     
     def parseArticleAndAuthor(self,fetchContent):
+        '''
+        Parse article and author information from the returned fetchContent, 
+        in XML format obeying the Pubmed efetch DTD format.
+        '''
         #FIXME: do DTD check for returned xml file
         '''
         xml is in format of: <PubmedArticleSet>(root)
