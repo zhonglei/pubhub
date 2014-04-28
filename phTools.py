@@ -78,6 +78,14 @@ def myNormalizedDate(dateString):
            .replace('Jun','6').replace('Jul','7').replace('Aug','8') \
            .replace('Sep','9').replace('Oct','10').replace('Nov','11') \
            .replace('Dec','12')
+           
+def singleStrip(t):
+    '''
+    Example:
+    >>> singleStrip(((1L,), (2L,)))
+    [1L, 2L]
+    '''
+    return[(lambda y: y[0])(x) for x in t]           
                     
 if __name__ == '__main__':
     import doctest

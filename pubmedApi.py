@@ -1,5 +1,5 @@
 '''
-API for Pubmed database.
+API for Pubmed.
 
 Created on Apr 25, 2014
 
@@ -38,7 +38,7 @@ class PubmedApi(object):
     _base = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/'
     _db = 'pubmed'
     _email = 'pubhub2@gmail.com'
-    #_queryMinInterval = 0.5 #seconds. required not to query too frequently    
+    _queryMinInterval = 0.5 #seconds. required not to query too frequently    
     
     def __init__(self):
         pass
@@ -56,6 +56,7 @@ class PubmedApi(object):
         #use urllib2 instead.
         logging.debug('GET '+searchUrl+' ...')
         try:
+            time.sleep(self._queryMinInterval)
             _,searchContent=httplib2.Http().request(searchUrl,"GET")
         except Exception as e:
             logging.warning(e)
@@ -106,6 +107,7 @@ class PubmedApi(object):
         
         logging.debug('GET '+fetchUrl+' ...')
         try:
+            time.sleep(self._queryMinInterval)
             _,fetchContent=httplib2.Http().request(fetchUrl,"GET")
         except Exception as e:
             logging.warning(e)
@@ -398,7 +400,10 @@ class PubmedApi(object):
     
     def query(self, query, maxRes):
         listPmid = self.getMatchedPmid(query, maxRes)
-        listArticle = self.getArticleAndAuthorDetails(listPmid)
+        if listPmid:
+            listArticle = self.getArticleAndAuthorDetails(listPmid)
+        else:
+            listArticle = ([], [])
         return listArticle
 
 if __name__ == '__main__':
