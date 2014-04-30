@@ -72,6 +72,10 @@ def constructPubmedQueryList(phdb):
             
     Example:
     >>> phdb = PhDatabase(MysqlConnection('testdb','54.187.112.65','root','lymanDelmedio123'))
+    >>> phdb.conn._execute("DROP TABLE subscriber_articleEvent")
+    0
+    >>> phdb.conn._execute("DROP TABLE subscriber_article")
+    0
     >>> phdb.conn._execute("DROP TABLE interest")
     0
     >>> phdb.conn._execute("DROP TABLE subscriber")
@@ -79,6 +83,10 @@ def constructPubmedQueryList(phdb):
     >>> phdb.createTableSubscriber()
     0
     >>> phdb.createTableInterest()
+    0
+    >>> phdb.createTableSubscriber_Article()
+    0
+    >>> phdb.createTableSubscriber_ArticleEvent()
     0
     >>> ldSubscriber = [
     ...                {'firstName':'Franklin', 'lastName':'Zhong', 'email':'franklin.zhong@gmail.com'}, 
@@ -168,13 +176,21 @@ def constructPubmedQueryList(phdb):
             
     return listQuery
 
-def constructPubmedTimeStr(lastQueryTime):
+def constructPubmedTimeStr(t):
     '''
     Example:
     >>> constructPubmedTimeStr(1398036175.4)
     '(2014/04/20[PDAT] : 3000/01/01[PDAT])'
     '''
-    return time.strftime('(%Y/%m/%d[PDAT] : 3000/01/01[PDAT])', time.gmtime(lastQueryTime))
+    return time.strftime('(%Y/%m/%d[PDAT] : 3000/01/01[PDAT])', time.gmtime(t))
+
+def constructMysqlDatetimeStr(t):
+    '''
+    Example:
+    >>> constructMysqlDatetimeStr(1398036175.4)
+    '2014-04-20 23:22:55'
+    '''
+    return time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(t))
 
 def queryPubmedAndStoreResults(lastQueryTime):
 
@@ -190,7 +206,7 @@ def queryPubmedAndStoreResults(lastQueryTime):
         queryStr += ' AND '+ timeStr
         
         'add type: journal article'
-        queryStr += ' AND Journal Article[ptyp]'
+        queryStr += ' AND (Journal Article[ptyp])'
             
         'replace space with +'
         queryStr = queryStr.replace(' ', '+')
@@ -200,145 +216,102 @@ def queryPubmedAndStoreResults(lastQueryTime):
         'query pubmed'
         pa = PubmedApi()
         ldArticle, ldAuthor = pa.query(queryStr, 100)
-               
-        'record article'
-        phdb.insertMany('article', ldArticle)
-       
+        
+        for dArticle in ldArticle:
+                                       
+            'record article'
+            dArticle['articleId'] = None #prepare to get LAST_INSERT_ID
+            articleId = phdb.insertOneReturnLastInsertId('article', dArticle) 
+            
+            if articleId == -1: #article insertion fails (could be already in db)
+                continue
+            
+            for s in listSubscriber:
+                                                                   
+                'record subscriber_article'
+                dSubscriber_article = {}
+                dSubscriber_article['subscriber_articleId'] = None
+                dSubscriber_article['subscriberId'] = s
+                dSubscriber_article['articleId'] = articleId
+                
+                subscriber_articleId = phdb.insertOneReturnLastInsertId(
+                                    'subscriber_article', dSubscriber_article)
+                
+                'record subscriber_articleEvent'
+                dSubscriber_articleEvent = {}
+                dSubscriber_articleEvent['subscriber_articleId'] = subscriber_articleId
+                dSubscriber_articleEvent['timestamp'] = constructMysqlDatetimeStr(time.time())
+                dSubscriber_articleEvent['category'] = 0
+                dSubscriber_articleEvent['status'] = 1
+
+                phdb.insertOne('subscriber_articleEvent', dSubscriber_articleEvent)
+
         'record author'
+        #ldAuthorForArticle = [l for l in ldAuthor if l['PMID']==dArticle['PMID']]
         replaceKeyValuePair(phdb, ldAuthor, 'article', 'PMID', 'articleId')
                                 # Need to look up articleId in article, 
                                 # and replace key PMID with articleID
         phdb.insertMany('author', ldAuthor)
-      
+            
     'close pubhub database'
     phdb.close()
     
-    pass
-    
-
 if __name__ == '__main__':
+         
+    '================================'
+    'Add subscribers and interests'
+    '================================'
+
+    if False:
+        phdb = PhDatabase(MysqlConnection('pubhub', '54.187.112.65', 'root', 'lymanDelmedio123'))    
+        phdb.createTableSubscriber()
+        phdb.createTableInterest()
+        ldSubscriber = [
+                        {'firstName':'Franklin', 'lastName':'Zhong', 'email':'franklin.zhong@gmail.com'}, 
+                        {'firstName':'Zhi', 'lastName':'Li', 'email':'henrylee18@yahoo.com'}, 
+                        ]
+        ldInterest = [
+                        {'subscriberId':'1', 'category':'0', 'phrase':'biochemistry'}, 
+                        {'subscriberId':'1', 'category':'0', 'phrase':'cell biology'}, 
+                        {'subscriberId':'1', 'category':'1', 'phrase':'Nature'}, 
+                        {'subscriberId':'1', 'category':'1', 'phrase':'Science'}, 
+                        {'subscriberId':'1', 'category':'1', 'phrase':'Cell'}, 
+                        {'subscriberId':'1', 'category':'2', 'phrase':'Molecular Cell'}, 
+                        {'subscriberId':'1', 'category':'2', 'phrase':'Nature structural and Molecular Biology'}, 
+                        {'subscriberId':'1', 'category':'2', 'phrase':'Molecular and Cellular Biology'}, 
+                        {'subscriberId':'1', 'category':'3', 'phrase':'telomerase and cancer biology'}, 
+                        {'subscriberId':'1', 'category':'3', 'phrase':'telomere and DNA replication'}, 
+                          
+                        {'subscriberId':'2', 'category':'0', 'phrase':'biochemistry'}, 
+                        {'subscriberId':'2', 'category':'0', 'phrase':'Immunology'}, 
+                        {'subscriberId':'2', 'category':'1', 'phrase':'Nature'}, 
+                        {'subscriberId':'2', 'category':'1', 'phrase':'Science'}, 
+                        {'subscriberId':'2', 'category':'2', 'phrase':'Immunity'}, 
+                        {'subscriberId':'2', 'category':'2', 'phrase':'Journal of Immunology'}, 
+                        {'subscriberId':'2', 'category':'2', 'phrase':'Molecular Cell'}, 
+                        {'subscriberId':'2', 'category':'2', 'phrase':'Nature structural and Molecular Biology'}, 
+                        {'subscriberId':'2', 'category':'3', 'phrase':'noncoding RNA'}, 
+      
+                        ]
+        phdb.insertMany('subscriber', ldSubscriber)
+        phdb.insertMany('interest', ldInterest)
+          
+        'close pubhub database'    
+        phdb.close()
     
     '================================'
-    'create subscriber query'
+    'Query Pubmed and store results'
     '================================'
-     
-#      
-#     'create tables and populate dummy subscribers'
-#     '''
-#     subscriber:    
-#     +--------------+--------------+------+-----+---------+----------------+
-#     | Field        | Type         | Null | Key | Default | Extra          |
-#     +--------------+--------------+------+-----+---------+----------------+
-#     | subscriberId | int(11)      | NO   | PRI | NULL    | auto_increment |
-#     | firstName    | varchar(255) | YES  |     | NULL    |                |
-#     | lastName     | varchar(255) | YES  |     | NULL    |                |
-#     | email        | varchar(255) | NO   | UNI | NULL    |                |
-#     +--------------+--------------+------+-----+---------+----------------+
-#     interest:
-#     +--------------+--------------+------+-----+---------+----------------+
-#     | Field        | Type         | Null | Key | Default | Extra          |
-#     +--------------+--------------+------+-----+---------+----------------+
-#     | InterestId   | int(11)      | NO   | PRI | NULL    | auto_increment |
-#     | subscriberId | int(11)      | NO   | MUL | NULL    |                |
-#     | category*    | tinyint(4)   | NO   |     | NULL    |                |
-#     | phrase       | varchar(255) | NO   |     | NULL    |                |
-#     +--------------+--------------+------+-----+---------+----------------+
-#     '*category: 0 - area, 1- general_journal, 2 - expert_journal, 3 - keyword, 4 - author'
-#     '''
-#     phdb.createTableSubscriber()
-#     phdb.createTableInterest()
-#     ldSubscriber = [
-#                     {'firstName':'Franklin', 'lastName':'Zhong', 'email':'franklin.zhong@gmail.com'}, 
-#                     {'firstName':'Zhi', 'lastName':'Li', 'email':'henrylee18@yahoo.com'}, 
-#                     ]
-#     ldInterest = [
-#                     {'subscriberId':'1', 'category':'0', 'phrase':'biochemistry'}, 
-#                     {'subscriberId':'1', 'category':'0', 'phrase':'cell biology'}, 
-#                     {'subscriberId':'1', 'category':'1', 'phrase':'Nature'}, 
-#                     {'subscriberId':'1', 'category':'1', 'phrase':'Science'}, 
-#                     {'subscriberId':'1', 'category':'1', 'phrase':'Cell'}, 
-#                     {'subscriberId':'1', 'category':'2', 'phrase':'Molecular Cell'}, 
-#                     {'subscriberId':'1', 'category':'2', 'phrase':'Nature structural and Molecular Biology'}, 
-#                     {'subscriberId':'1', 'category':'2', 'phrase':'Molecular and Cellular Biology'}, 
-#                     {'subscriberId':'1', 'category':'3', 'phrase':'telomerase and cancer biology'}, 
-#                     {'subscriberId':'1', 'category':'3', 'phrase':'telomere and DNA replication'}, 
-#                      
-#                     {'subscriberId':'2', 'category':'0', 'phrase':'biochemistry'}, 
-#                     {'subscriberId':'2', 'category':'0', 'phrase':'Immunology'}, 
-#                     {'subscriberId':'2', 'category':'1', 'phrase':'Nature'}, 
-#                     {'subscriberId':'2', 'category':'1', 'phrase':'Science'}, 
-#                     {'subscriberId':'2', 'category':'2', 'phrase':'Immunity'}, 
-#                     {'subscriberId':'2', 'category':'2', 'phrase':'Journal of Immunology'}, 
-#                     {'subscriberId':'2', 'category':'2', 'phrase':'Molecular Cell'}, 
-#                     {'subscriberId':'2', 'category':'2', 'phrase':'Nature structural and Molecular Biology'}, 
-#                     {'subscriberId':'2', 'category':'3', 'phrase':'noncoding RNA'}, 
-#  
-#                     ]
-#     phdb.insertMany('subscriber', ldSubscriber)
-#     phdb.insertMany('interest', ldInterest)
-#      
-#      
-#     'close pubhub database'    
-#     phdb.close()
-    
-    
-    
-    '''
-    =====================================================================
-    Already in database:
-    =====================================================================
-    '''
-    '''
-    table article
-    
-    table author
-    
-    table subscriber:
-    +--------------+-----------+----------+--------------------------+
-    | subscriberId | firstName | lastName | email                    |
-    +--------------+-----------+----------+--------------------------+
-    |            1 | Franklin  | Zhong    | franklin.zhong@gmail.com |
-    |            2 | Zhi       | Li       | henrylee18@yahoo.com     |
-    +--------------+-----------+----------+--------------------------+
 
-    table interest:
-    +------------+--------------+----------+-----------------------------------------+
-    | InterestId | subscriberId | category | phrase                                  |
-    +------------+--------------+----------+-----------------------------------------+
-    |          1 |            1 |        0 | biochemistry                            |
-    |          2 |            1 |        0 | cell biology                            |
-    |          5 |            1 |        1 | Cell                                    |
-    |          3 |            1 |        1 | Nature                                  |
-    |          4 |            1 |        1 | Science                                 |
-    |          8 |            1 |        2 | Molecular and Cellular Biology          |
-    |          6 |            1 |        2 | Molecular Cell                          |
-    |          7 |            1 |        2 | Nature structural and Molecular Biology |
-    |          9 |            1 |        3 | telomerase and cancer biology           |
-    |         10 |            1 |        3 | telomere and DNA replication            |
-    |         11 |            2 |        0 | biochemistry                            |
-    |         12 |            2 |        0 | Immunology                              |
-    |         13 |            2 |        1 | Nature                                  |
-    |         14 |            2 |        1 | Science                                 |
-    |         15 |            2 |        2 | Immunity                                |
-    |         16 |            2 |        2 | Journal of Immunology                   |
-    |         17 |            2 |        2 | Molecular Cell                          |
-    |         18 |            2 |        2 | Nature structural and Molecular Biology |
-    |         19 |            2 |        3 | noncoding RNA                           |
-    +------------+--------------+----------+-----------------------------------------+    
-    '''
+    if False:
+        pubmedQueryInterval = 7 * 24 * 3600 # 7 days in seconds 
+        lastQueryTime = time.time() - pubmedQueryInterval
+        
+        queryPubmedAndStoreResults(lastQueryTime)
     
-    '''
-    =====================================================================
-    At a given time, query Pubmed and store new results since last query
-    time in database
-    =====================================================================
-    '''
-
-    pubmedQueryInterval = 7 * 24 * 3600 # in seconds 
-    lastQueryTime = time.time() - pubmedQueryInterval
-    
-    queryPubmedAndStoreResults(lastQueryTime)
-    
+    '================================'
+    'Query Pubmed and store results'
+    '================================'
     
     
     

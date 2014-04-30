@@ -13,6 +13,7 @@ import logging
 import phTools
 import pprint
 
+
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
@@ -338,14 +339,16 @@ class PubmedApi(object):
                                 print e
                                 continue
             try:
-#                 JournalTitle=JournalTitle.encode(sys.stdout.encoding, errors='replace')
-#                 JournalISOAbbreviation=JournalISOAbbreviation.encode(sys.stdout.encoding, errors='replace')
-#                 ArticleTitle=ArticleTitle.encode(sys.stdout.encoding, errors='replace')
-#                 Abstract=Abstract.encode(sys.stdout.encoding, errors='replace')
-#                 for t in ListAuthorForeName: t=t.encode(sys.stdout.encoding, errors='replace')
-#                 for t in ListAuthorInitials: t=t.encode(sys.stdout.encoding, errors='replace')
-#                 for t in ListAuthorLastName: t=t.encode(sys.stdout.encoding, errors='replace')
-#                 for t in ListAuthorAffiliation: t=t.encode(sys.stdout.encoding, errors='replace')
+
+#                 JournalTitle=JournalTitle.encode('ASCII', 'ignore')
+#                 JournalISOAbbreviation=JournalISOAbbreviation.encode('ASCII', 'ignore')
+#                 ArticleTitle=ArticleTitle.encode('ASCII', 'ignore')
+#                 Abstract=Abstract.encode('ASCII', 'ignore')
+#                 for t in ListAuthorForeName: t=t.encode('ASCII', 'ignore')
+#                 for t in ListAuthorInitials: t=t.encode('ASCII', 'ignore')
+#                 for t in ListAuthorLastName: t=t.encode('ASCII', 'ignore')
+#                 for t in ListAuthorAffiliation: t=t.encode('ASCII', 'ignore')
+
                 'FIXME'
                 
                 JournalTitle=JournalTitle
@@ -356,6 +359,7 @@ class PubmedApi(object):
                 for t in ListAuthorInitials: t=t
                 for t in ListAuthorLastName: t=t
                 for t in ListAuthorAffiliation: t=t
+
             except Exception as e:
                 logging.warning(e)
                 continue

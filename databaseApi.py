@@ -128,6 +128,10 @@ class PhDatabase(Database):
     '''
     Example:
     >>> phdb = PhDatabase(MysqlConnection('testdb','54.187.112.65','root','lymanDelmedio123'))
+    >>> phdb.conn._execute("DROP TABLE subscriber_articleEvent")
+    0
+    >>> phdb.conn._execute("DROP TABLE subscriber_article")
+    0
     >>> phdb.conn._execute("DROP TABLE author")
     0
     >>> phdb.conn._execute("DROP TABLE article")
@@ -143,6 +147,10 @@ class PhDatabase(Database):
     >>> phdb.createTableSubscriber()
     0
     >>> phdb.createTableInterest()
+    0
+    >>> phdb.createTableSubscriber_Article()
+    0
+    >>> phdb.createTableSubscriber_ArticleEvent()
     0
     >>> phdb.conn._execute('DELETE FROM Dict')
     0
@@ -167,6 +175,8 @@ class PhDatabase(Database):
         self.createTableAuthor()
         self.createTableSubscriber()
         self.createTableInterest()
+        self.createTableSubscriber_Article()
+        self.createTableSubscriber_ArticleEvent()
         'add all the table creation funcs...'
     
     def createTableArticle(self):
@@ -239,6 +249,82 @@ class PhDatabase(Database):
         if self.conn:
             return self.conn._execute(query)
         return -1    
+
+    def createTableSubscriber_Article(self):
+        query='''CREATE TABLE subscriber_article(
+                subscriber_articleId INT NOT NULL AUTO_INCREMENT,
+                subscriberId INT NOT NULL,
+                articleId INT NOT NULL,
+                PRIMARY KEY (subscriber_articleId),
+                FOREIGN KEY (subscriberId) REFERENCES subscriber(subscriberId),
+                FOREIGN KEY (articleId) REFERENCES article(articleId),
+                CONSTRAINT uc_subscriber_article UNIQUE (subscriberId,articleId)
+                );
+        '''
+        logging.debug('query:\n'+query)
+        if self.conn:
+            return self.conn._execute(query)
+        return -1
+    
+    def createTableSubscriber_ArticleEvent(self):
+        query='''CREATE TABLE subscriber_articleEvent(
+                subscriber_articleEventId INT NOT NULL AUTO_INCREMENT,
+                subscriber_articleId INT NOT NULL,
+                timestamp DATETIME NOT NULL,
+                category TINYINT NOT NULL COMMENT 'category: 0 - created, 1 - pinned, 2 - mored, 3 - viewed, ...',
+                status BOOLEAN NOT NULL,
+                PRIMARY KEY (subscriber_articleEventId),
+                FOREIGN KEY (subscriber_articleId) REFERENCES subscriber_article(subscriber_articleId)
+                );
+        '''
+        logging.debug('query:\n'+query)
+        if self.conn:
+            return self.conn._execute(query)
+        return -1
+    
+    def insertOneReturnLastInsertId(self,tableName,d):
+        '''
+        Insert one record and return the last insert id (MySQL LAST_INSERT_ID()
+        method). Return: -1 if the operation fails, the ID otherwise.
+        The input dict must contains a key corresponding to a field with
+        AUTO_INCREMENT property in the table tableName.
+        
+        Example:
+        >>> phdb = PhDatabase(MysqlConnection('testdb','54.187.112.65','root','lymanDelmedio123'))
+        >>> phdb.conn._execute("DROP TABLE subscriber_articleEvent")
+        0
+        >>> phdb.conn._execute("DROP TABLE subscriber_article")
+        0
+        >>> phdb.conn._execute("DROP TABLE interest")
+        0
+        >>> phdb.conn._execute("DROP TABLE subscriber")
+        0
+        >>> phdb.createTableSubscriber()
+        0
+        >>> phdb.createTableInterest()
+        0
+        >>> phdb.createTableSubscriber_Article()
+        0
+        >>> phdb.createTableSubscriber_ArticleEvent()
+        0
+        >>> dSubscriber1 = {'subscriberId':None,'firstName':'Franklin', 'lastName':'Zhong', 'email':'franklin.zhong@gmail.com'}
+        >>> phdb.insertOneReturnLastInsertId('subscriber',dSubscriber1)
+        1L
+        >>> dSubscriber2 = {'subscriberId':None,'firstName':'Zhi', 'lastName':'Li', 'email':'henrylee18@yahoo.com'}
+        >>> phdb.insertOneReturnLastInsertId('subscriber',dSubscriber2)
+        2L
+        >>> phdb.close()
+        '''
+        ret = self.insertMany(tableName,[d,])
+        if ret != 0:
+            return -1
+        ret, res = self.conn._fetchall("SELECT LAST_INSERT_ID()")
+        if ret !=0:
+            return -1
+        return res[0][0]
+    
+    def insertOne(self,tableName,d):
+        return self.insertMany(tableName,[d,])
     
     def insertMany(self,tableName,listDict):
         '''
