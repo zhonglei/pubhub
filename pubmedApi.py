@@ -18,8 +18,8 @@ import pprint
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
 '''
-# logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
-#                     level=logging.DEBUG)
+logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
+                    level=logging.DEBUG)
 
 class PubmedApi(object):
     '''
@@ -369,6 +369,10 @@ class PubmedApi(object):
             except Exception as e:
                 logging.warning(e)
                 continue
+            
+            'Manual Filter rule: if no abstract, skip'
+            #if Abstract == '':
+            #    continue
                 
             dictArticle={}
             dictArticle['PMID']=PMID
