@@ -15,47 +15,37 @@
         <!--[if lt IE 9]>
           <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
-
     </head>
-    
     
 	<body>
 	<!-- Update in this div -->
 	
-	<div class="wrapper_main">
-		
-		<div class="header_top"> 
 				
-			<button type="button" data-toggle="offcanvas" data-target="#myNavmenu" data-canvas="">
-			</button>
-			
-			<p>sCoopLy</p>
-		
-		</div>
-		
-		<nav id="myNavmenu" class="navmenu navmenu-default navmenu-fixed-left offcanvas" role="navigation">
-						  <a class="navmenu-brand" href="#">Scooply</a>
-						  <ul class="nav navmenu-nav">
-							<li class="active"><a href="#">Home</a></li>
-							<li><a href="#">Nature</a></li>
-							<li><a href="#">Cell</a></li>
-							<li><a href="#">Cell</a></li>
+			<nav id="myNavmenu" class="navmenu navmenu-default navmenu-fixed-left offcanvas" role="navigation">
 
-						  </ul>
-		</nav>
+				<a class="navmenu-brand" href="#">sCoopLy</a>
+				  
+				<ul class="nav navmenu-nav">
+					<li class="active"><a href="#">Home</a></li>
+					<li><a href="#">Nature</a></li>
+					<li><a href="#">Science</a></li>
+					<li><a href="#">Cell</a></li>
+				</ul>
+		
+			</nav>
 						
 		<div class="content_main">
 			
 %for row in rows:
-	%ArticleTitle, JournalTitle, dayStr = row
-	<div class="article_info">
-			<h3><a href="#">{{ArticleTitle}}</a> </h3>
-			<h4> Liu et al. Wei lab, Cornell University</h4>
-			<h4> {{dayStr}} in <span class="label label-default">{{JournalTitle}}</span></h4>
-	</div> 
+	%ArticleTitle, JournalTitle, dayStr, authorField, affiliation, www = row
+			<div class="article_info">
+				<h3><a href="{{www}}">{{ArticleTitle}}</a> </h3>
+				<h4> {{authorField}} </h4>
+				<h4> {{dayStr}} in <span class="label label-default">{{JournalTitle}}</span></h4>
+			</div> 
 	
 		</div><!-- content_main-->
-	</div><!-- wrapper_main-->
+
     
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
@@ -70,5 +60,7 @@
 	
 	<!-- Jasney-->
 	<script src="jasny-bootstrap/js/jasny-bootstrap.min.js"></script>
+
     </body>
+
 </html>

@@ -19,7 +19,7 @@ format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
 '''
 logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
-                    level=logging.DEBUG)
+                    level=logging.INFO)
 
 class PubmedApi(object):
     '''
@@ -370,9 +370,9 @@ class PubmedApi(object):
                 logging.warning(e)
                 continue
             
-            'Manual Filter rule: if no abstract, skip'
-            #if Abstract == '':
-            #    continue
+            'Manual Filter rule: if no abstract or no author, skip'
+            if Abstract == '':
+                continue
                 
             dictArticle={}
             dictArticle['PMID']=PMID
@@ -383,6 +383,7 @@ class PubmedApi(object):
             dictArticle['JournalTitle']=JournalTitle
             dictArticle['JournalISOAbbreviation']=JournalISOAbbreviation
             dictArticle['ArticleTitle']=ArticleTitle
+            dictArticle['DoiId']=DoiId
             dictArticle['Abstract']=Abstract
 
             listDictArticle.append(dictArticle)            

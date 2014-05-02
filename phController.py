@@ -303,7 +303,7 @@ if __name__ == '__main__':
     'Query Pubmed and store results'
     '================================'
 
-    if False:
+    if True:
         pubmedQueryInterval = 7 * 24 * 3600 # 7 days in seconds 
         lastQueryTime = time.time() - pubmedQueryInterval
         
@@ -312,12 +312,7 @@ if __name__ == '__main__':
     '================================'
     'Query Pubmed and store results'
     '================================'
-    
-    
-    
-    
-    
-    
+        
 # #     queryStr = '"Nature"[Journal]+AND+(2014/04/20[PDAT]+:+2014/04/26[PDAT])+AND+Journal+Article[ptyp]'
 # #     queryStr = '("Nature"[Journal])+AND+(2014/04/20[PDAT]+:+2014/04/26[PDAT])'
 #     queryStr = '("Nature"[Journal])+AND+(2014/04/21[PDAT]+:+3000/01/01[PDAT])+AND+(Journal+Article[ptyp])'

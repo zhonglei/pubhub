@@ -10,6 +10,7 @@ from bottle import route, run, response, template, get, post, request, static_fi
 from databaseApi import PhDatabase, MysqlConnection
 from phInfo import phDbInfo
 from phTools import singleStrip
+import logging
 import time
 
 @route('/css/<filepath:path>')
@@ -53,20 +54,31 @@ def showListArticle():
     subscriberId = request.query.subscriberId
     phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
                                       phDbInfo['user'],phDbInfo['password']))
-    '''
-    SELECT DISTINCT PMID, JournalISOAbbreviation, DateCreated 
-    FROM article JOIN subscriber_article ON article.articleId = 
-    subscriber_article.articleId WHERE subscriber_article.subscriberId=1;    
-    '''
-    _, articleRes = phdb.selectDistinct('article JOIN subscriber_article '+
-            'ON article.articleId = subscriber_article.articleId', 
-            ['ArticleTitle', 'JournalISOAbbreviation', 'DateCreated',],
-            'subscriber_article.subscriberId='+str(subscriberId)
-            )
+
+#     _, articleRes = phdb.selectDistinct('article JOIN subscriber_article '+
+#             'ON article.articleId = subscriber_article.articleId', 
+#             ['ArticleTitle', 'JournalISOAbbreviation', 'DateCreated',],
+#             'subscriber_article.subscriberId='+str(subscriberId)
+#             )
+
+    'FIXME: 4 tables join!'
+    queryStartTime=time.time()
+    _, res = phdb.fetchall('''SELECT DISTINCT ArticleTitle, JournalISOAbbreviation, 
+    DateCreated, firstAuthor.lastName, lastAuthor.lastName, firstAuthor.affiliation, 
+    lastAuthor.affiliation, DoiId, PMID FROM article 
+    LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
+    LEFT JOIN firstAuthor ON article.articleId = firstAuthor.articleId 
+    LEFT JOIN lastAuthor ON article.articleId = lastAuthor.articleId 
+    WHERE subscriber_article.subscriberId=1;''')
+    timeElapsed = time.time()-queryStartTime
+    if timeElapsed > 1:
+        logging.warning("showListArticle 4 tables join takes %.2f sec!" % timeElapsed)
+    
     phdb.close()
     
     rows=[]
-    for ArticleTitle, JournalTitle, DateCreated in articleRes:
+    for ArticleTitle, JournalTitle, DateCreated, firstAuthorLastName, \
+    lastAuthorLastName, firstAuthorAffiliation, lastAuthorAffiliation, DoiId, PMID in res:
         daysElapsed = int((time.time()-int(DateCreated.strftime('%s')))/24/3600)
         if daysElapsed == 0:
             dayStr = 'Today'
@@ -74,7 +86,20 @@ def showListArticle():
             dayStr = '1 day ago'
         else:
             dayStr = '%d days ago' % daysElapsed
-        rows.append((ArticleTitle, JournalTitle, dayStr))
+        affiliation=''
+        if firstAuthorAffiliation != '':
+            affiliation = firstAuthorAffiliation
+        elif lastAuthorAffiliation != '':
+            affiliation = lastAuthorAffiliation
+        if DoiId != '':
+            www = 'http://dx.doi.org/' + DoiId
+        else: 
+            www = 'http://www.ncbi.nlm.nih.gov/pubmed/' + str(PMID)
+        if firstAuthorLastName != '':
+            authorField = firstAuthorLastName+' et al., '+lastAuthorLastName+' Lab'
+        else:
+            authorField = ''
+        rows.append((ArticleTitle, JournalTitle, dayStr, authorField, affiliation, www))
     
     output = template('views/listArticle', rows = rows)
     return output
@@ -139,4 +164,6 @@ if __name__ == '__main__':
 #     '''
 #     subscriberId = request.GET.get('subscriberId','0')
 #     return "<h1> subscriberId = "+str(subscriberId)+". </h1>"
+
+
     

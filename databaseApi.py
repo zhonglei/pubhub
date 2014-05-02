@@ -173,6 +173,8 @@ class PhDatabase(Database):
     def createTables(self):
         self.createTableArticle()
         self.createTableAuthor()
+        self.createViewFirstAuthor()
+        self.createViewLastAuthor()
         self.createTableSubscriber()
         self.createTableInterest()
         self.createTableSubscriber_Article()
@@ -213,6 +215,30 @@ class PhDatabase(Database):
                 FOREIGN KEY (articleId) REFERENCES article(articleId),
                 CONSTRAINT uc_author_article UNIQUE (articleId,ForeName,LastName)
                 );
+        '''
+        logging.debug('query:\n'+query)
+        if self.conn:
+            return self.conn._execute(query)
+        return -1
+
+    def createViewFirstAuthor(self):
+        query='''CREATE VIEW firstAuthor AS 
+                    SELECT * FROM author WHERE 
+                    (authorId,articleId) IN 
+                    (SELECT MIN(authorId),articleId 
+                    FROM author GROUP BY articleId);
+        '''
+        logging.debug('query:\n'+query)
+        if self.conn:
+            return self.conn._execute(query)
+        return -1
+
+    def createViewLastAuthor(self):
+        query='''CREATE VIEW firstAuthor AS 
+                    SELECT * FROM author WHERE 
+                    (authorId,articleId) IN 
+                    (SELECT MAX(authorId),articleId 
+                    FROM author GROUP BY articleId);
         '''
         logging.debug('query:\n'+query)
         if self.conn:
@@ -386,6 +412,14 @@ class PhDatabase(Database):
         logging.debug('fetched result:\n'+ pprint.pformat(res))
         
         return (ret, res)
+    
+    def fetchall(self,query):
+        logging.debug('query:\n'+query)
+        ret, res = self.conn._fetchall(query)
+        logging.debug('fetched result:\n'+ pprint.pformat(res))        
+        return (ret, res)
+        
+        
                         
 if __name__ == '__main__':
     import doctest
