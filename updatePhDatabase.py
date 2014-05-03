@@ -1,4 +1,8 @@
 '''
+
+Update Pubhub database by read subscriber information and accordingly retrieve
+from Pubmed.
+
 Created on May 2, 2014
 
 @author: zhil2

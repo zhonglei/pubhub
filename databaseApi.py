@@ -371,9 +371,11 @@ class PhDatabase(Database):
             query += '%s'
             query += ')'
             
-            logging.debug('query:\n'+query)
-            
             fields = tuple(d.values())
+
+            logging.debug('query:\n'+query)
+            logging.debug('fields:\n'+str(fields))
+            
             if self.conn:
                 ret = self.conn._execute(query,fields)
                 if ret == 0:
