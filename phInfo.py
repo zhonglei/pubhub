@@ -10,4 +10,6 @@ phDbInfo={'dbName':'pubhub', 'ip':'54.187.112.65', 'user':'root', 'password':'ly
 
 
 if __name__ == '__main__':
-    pass
+
+    import doctest
+    print doctest.testmod()

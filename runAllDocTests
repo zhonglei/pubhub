@@ -1,0 +1,20 @@
+#! /bin/sh
+
+echo "databaseApi.py:"
+python databaseApi.py
+
+echo "phController.py:"
+python phController.py
+
+echo "phInfo.py:"
+python phInfo.py
+
+echo "phTools.py:"
+python phTools.py
+
+echo "pubmedApi.py:"
+python pubmedApi.py
+
+echo "runBottleServer.py:"
+python runBottleServer.py --doctest-only
+

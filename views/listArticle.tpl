@@ -37,9 +37,9 @@
 		<div class="content_main">
 			
 %for row in rows:
-	%ArticleTitle, JournalTitle, dayStr, authorField, affiliation, www = row
+	%ArticleTitle, JournalTitle, dayStr, authorField, affiliation, recordAndRedirectStr = row
 			<div class="article_info">
-				<h3><a href="{{www}}">{{ArticleTitle}}</a> </h3>
+				<h3><a href="{{recordAndRedirectStr}}">{{ArticleTitle}}</a> </h3>
 				<h4> {{authorField}} </h4>
 				<h4> {{dayStr}} in <span class="label label-default">{{JournalTitle}}</span></h4>
 			</div> 

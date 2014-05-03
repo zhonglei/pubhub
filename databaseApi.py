@@ -10,6 +10,7 @@ Created on Apr 25, 2014
 import MySQLdb
 import logging
 import pprint
+import time
 
 logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
                     level=logging.INFO)
@@ -264,7 +265,7 @@ class PhDatabase(Database):
         query='''CREATE TABLE interest(
                 InterestId INT NOT NULL AUTO_INCREMENT,
                 subscriberId INT NOT NULL,
-                category TINYINT NOT NULL COMMENT 'category: 0 - area, 1- general_journal, 2 - expert_journal, 3 - keyword, 4 - author, ...',
+                category TINYINT NOT NULL COMMENT 'category: 1 - area, 2- generalJournal, 3 - expertJournal, 4 - keyword, 5 - author, ...',
                 phrase VARCHAR(255) NOT NULL,
                 PRIMARY KEY (interestId),
                 FOREIGN KEY (subscriberId) REFERENCES subscriber(subscriberId),
@@ -297,8 +298,9 @@ class PhDatabase(Database):
                 subscriber_articleEventId INT NOT NULL AUTO_INCREMENT,
                 subscriber_articleId INT NOT NULL,
                 timestamp DATETIME NOT NULL,
-                category TINYINT NOT NULL COMMENT 'category: 0 - created, 1 - pinned, 2 - mored, 3 - viewed, ...',
+                category TINYINT NOT NULL COMMENT 'category: 1 - created, 2 - pinned, 3 - moreClicked, 4 - extlinkClicked, ...',
                 status BOOLEAN NOT NULL,
+                requestHeader TEXT,
                 PRIMARY KEY (subscriber_articleEventId),
                 FOREIGN KEY (subscriber_articleId) REFERENCES subscriber_article(subscriber_articleId)
                 );
@@ -419,6 +421,14 @@ class PhDatabase(Database):
         logging.debug('fetched result:\n'+ pprint.pformat(res))        
         return (ret, res)
         
+def constructMysqlDatetimeStr(t):
+    '''
+    Example:
+    >>> constructMysqlDatetimeStr(1398036175.4)
+    '2014-04-20 23:22:55'
+    '''
+    return time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(t))
+
         
                         
 if __name__ == '__main__':

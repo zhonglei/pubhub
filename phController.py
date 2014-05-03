@@ -8,7 +8,7 @@ Created on Apr 26, 2014
 '''
 
 from pubmedApi import PubmedApi
-from databaseApi import PhDatabase, MysqlConnection
+from databaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
 import logging
 from phTools import singleStrip
 import pprint
@@ -94,24 +94,24 @@ def constructPubmedQueryList(phdb):
     ...                ]
     >>> ldInterest = [
     ...             {'subscriberId':'1', 'category':'0', 'phrase':'biochemistry'}, 
-    ...                {'subscriberId':'1', 'category':'0', 'phrase':'cell biology'}, 
-    ...                {'subscriberId':'1', 'category':'1', 'phrase':'Nature'}, 
-    ...                {'subscriberId':'1', 'category':'1', 'phrase':'Science'}, 
-    ...                {'subscriberId':'1', 'category':'1', 'phrase':'Cell'}, 
-    ...                {'subscriberId':'1', 'category':'2', 'phrase':'Molecular Cell'}, 
-    ...                {'subscriberId':'1', 'category':'2', 'phrase':'Nature structural and Molecular Biology'}, 
-    ...                {'subscriberId':'1', 'category':'2', 'phrase':'Molecular and Cellular Biology'}, 
-    ...                {'subscriberId':'1', 'category':'3', 'phrase':'telomerase and cancer biology'}, 
-    ...                {'subscriberId':'1', 'category':'3', 'phrase':'telomere and DNA replication'}, 
-    ...                {'subscriberId':'2', 'category':'0', 'phrase':'biochemistry'}, 
-    ...                {'subscriberId':'2', 'category':'0', 'phrase':'Immunology'}, 
-    ...                {'subscriberId':'2', 'category':'1', 'phrase':'Nature'}, 
-    ...                {'subscriberId':'2', 'category':'1', 'phrase':'Science'}, 
-    ...                {'subscriberId':'2', 'category':'2', 'phrase':'Immunity'}, 
-    ...                {'subscriberId':'2', 'category':'2', 'phrase':'Journal of Immunology'}, 
-    ...                {'subscriberId':'2', 'category':'2', 'phrase':'Molecular Cell'}, 
-    ...                {'subscriberId':'2', 'category':'2', 'phrase':'Nature structural and Molecular Biology'}, 
-    ...                {'subscriberId':'2', 'category':'3', 'phrase':'noncoding RNA'}, 
+    ...                {'subscriberId':'1', 'category':'1', 'phrase':'cell biology'}, 
+    ...                {'subscriberId':'1', 'category':'2', 'phrase':'Nature'}, 
+    ...                {'subscriberId':'1', 'category':'2', 'phrase':'Science'}, 
+    ...                {'subscriberId':'1', 'category':'2', 'phrase':'Cell'}, 
+    ...                {'subscriberId':'1', 'category':'3', 'phrase':'Molecular Cell'}, 
+    ...                {'subscriberId':'1', 'category':'3', 'phrase':'Nature structural and Molecular Biology'}, 
+    ...                {'subscriberId':'1', 'category':'3', 'phrase':'Molecular and Cellular Biology'}, 
+    ...                {'subscriberId':'1', 'category':'4', 'phrase':'telomerase and cancer biology'}, 
+    ...                {'subscriberId':'1', 'category':'4', 'phrase':'telomere and DNA replication'}, 
+    ...                {'subscriberId':'2', 'category':'1', 'phrase':'biochemistry'}, 
+    ...                {'subscriberId':'2', 'category':'1', 'phrase':'Immunology'}, 
+    ...                {'subscriberId':'2', 'category':'2', 'phrase':'Nature'}, 
+    ...                {'subscriberId':'2', 'category':'2', 'phrase':'Science'}, 
+    ...                {'subscriberId':'2', 'category':'3', 'phrase':'Immunity'}, 
+    ...                {'subscriberId':'2', 'category':'3', 'phrase':'Journal of Immunology'}, 
+    ...                {'subscriberId':'2', 'category':'3', 'phrase':'Molecular Cell'}, 
+    ...                {'subscriberId':'2', 'category':'3', 'phrase':'Nature structural and Molecular Biology'}, 
+    ...                {'subscriberId':'2', 'category':'4', 'phrase':'noncoding RNA'}, 
     ...                ]
     >>> phdb.insertMany('subscriber', ldSubscriber)
     0
@@ -125,7 +125,7 @@ def constructPubmedQueryList(phdb):
     listQuery=[]
     
     _, generalJournals = phdb.selectDistinct('interest', ['phrase',], 
-                                             'category = 1')
+                                             'category = 2') #generalJournal
     generalJournals = singleStrip(generalJournals)    
         
     for j in generalJournals:
@@ -148,15 +148,15 @@ def constructPubmedQueryList(phdb):
     for i in subscriberIds:
         
         _, keywords = phdb.selectDistinct('interest', ['phrase'], 
-                                'subscriberId = %d AND category = 3' % i)
+                                'subscriberId = %d AND category = 4' % i) #keyword
         keywords = singleStrip(keywords)
         
         _, subscriberGeneralJournals = phdb.selectDistinct('interest', 
-                    ['phrase',], 'subscriberId = %d AND category = 1' % i)
+                    ['phrase',], 'subscriberId = %d AND category = 2' % i) #generalJournal
         subscriberGeneralJournals = singleStrip(subscriberGeneralJournals)
         
         _, subscriberExpertJournals = phdb.selectDistinct('interest', 
-                    ['phrase',], 'subscriberId = %d AND category = 2' % i)
+                    ['phrase',], 'subscriberId = %d AND category = 3' % i) #expertJournal
         subscriberExpertJournals = singleStrip(subscriberExpertJournals)
         
         subscriberJournals = subscriberGeneralJournals + subscriberExpertJournals
@@ -183,14 +183,6 @@ def constructPubmedTimeStr(t):
     '(2014/04/20[PDAT] : 3000/01/01[PDAT])'
     '''
     return time.strftime('(%Y/%m/%d[PDAT] : 3000/01/01[PDAT])', time.gmtime(t))
-
-def constructMysqlDatetimeStr(t):
-    '''
-    Example:
-    >>> constructMysqlDatetimeStr(1398036175.4)
-    '2014-04-20 23:22:55'
-    '''
-    return time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(t))
 
 def queryPubmedAndStoreResults(lastQueryTime):
 
@@ -241,8 +233,8 @@ def queryPubmedAndStoreResults(lastQueryTime):
                 dSubscriber_articleEvent = {}
                 dSubscriber_articleEvent['subscriber_articleId'] = subscriber_articleId
                 dSubscriber_articleEvent['timestamp'] = constructMysqlDatetimeStr(time.time())
-                dSubscriber_articleEvent['category'] = 0
-                dSubscriber_articleEvent['status'] = 1
+                dSubscriber_articleEvent['category'] = 1 #created
+                dSubscriber_articleEvent['status'] = 1 #yes
 
                 phdb.insertOne('subscriber_articleEvent', dSubscriber_articleEvent)
 
@@ -257,104 +249,10 @@ def queryPubmedAndStoreResults(lastQueryTime):
     phdb.close()
     
 if __name__ == '__main__':
-         
-    '================================'
-    'Add subscribers and interests'
-    '================================'
-
-    if False:
-        phdb = PhDatabase(MysqlConnection('pubhub', '54.187.112.65', 'root', 'lymanDelmedio123'))    
-        phdb.createTableSubscriber()
-        phdb.createTableInterest()
-        ldSubscriber = [
-                        {'firstName':'Franklin', 'lastName':'Zhong', 'email':'franklin.zhong@gmail.com'}, 
-                        {'firstName':'Zhi', 'lastName':'Li', 'email':'henrylee18@yahoo.com'}, 
-                        ]
-        ldInterest = [
-                        {'subscriberId':'1', 'category':'0', 'phrase':'biochemistry'}, 
-                        {'subscriberId':'1', 'category':'0', 'phrase':'cell biology'}, 
-                        {'subscriberId':'1', 'category':'1', 'phrase':'Nature'}, 
-                        {'subscriberId':'1', 'category':'1', 'phrase':'Science'}, 
-                        {'subscriberId':'1', 'category':'1', 'phrase':'Cell'}, 
-                        {'subscriberId':'1', 'category':'2', 'phrase':'Molecular Cell'}, 
-                        {'subscriberId':'1', 'category':'2', 'phrase':'Nature structural and Molecular Biology'}, 
-                        {'subscriberId':'1', 'category':'2', 'phrase':'Molecular and Cellular Biology'}, 
-                        {'subscriberId':'1', 'category':'3', 'phrase':'telomerase and cancer biology'}, 
-                        {'subscriberId':'1', 'category':'3', 'phrase':'telomere and DNA replication'}, 
-                          
-                        {'subscriberId':'2', 'category':'0', 'phrase':'biochemistry'}, 
-                        {'subscriberId':'2', 'category':'0', 'phrase':'Immunology'}, 
-                        {'subscriberId':'2', 'category':'1', 'phrase':'Nature'}, 
-                        {'subscriberId':'2', 'category':'1', 'phrase':'Science'}, 
-                        {'subscriberId':'2', 'category':'2', 'phrase':'Immunity'}, 
-                        {'subscriberId':'2', 'category':'2', 'phrase':'Journal of Immunology'}, 
-                        {'subscriberId':'2', 'category':'2', 'phrase':'Molecular Cell'}, 
-                        {'subscriberId':'2', 'category':'2', 'phrase':'Nature structural and Molecular Biology'}, 
-                        {'subscriberId':'2', 'category':'3', 'phrase':'noncoding RNA'}, 
-      
-                        ]
-        phdb.insertMany('subscriber', ldSubscriber)
-        phdb.insertMany('interest', ldInterest)
-          
-        'close pubhub database'    
-        phdb.close()
-    
-    '================================'
-    'Query Pubmed and store results'
-    '================================'
-
-    if True:
-        pubmedQueryInterval = 7 * 24 * 3600 # 7 days in seconds 
-        lastQueryTime = time.time() - pubmedQueryInterval
-        
-        queryPubmedAndStoreResults(lastQueryTime)
-    
-    '================================'
-    'Query Pubmed and store results'
-    '================================'
-        
-# #     queryStr = '"Nature"[Journal]+AND+(2014/04/20[PDAT]+:+2014/04/26[PDAT])+AND+Journal+Article[ptyp]'
-# #     queryStr = '("Nature"[Journal])+AND+(2014/04/20[PDAT]+:+2014/04/26[PDAT])'
-#     queryStr = '("Nature"[Journal])+AND+(2014/04/21[PDAT]+:+3000/01/01[PDAT])+AND+(Journal+Article[ptyp])'
-# #     queryStr = 'Nature[Journal]+AND+(2008/11/01[PDAT]+:+2012/11/12[PDAT])'
-# #     queryStr = 'Science[Journal]+AND+(2008/11/01[PDAT]+:+2012/11/12[PDAT])'
-# #     queryStr = 'Science[Journal]+AND+(2005/07/01[PDAT]+:+2010/07/12[PDAT])'
-# #     queryStr = 'Cell[Journal]+AND+(2008/07/01[PDAT]+:+2010/07/12[PDAT])'
-# #     queryStr = 'Nature[Journal]+AND+(2012/07/01[PDAT]+:+2012/07/12[PDAT])'
-# #     queryStr = 'Molecular+Cell[Journal]+AND+(2010/05/01[PDAT]+:+2010/07/12[PDAT])'
-# #     queryStr = 'Molecular+and+cellular+biology[Journal]+AND+(2010/05/01[PDAT]+:+2011/07/12[PDAT])'
-# #     queryStr = '(telomere+and+DNA+replication)+AND+(2010/05/01[PDAT]+:+2011/07/12[PDAT])'
-#            
-#     'query pubmed'
-#     pa = PubmedApi()
-#     ldArticle, ldAuthor = pa.query(queryStr, 5)
-#    
-#     'connect pubhub database'
-#     phdb = PhDatabase(MysqlConnection('pubhub', '54.187.112.65', 'root', 'lymanDelmedio123'))    
-#     
-#     'record article'
-#     phdb.insertMany('article', ldArticle)
-#    
-#     'record author'
-#     #Need to look up articleId in article, replace key PMID with articleID
-#     replaceKeyValuePair(phdb, ldAuthor, 'article', 'PMID', 'articleId')
-#     phdb.insertMany('author', ldAuthor)
-#    
-#     'close pubhub database'
-#     phdb.close()
-    
-    '================================'
-    'doc tests'
-    '================================'
 
     import doctest
     print doctest.testmod()
          
-    '================================'
-    'done'
-    '================================'
-    
-    logging.info('\n\nDone.\n')
 
     
     

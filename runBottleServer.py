@@ -6,12 +6,18 @@ Created on Apr 30, 2014
 
 @author: zhil2
 '''
-from bottle import route, run, response, template, get, post, request, static_file
-from databaseApi import PhDatabase, MysqlConnection
+from bottle import route, run, response, template, get, post, request, \
+                   static_file, redirect
+from databaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
 from phInfo import phDbInfo
 from phTools import singleStrip
 import logging
 import time
+import sys
+
+@route('/')
+def greet():
+    return '<h2>Welcome to sCoopLy -- the ONE place for bioscientists to keep track of latest research findings!</h2>'
 
 @route('/css/<filepath:path>')
 def serverStaticCss(filepath):
@@ -29,26 +35,6 @@ def serverStaticJs(filepath):
 def serverStaticJasny(filepath):
     return static_file(filepath, root='static/jasny-bootstrap')
 
-@route('/hello')
-def hello():
-    return "<h1>Hello World!</h1>"
-
-@route('/')
-@route('/hello/<name>')
-def greet(name = 'Stranger'):
-    return template('<h1>Hello {{name}}, how are you?</h1>', name = name)
-    
-@route('/test')
-def test():
-    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
-                                      phDbInfo['user'],phDbInfo['password']))
-    _, res = phdb.selectDistinct('article',['articleId','PMID','DoiId',
-                                            'JournalTitle','ArticleTitle',])    
-    phdb.close()
-     
-    output = template('views/test', rows = res)
-    return output
-
 @route('/listArticle')      #/listArticle?subscriberId=1
 def showListArticle():
     subscriberId = request.query.subscriberId
@@ -63,13 +49,13 @@ def showListArticle():
 
     'FIXME: 4 tables join!'
     queryStartTime=time.time()
-    _, res = phdb.fetchall('''SELECT DISTINCT ArticleTitle, JournalISOAbbreviation, 
+    _, res = phdb.fetchall('''SELECT DISTINCT article.articleId, ArticleTitle, JournalISOAbbreviation, 
     DateCreated, firstAuthor.lastName, lastAuthor.lastName, firstAuthor.affiliation, 
     lastAuthor.affiliation, DoiId, PMID FROM article 
     LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
     LEFT JOIN firstAuthor ON article.articleId = firstAuthor.articleId 
     LEFT JOIN lastAuthor ON article.articleId = lastAuthor.articleId 
-    WHERE subscriber_article.subscriberId=1;''')
+    WHERE subscriber_article.subscriberId = %s;''' % subscriberId)
     timeElapsed = time.time()-queryStartTime
     if timeElapsed > 1:
         logging.warning("showListArticle 4 tables join takes %.2f sec!" % timeElapsed)
@@ -77,7 +63,7 @@ def showListArticle():
     phdb.close()
     
     rows=[]
-    for ArticleTitle, JournalTitle, DateCreated, firstAuthorLastName, \
+    for articleId, ArticleTitle, JournalTitle, DateCreated, firstAuthorLastName, \
     lastAuthorLastName, firstAuthorAffiliation, lastAuthorAffiliation, DoiId, PMID in res:
         daysElapsed = int((time.time()-int(DateCreated.strftime('%s')))/24/3600)
         if daysElapsed == 0:
@@ -95,14 +81,50 @@ def showListArticle():
             www = 'http://dx.doi.org/' + DoiId
         else: 
             www = 'http://www.ncbi.nlm.nih.gov/pubmed/' + str(PMID)
+        recordAndRedirectStr = \
+                    'redirect?subscriberId=%s&articleId=%ld&redirectUrl=%s' \
+                    % (subscriberId,articleId,www)
         if firstAuthorLastName != '':
             authorField = firstAuthorLastName+' et al., '+lastAuthorLastName+' Lab'
         else:
             authorField = ''
-        rows.append((ArticleTitle, JournalTitle, dayStr, authorField, affiliation, www))
+        rows.append((ArticleTitle, JournalTitle, dayStr, authorField, 
+                                        affiliation, recordAndRedirectStr))
     
     output = template('views/listArticle', rows = rows)
     return output
+
+@route('/redirect')     #/redirect?subscriberId=1&articleId=2&redirectUrl=http://www.google.com
+def recordSubscriberArticleAndredirect():
+    subscriberId = request.query.subscriberId
+    articleId = request.query.articleId
+    redirectUrl = request.query.redirectUrl
+    
+    dictHeader={}
+    headerFields = request.headers.keys()
+    for field in headerFields:
+        dictHeader[field] = request.get_header(field)
+    
+    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
+                                      phDbInfo['user'],phDbInfo['password']))
+    'record'
+    _, s_aId = phdb.selectDistinct('subscriber_article',['subscriber_articleId'],
+                                 'subscriberId = %s AND articleId = %s' %
+                                 (subscriberId, articleId))
+    s_aId = singleStrip(s_aId)
+    
+    s_aEventDict={}
+    s_aEventDict['subscriber_articleId'] = s_aId
+    s_aEventDict['timestamp'] = constructMysqlDatetimeStr(time.time())
+    s_aEventDict['category'] = 4 #extlinkClicked
+    s_aEventDict['status'] = 1 #yes
+    s_aEventDict['requestHeader'] = str(dictHeader)
+    phdb.insertOne('subscriber_articleEvent',s_aEventDict)
+
+    phdb.close()
+    
+    redirect(redirectUrl)
+    
 
 @route('/add')
 def addition():
@@ -112,12 +134,16 @@ def addition():
 
 
 if __name__ == '__main__':
+
     import doctest
     print doctest.testmod()
     
+    if len(sys.argv) > 1:
+        for a in sys.argv[1:]: 
+            if a =='--doctest-only':
+                sys.exit()
+    
     run(host = '0.0.0.0', port = 8080)
-
-
 
 #     jsonRes = json.dumps(dbRes, indent = 2)
 #     response.content_type = 'application/json'
