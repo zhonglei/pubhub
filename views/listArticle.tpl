@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8"> 
-        <title>sCoopLy</title>
+        <title>Scooply</title>
         <meta name="generator" content="Bootply" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         <!--Bootstrap-->
@@ -20,11 +20,11 @@
 	<body>
 	<!-- Update in this div -->
 	
+%if displayType != 'email':
 				
 			<nav id="myNavmenu" class="navmenu navmenu-default navmenu-fixed-left offcanvas" role="navigation">
 
-				<a class="navmenu-brand" href="#">sCoopLy</a>
-				  
+				<a class="navmenu-brand" href="#">Scooply</a>				  
 				<ul class="nav navmenu-nav">
 					<li class="active"><a href="#">Home</a></li>
 					<li><a href="#">Nature</a></li>
@@ -33,17 +33,25 @@
 				</ul>
 		
 			</nav>
+%end
 						
 		<div class="content_main">
 			
 %for row in rows:
 	%ArticleTitle, JournalTitle, dayStr, authorField, affiliation, recordAndRedirectStr = row
+
 			<div class="article_info">
+	%if displayType == 'email':
+				<h4> <a href="{{recordAndRedirectStr}}">{{ArticleTitle}}</a> <br>
+				{{authorField}} <br>
+				{{dayStr}} in <span class="label label-default">{{JournalTitle}}</span> </h4>
+	%else:
 				<h3><a href="{{recordAndRedirectStr}}">{{ArticleTitle}}</a> </h3>
 				<h4> {{authorField}} </h4>
 				<h4> {{dayStr}} in <span class="label label-default">{{JournalTitle}}</span></h4>
-			</div> 
-	
+	%end
+			</div>
+%end	
 		</div><!-- content_main-->
 
     

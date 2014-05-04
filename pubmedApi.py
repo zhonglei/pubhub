@@ -371,7 +371,7 @@ class PubmedApi(object):
                 continue
             
             'Manual Filter rule: if no abstract or no author, skip'
-            if Abstract == '':
+            if Abstract == '' or len(ListAuthorLastName) == 0:
                 continue
                 
             dictArticle={}

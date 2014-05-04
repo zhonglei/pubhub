@@ -6,14 +6,15 @@ Created on Apr 30, 2014
 
 @author: zhil2
 '''
-from bottle import route, run, response, template, get, post, request, \
-                   static_file, redirect
+from bottle import route, run, request, static_file, redirect
+#from bottle import response, get, post
 from phDatabaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
 from phInfo import phDbInfo
 from phTools import singleStrip
 import logging
 import time
 import sys
+from phController import getListArticlePage
 
 logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
                     level=logging.DEBUG)
@@ -41,62 +42,8 @@ def serverStaticJasny(filepath):
 @route('/listArticle')      #/listArticle?subscriberId=1&sinceDaysAgo=10
 def showListArticle():
     subscriberId = request.query.subscriberId
-    sinceDaysAgo = int(request.query.sinceDaysAgo) or 7
-    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
-                                      phDbInfo['user'],phDbInfo['password']))
-
-#     _, articleRes = phdb.selectDistinct('article JOIN subscriber_article '+
-#             'ON article.articleId = subscriber_article.articleId', 
-#             ['ArticleTitle', 'JournalISOAbbreviation', 'DateCreated',],
-#             'subscriber_article.subscriberId='+str(subscriberId)
-#             )
-
-    'FIXME: 4 tables join!'
-    queryStartTime=time.time()
-    _, res = phdb.fetchall('''SELECT DISTINCT article.articleId, ArticleTitle, JournalISOAbbreviation, 
-    DateCreated, firstAuthor.lastName, lastAuthor.lastName, firstAuthor.affiliation, 
-    lastAuthor.affiliation, DoiId, PMID FROM article 
-    LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
-    LEFT JOIN firstAuthor ON article.articleId = firstAuthor.articleId 
-    LEFT JOIN lastAuthor ON article.articleId = lastAuthor.articleId 
-    WHERE subscriber_article.subscriberId = %s AND DATE_SUB(NOW(), Interval %d day) 
-    < article.DateCreated;''' % (subscriberId,sinceDaysAgo))
-    timeElapsed = time.time()-queryStartTime
-    if timeElapsed > 1:
-        logging.warning("showListArticle 4 tables join takes %.2f sec!" % timeElapsed)
-    
-    phdb.close()
-    
-    rows=[]
-    for articleId, ArticleTitle, JournalTitle, DateCreated, firstAuthorLastName, \
-    lastAuthorLastName, firstAuthorAffiliation, lastAuthorAffiliation, DoiId, PMID in res:
-        daysElapsed = int((time.time()-int(DateCreated.strftime('%s')))/24/3600)
-        if daysElapsed == 0:
-            dayStr = 'Today'
-        elif daysElapsed == 1:
-            dayStr = '1 day ago'
-        else:
-            dayStr = '%d days ago' % daysElapsed
-        affiliation=''
-        if firstAuthorAffiliation != '':
-            affiliation = firstAuthorAffiliation
-        elif lastAuthorAffiliation != '':
-            affiliation = lastAuthorAffiliation
-        if DoiId != '':
-            www = 'http://dx.doi.org/' + DoiId
-        else: 
-            www = 'http://www.ncbi.nlm.nih.gov/pubmed/' + str(PMID)
-        recordAndRedirectStr = \
-                    'redirect?subscriberId=%s&articleId=%ld&redirectUrl=%s' \
-                    % (subscriberId,articleId,www)
-        if firstAuthorLastName != '':
-            authorField = firstAuthorLastName+' et al., '+lastAuthorLastName+' Lab'
-        else:
-            authorField = ''
-        rows.append((ArticleTitle, JournalTitle, dayStr, authorField, 
-                                        affiliation, recordAndRedirectStr))
-    
-    output = template('views/listArticle', rows = rows)
+    sinceDaysAgo = int(request.query.sinceDaysAgo) or 7    
+    output = getListArticlePage(subscriberId, sinceDaysAgo)
     return output
 
 @route('/redirect')     #/redirect?subscriberId=1&articleId=2&redirectUrl=http://www.google.com

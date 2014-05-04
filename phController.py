@@ -13,7 +13,8 @@ import logging
 from phTools import singleStrip
 import pprint
 import time
-from phInfo import phDbInfo
+from phInfo import phDbInfo, webServerInfo
+from bottle import template
 
 logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
                     level=logging.INFO)
@@ -250,6 +251,60 @@ def queryPubmedAndStoreResults(lastQueryTime):
             
     'close pubhub database'
     phdb.close()
+    
+def getListArticlePage(subscriberId, sinceDaysAgo, displayType = 'web'):
+    
+    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
+                                      phDbInfo['user'],phDbInfo['password']))
+    
+    'FIXME: 4 tables join!'
+    queryStartTime=time.time()
+    _, res = phdb.fetchall('''SELECT DISTINCT article.articleId, ArticleTitle, JournalISOAbbreviation, 
+    DateCreated, firstAuthor.lastName, lastAuthor.lastName, firstAuthor.affiliation, 
+    lastAuthor.affiliation, DoiId, PMID FROM article 
+    LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
+    LEFT JOIN firstAuthor ON article.articleId = firstAuthor.articleId 
+    LEFT JOIN lastAuthor ON article.articleId = lastAuthor.articleId 
+    WHERE subscriber_article.subscriberId = %s AND DATE_SUB(NOW(), Interval %d day) 
+    < article.DateCreated;''' % (subscriberId,sinceDaysAgo))
+    timeElapsed = time.time()-queryStartTime
+    if timeElapsed > 1:
+        logging.warning("showListArticle 4 tables join takes %.2f sec!" % timeElapsed)
+    
+    phdb.close()
+    
+    rows=[]
+    for articleId, ArticleTitle, JournalTitle, DateCreated, firstAuthorLastName, \
+    lastAuthorLastName, firstAuthorAffiliation, lastAuthorAffiliation, DoiId, PMID in res:
+        daysElapsed = int((time.time()-int(DateCreated.strftime('%s')))/24/3600)
+        if daysElapsed == 0:
+            dayStr = 'Today'
+        elif daysElapsed == 1:
+            dayStr = '1 day ago'
+        else:
+            dayStr = '%d days ago' % daysElapsed
+        affiliation=''
+        if firstAuthorAffiliation != '':
+            affiliation = firstAuthorAffiliation
+        elif lastAuthorAffiliation != '':
+            affiliation = lastAuthorAffiliation
+        if DoiId != '':
+            www = 'http://dx.doi.org/' + DoiId
+        else: 
+            www = 'http://www.ncbi.nlm.nih.gov/pubmed/' + str(PMID)
+        recordAndRedirectStr = 'http://'+webServerInfo['addr']+ '/' \
+                    'redirect?subscriberId=%s&articleId=%ld&redirectUrl=%s' \
+                    % (subscriberId,articleId,www)
+        if firstAuthorLastName != '':
+            authorField = firstAuthorLastName+' et al., '+lastAuthorLastName+' Lab'
+        else:
+            authorField = ''
+        rows.append((ArticleTitle, JournalTitle, dayStr, authorField, 
+                                        affiliation, recordAndRedirectStr))
+    
+    output = template('views/listArticle', rows = rows, displayType = displayType)
+    
+    return output
     
 if __name__ == '__main__':
 
