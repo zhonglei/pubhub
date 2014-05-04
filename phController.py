@@ -8,11 +8,12 @@ Created on Apr 26, 2014
 '''
 
 from pubmedApi import PubmedApi
-from databaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
+from phDatabaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
 import logging
 from phTools import singleStrip
 import pprint
 import time
+from phInfo import phDbInfo
 
 logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
                     level=logging.INFO)
@@ -27,7 +28,8 @@ def replaceKeyValuePair(db, listDict, tableName, keyOld, keyNew):
     articleId in table article).
 
     Example:
-    >>> phdb = PhDatabase(MysqlConnection('testdb','54.187.112.65','root','lymanDelmedio123'))
+    >>> from phInfo import testDbInfo
+    >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
     >>> phdb.conn._execute('DELETE FROM Dict')
     0
     >>> phdb.insertMany('Dict',[{'k':'Zhi','v':'32'},{'k':'Hu','v':'28'},{'k':'Russ','v':'31'},{'k':'Lala','v':'31'},{'k':'Franklin','v':'31'},{'k':'Yang','v':'31'}])
@@ -71,7 +73,8 @@ def constructPubmedQueryList(phdb):
     4 - author
             
     Example:
-    >>> phdb = PhDatabase(MysqlConnection('testdb','54.187.112.65','root','lymanDelmedio123'))
+    >>> from phInfo import testDbInfo
+    >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
     >>> phdb.conn._execute("DROP TABLE subscriber_articleEvent")
     0
     >>> phdb.conn._execute("DROP TABLE subscriber_article")
@@ -189,7 +192,7 @@ def queryPubmedAndStoreResults(lastQueryTime):
     timeStr = constructPubmedTimeStr(lastQueryTime)
 
     'connect pubhub database'
-    phdb = PhDatabase(MysqlConnection('pubhub', '54.187.112.65', 'root', 'lymanDelmedio123'))    
+    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],phDbInfo['user'],phDbInfo['password']))    
     
     res = constructPubmedQueryList(phdb)
     for queryStr, listSubscriber in res:

@@ -8,7 +8,7 @@ Created on Apr 30, 2014
 '''
 from bottle import route, run, response, template, get, post, request, \
                    static_file, redirect
-from databaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
+from phDatabaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
 from phInfo import phDbInfo
 from phTools import singleStrip
 import logging
@@ -38,9 +38,10 @@ def serverStaticJs(filepath):
 def serverStaticJasny(filepath):
     return static_file(filepath, root='static/jasny-bootstrap')
 
-@route('/listArticle')      #/listArticle?subscriberId=1
+@route('/listArticle')      #/listArticle?subscriberId=1&sinceDaysAgo=10
 def showListArticle():
     subscriberId = request.query.subscriberId
+    sinceDaysAgo = int(request.query.sinceDaysAgo) or 7
     phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
                                       phDbInfo['user'],phDbInfo['password']))
 
@@ -58,7 +59,8 @@ def showListArticle():
     LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
     LEFT JOIN firstAuthor ON article.articleId = firstAuthor.articleId 
     LEFT JOIN lastAuthor ON article.articleId = lastAuthor.articleId 
-    WHERE subscriber_article.subscriberId = %s;''' % subscriberId)
+    WHERE subscriber_article.subscriberId = %s AND DATE_SUB(NOW(), Interval %d day) 
+    < article.DateCreated;''' % (subscriberId,sinceDaysAgo))
     timeElapsed = time.time()-queryStartTime
     if timeElapsed > 1:
         logging.warning("showListArticle 4 tables join takes %.2f sec!" % timeElapsed)

@@ -1,7 +1,7 @@
 #! /bin/sh
 
-echo "databaseApi.py:"
-python databaseApi.py
+echo "phDatabaseApi.py:"
+python phDatabaseApi.py
 
 echo "phController.py:"
 python phController.py

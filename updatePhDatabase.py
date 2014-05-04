@@ -10,7 +10,9 @@ Created on May 2, 2014
 
 import time
 from phController import queryPubmedAndStoreResults
-from databaseApi import PhDatabase, MysqlConnection
+from phDatabaseApi import PhDatabase, MysqlConnection
+from phInfo import phDbInfo
+import logging
 
 if __name__ == '__main__':
 
@@ -25,7 +27,7 @@ if __name__ == '__main__':
     '================================'
 
     if False:
-        phdb = PhDatabase(MysqlConnection('pubhub', '54.187.112.65', 'root', 'lymanDelmedio123'))    
+        phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],phDbInfo['user'],phDbInfo['password']))    
         phdb.createTableSubscriber()
         phdb.createTableInterest()
         ldSubscriber = [
@@ -66,7 +68,7 @@ if __name__ == '__main__':
     '================================'
 
     if True:
-        pubmedQueryInterval = 7 * 24 * 3600 # 7 days in seconds 
+        pubmedQueryInterval = 28 * 24 * 3600 # 7 days in seconds 
         lastQueryTime = time.time() - pubmedQueryInterval
         
         queryPubmedAndStoreResults(lastQueryTime)
@@ -92,7 +94,8 @@ if __name__ == '__main__':
 #     ldArticle, ldAuthor = pa.query(queryStr, 5)
 #    
 #     'connect pubhub database'
-#     phdb = PhDatabase(MysqlConnection('pubhub', '54.187.112.65', 'root', 'lymanDelmedio123'))    
+#     phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
+#                                      phDbInfo['user'],phDbInfo['password']))    
 #     
 #     'record article'
 #     phdb.insertMany('article', ldArticle)
@@ -104,3 +107,5 @@ if __name__ == '__main__':
 #    
 #     'close pubhub database'
 #     phdb.close()
+
+    logging.info("\n\nDone.")

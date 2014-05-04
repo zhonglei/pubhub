@@ -34,7 +34,8 @@ class MysqlConnection(DbConnection):
 
     '''
     Example:
-    >>> conn = MysqlConnection('testdb','54.187.112.65','root','lymanDelmedio123')
+    >>> from phInfo import testDbInfo
+    >>> conn = MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password'])
     >>> conn._execute('DELETE FROM Dict')
     0
     >>> conn._execute('INSERT INTO Dict (k, v) VALUES (%s,%s)', ("Zhi","32"))
@@ -128,7 +129,8 @@ class Database(object):
 class PhDatabase(Database):
     '''
     Example:
-    >>> phdb = PhDatabase(MysqlConnection('testdb','54.187.112.65','root','lymanDelmedio123'))
+    >>> from phInfo import testDbInfo
+    >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
     >>> phdb.conn._execute("DROP TABLE subscriber_articleEvent")
     0
     >>> phdb.conn._execute("DROP TABLE subscriber_article")
@@ -318,7 +320,8 @@ class PhDatabase(Database):
         AUTO_INCREMENT property in the table tableName.
         
         Example:
-        >>> phdb = PhDatabase(MysqlConnection('testdb','54.187.112.65','root','lymanDelmedio123'))
+        >>> from phInfo import testDbInfo
+        >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
         >>> phdb.conn._execute("DROP TABLE subscriber_articleEvent")
         0
         >>> phdb.conn._execute("DROP TABLE subscriber_article")
