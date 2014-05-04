@@ -13,8 +13,18 @@ from phController import queryPubmedAndStoreResults
 from phDatabaseApi import PhDatabase, MysqlConnection
 from phInfo import phDbInfo
 import logging
+import sys
 
 if __name__ == '__main__':
+    
+    import doctest
+    print doctest.testmod()
+    
+    'if with argument --doctest-only, skip the rest'
+    if len(sys.argv) > 1:
+        for a in sys.argv[1:]: 
+            if a =='--doctest-only':
+                sys.exit()
 
     '================================'
     'clear up data'

@@ -206,6 +206,10 @@ class PhDatabase(Database):
             return self.conn._execute(query)
         return -1
 
+    ''' must create index on article.DateCreated:
+    CREATE INDEX idx_DateCreated ON article (DateCreated)
+    '''
+
     def createTableAuthor(self):
         query='''CREATE TABLE author(
                 authorId INT NOT NULL AUTO_INCREMENT COMMENT 'lowest authorId for an article is the first author; vice versa.',
@@ -223,6 +227,10 @@ class PhDatabase(Database):
         if self.conn:
             return self.conn._execute(query)
         return -1
+    
+    ''' must create index on author.authorId:
+    CREATE INDEX idx_articleId ON author (articleId)
+    '''
 
     def createViewFirstAuthor(self):
         query='''CREATE VIEW firstAuthor AS 
@@ -247,6 +255,7 @@ class PhDatabase(Database):
         if self.conn:
             return self.conn._execute(query)
         return -1
+    
 
     def createTableSubscriber(self):
         query='''CREATE TABLE subscriber(
@@ -294,6 +303,13 @@ class PhDatabase(Database):
         if self.conn:
             return self.conn._execute(query)
         return -1
+
+    ''' must create index on subscriber_article.articleId:
+    CREATE INDEX idx_articleId ON subscriber_article (articleId)
+    '''
+    ''' must create index on subscriber_article.subscriberId:
+    CREATE INDEX idx_subscriberId ON subscriber_article (subscriberId)
+    '''
     
     def createTableSubscriber_ArticleEvent(self):
         query='''CREATE TABLE subscriber_articleEvent(

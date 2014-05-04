@@ -303,30 +303,41 @@ class PubmedApi(object):
                         
                         cAuthor=phTools.findAllAndAssert(nAuthorList,'Author','+')
                         for snAuthor,nAuthor in enumerate(cAuthor):
-                            try:                        
-                                cForeName=phTools.findAllAndAssert(nAuthor,'ForeName','?')                        
-                                if len(cForeName)==1:
-                                    nForeName=cForeName[0]
-                                    foreNameText=nForeName.text
-                                    ListAuthorForeName.append(foreNameText)
-                                else:
+                            try:  
+                                
+                                '''if author has CollectiveName, use last name field
+                                to store it, and break'''
+                                cCollectiveName=phTools.findAllAndAssert(nAuthor,'CollectiveName','?')                        
+                                if len(cCollectiveName)==1:
+                                    nCollectiveName=cCollectiveName[0]
+                                    collectiveNameText=nCollectiveName.text
+                                    ListAuthorLastName.append(collectiveNameText)
                                     ListAuthorForeName.append("")
-        
-                                cInitials=phTools.findAllAndAssert(nAuthor,'Initials','?')                        
-                                if len(cInitials)==1:
-                                    nInitials=cInitials[0]
-                                    initialsText=nInitials.text
-                                    ListAuthorInitials.append(initialsText)
-                                else:
                                     ListAuthorInitials.append("")
-                                                            
-                                cLastName=phTools.findAllAndAssert(nAuthor,'LastName','?')                        
-                                if len(cLastName)==1:
-                                    nLastName=cLastName[0]
-                                    lastNameText=nLastName.text
-                                    ListAuthorLastName.append(lastNameText)
-                                else:
-                                    ListAuthorLastName.append("")
+                                else:                                                      
+                                    cForeName=phTools.findAllAndAssert(nAuthor,'ForeName','?')                        
+                                    if len(cForeName)==1:
+                                        nForeName=cForeName[0]
+                                        foreNameText=nForeName.text
+                                        ListAuthorForeName.append(foreNameText)
+                                    else:
+                                        ListAuthorForeName.append("")
+            
+                                    cInitials=phTools.findAllAndAssert(nAuthor,'Initials','?')                        
+                                    if len(cInitials)==1:
+                                        nInitials=cInitials[0]
+                                        initialsText=nInitials.text
+                                        ListAuthorInitials.append(initialsText)
+                                    else:
+                                        ListAuthorInitials.append("")
+                                                                
+                                    cLastName=phTools.findAllAndAssert(nAuthor,'LastName','?')                        
+                                    if len(cLastName)==1:
+                                        nLastName=cLastName[0]
+                                        lastNameText=nLastName.text
+                                        ListAuthorLastName.append(lastNameText)
+                                    else:
+                                        ListAuthorLastName.append("")
                         
                                 cAffiliation=phTools.findAllAndAssert(nAuthor,'Affiliation','?')                        
                                 if len(cAffiliation)==1:
@@ -335,6 +346,7 @@ class PubmedApi(object):
                                     ListAuthorAffiliation.append(affiliationText)
                                 else:
                                     ListAuthorAffiliation.append("")
+                                                                        
                             except Exception as e:
                                 print e
                                 continue
@@ -370,8 +382,12 @@ class PubmedApi(object):
                 logging.warning(e)
                 continue
             
-            'Manual Filter rule: if no abstract or no author, skip'
-            if Abstract == '' or len(ListAuthorLastName) == 0:
+            'Manual Filter rule: if no abstract'
+            if Abstract == '':
+                continue
+            
+            'Manual Filter rule: if no author, skip'
+            if len(ListAuthorLastName) == 0:
                 continue
                 
             dictArticle={}

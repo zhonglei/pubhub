@@ -12,6 +12,7 @@ from email.mime.text import MIMEText
 from phController import getListArticlePage
 from phDatabaseApi import PhDatabase, MysqlConnection
 from phTools import singleStrip
+import sys
 
 def sendTestMail():
     
@@ -53,7 +54,7 @@ def sendListArticleToSubscriber(subscriberId, sinceDaysAgo = 7):
     
     'Create message container - the correct MIME type is multipart/alternative'
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = '''This week's hot papers, brought to you by Scooply'''
+    msg['Subject'] = '''The latest bioscience hot papers, brought to you by Scooply'''
     msg['From'] = sender
     msg['To'] = receiver
     
@@ -62,7 +63,7 @@ def sendListArticleToSubscriber(subscriberId, sinceDaysAgo = 7):
     html = getListArticlePage(subscriberId, sinceDaysAgo, displayType = 'email')
 
     'record the MIME types of both parts - text/plain and text/html'
-    part1 = MIMEText(text, 'plain')
+    part1 = MIMEText(text.encode('utf8'), 'plain')
     part2 = MIMEText(html.encode('utf8'), 'html')
     
     '''
@@ -87,6 +88,15 @@ def sendListArticleToSubscriber(subscriberId, sinceDaysAgo = 7):
 
 if __name__ == '__main__':
     
+    import doctest
+    print doctest.testmod()
+    
+    'if with argument --doctest-only, skip the rest'
+    if len(sys.argv) > 1:
+        for a in sys.argv[1:]: 
+            if a =='--doctest-only':
+                sys.exit()
+
     #sendTestMail()
     
     subscriberId = 8 # henrylee18@yahoo.com

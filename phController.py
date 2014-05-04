@@ -259,23 +259,26 @@ def getListArticlePage(subscriberId, sinceDaysAgo, displayType = 'web'):
     
     'FIXME: 4 tables join!'
     queryStartTime=time.time()
-    _, res = phdb.fetchall('''SELECT DISTINCT article.articleId, ArticleTitle, JournalISOAbbreviation, 
-    DateCreated, firstAuthor.lastName, lastAuthor.lastName, firstAuthor.affiliation, 
-    lastAuthor.affiliation, DoiId, PMID FROM article 
+    _, res = phdb.fetchall('''SELECT DISTINCT article.articleId, ArticleTitle, 
+    JournalISOAbbreviation, DateCreated, firstAuthor.authorId, 
+    firstAuthor.initials, firstAuthor.lastName, firstAuthor.affiliation, 
+    lastAuthor.authorId, lastAuthor.lastName, lastAuthor.affiliation, DoiId, PMID 
+    FROM article 
     LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
     LEFT JOIN firstAuthor ON article.articleId = firstAuthor.articleId 
     LEFT JOIN lastAuthor ON article.articleId = lastAuthor.articleId 
     WHERE subscriber_article.subscriberId = %s AND DATE_SUB(NOW(), Interval %d day) 
     < article.DateCreated;''' % (subscriberId,sinceDaysAgo))
     timeElapsed = time.time()-queryStartTime
-    if timeElapsed > 1:
+    if timeElapsed > 0.1:
         logging.warning("showListArticle 4 tables join takes %.2f sec!" % timeElapsed)
     
     phdb.close()
     
     rows=[]
-    for articleId, ArticleTitle, JournalTitle, DateCreated, firstAuthorLastName, \
-    lastAuthorLastName, firstAuthorAffiliation, lastAuthorAffiliation, DoiId, PMID in res:
+    for (articleId, ArticleTitle, JournalTitle, DateCreated, firstAuthorId, 
+    firstAuthorInitials, firstAuthorLastName, firstAuthorAffiliation, 
+    lastAuthorId, lastAuthorLastName, lastAuthorAffiliation, DoiId, PMID) in res:
         daysElapsed = int((time.time()-int(DateCreated.strftime('%s')))/24/3600)
         if daysElapsed == 0:
             dayStr = 'Today'
@@ -296,7 +299,13 @@ def getListArticlePage(subscriberId, sinceDaysAgo, displayType = 'web'):
                     'redirect?subscriberId=%s&articleId=%ld&redirectUrl=%s' \
                     % (subscriberId,articleId,www)
         if firstAuthorLastName != '':
-            authorField = firstAuthorLastName+' et al., '+lastAuthorLastName+' Lab'
+            if firstAuthorId != lastAuthorId:
+                authorField = firstAuthorLastName+' et al., '+lastAuthorLastName+' Lab'
+            else:
+                authorField = ''
+                if firstAuthorInitials != '':
+                    authorField += firstAuthorInitials+' '
+                authorField += firstAuthorLastName
         else:
             authorField = ''
         rows.append((ArticleTitle, JournalTitle, dayStr, authorField, 
