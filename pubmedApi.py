@@ -1,5 +1,5 @@
 '''
-API for Pubmed.
+Classes and methods for accessing the Pubmed database.
 
 Created on Apr 25, 2014
 
@@ -10,6 +10,7 @@ import time
 import httplib2
 import xml.etree.ElementTree as et
 import logging
+from logging import debug, warning
 import phTools
 import pprint
 
@@ -49,21 +50,21 @@ class PubmedApi(object):
         Query database using starndard Pubmed query format.
         Return a list of PMIDs of matched articles with maximum length maxRes.
         '''
-        logging.info('get PMID of articles matching query...')
+        debug('get PMID of articles matching query...')
         
         searchUrl=self._base+'esearch.fcgi?'+'db='+self._db+'&term='+query+'&retmax=' \
                         +str(maxRes)+'&email='+self._email 
         #Note: httplib2 is the plain-vanilla version. If encounter problems 
         #use urllib2 instead.
-        logging.debug('GET '+searchUrl+' ...')
+        debug('GET '+searchUrl+' ...')
         try:
             time.sleep(self._queryMinInterval)
             _,searchContent=httplib2.Http().request(searchUrl,"GET")
         except Exception as e:
-            logging.warning(e)
+            warning(e)
             return []
         else:
-            logging.debug('returned:\n\n'+searchContent)
+            debug('returned:\n\n'+searchContent)
          
         #FIXME: do DTD check for returned xml file
         '''
@@ -84,12 +85,12 @@ class PubmedApi(object):
                 raise phTools.MyException("no article found.")
      
             listId=[n.text for n in c]
-            logging.debug('returned ID: '+str(listId))
+            debug('returned ID: '+str(listId))
         except phTools.MyException as e:
-            logging.warning(e)
+            warning(e)
             return []
         except Exception as e:
-            logging.warning(e)   
+            warning(e)   
             return []  
         
         return listId
@@ -100,21 +101,21 @@ class PubmedApi(object):
         Return a list of dictionaries of article details and a list of 
         dictionaries of author details.
         '''
-        logging.info('get article and author details...')
+        debug('get article and author details...')
         fetchUrl=self._base+'efetch.fcgi?'+'db='+self._db+'&id='
         for i in listPmid:
             fetchUrl+=(i+',')
         fetchUrl+='&retmode=xml'
         
-        logging.debug('GET '+fetchUrl+' ...')
+        debug('GET '+fetchUrl+' ...')
         try:
             time.sleep(self._queryMinInterval)
             _,fetchContent=httplib2.Http().request(fetchUrl,"GET")
         except Exception as e:
-            logging.warning(e)
+            warning(e)
             return ([],[])
         else:
-            logging.debug('returned:\n\n'+fetchContent)
+            debug('returned:\n\n'+fetchContent)
 
         res = self.parseArticleAndAuthor(fetchContent)
         
@@ -173,7 +174,7 @@ class PubmedApi(object):
         cPubmedArticle=phTools.findAllAndAssert(nPubmedArticleSet, 'PubmedArticle', '+')
         for i,nPubmedArticle in enumerate(cPubmedArticle):
     
-            logging.debug('    article %d:' % (i+1))
+            debug('    article %d:' % (i+1))
             
             parseStartTime=time.time()
     
@@ -373,13 +374,13 @@ class PubmedApi(object):
                 for t in ListAuthorAffiliation: t=t
 
             except Exception as e:
-                logging.warning(e)
+                warning(e)
                 continue
 
             try:
                 PubDate=phTools.myNormalizedDate(PubDate)
             except Exception as e:
-                logging.warning(e)
+                warning(e)
                 continue
             
             'Manual Filter rule: if no abstract'
@@ -416,10 +417,10 @@ class PubmedApi(object):
 
                 listDictAuthor.append(dictAuthor)     
                 
-            logging.debug('      (parsing time: %f sec.)' % (time.time()-parseStartTime))
+            debug('      (parsing time: %f sec.)' % (time.time()-parseStartTime))
                   
-        logging.debug('    listDictArticle:\n\n'+pprint.pformat(listDictArticle)+'\n')       
-        logging.debug('    listDictAuthor:\n\n'+pprint.pformat(listDictAuthor)+'\n')       
+        debug('    listDictArticle:\n\n'+pprint.pformat(listDictArticle)+'\n')       
+        debug('    listDictAuthor:\n\n'+pprint.pformat(listDictAuthor)+'\n')       
         
         return (listDictArticle,listDictAuthor)
     

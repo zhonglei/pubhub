@@ -23,3 +23,5 @@ python updatePhDatabase.py --doctest-only
 
 echo "sendEmail.py:"
 python sendEmail.py --doctest-only
+
+echo "Done."

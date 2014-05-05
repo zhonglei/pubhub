@@ -1,6 +1,7 @@
 '''
 
-Control logic of Pubhub.
+Pubhub's main controller logic for the interaction between the Pubhub database,
+the Pubmed database and the front-end Bottle web server.
 
 Created on Apr 26, 2014
 
@@ -10,54 +11,19 @@ Created on Apr 26, 2014
 from pubmedApi import PubmedApi
 from phDatabaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
 import logging
+from logging import warning, debug
 from phTools import singleStrip
 import pprint
 import time
 from phInfo import phDbInfo, webServerInfo
 from bottle import template
 
+'''
+format '%(asctime)s %(name)s %(levelname)s: %(message)s'
+level DEBUG, INFO
+'''
 logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
                     level=logging.INFO)
-
-def replaceKeyValuePair(db, listDict, tableName, keyOld, keyNew):
-    '''
-    Replace a old key-value pair (with key keyOld) in a list of dictionaries 
-    (listDict) with a new pair (with key keyNew), based on the old/new key 
-    lookup in a database table (tableName). Commonly used because there are 
-    many cases one needs to lookup and replace the id column of a table 
-    based on another column (for example, look up and replace PMID with 
-    articleId in table article).
-
-    Example:
-    >>> from phInfo import testDbInfo
-    >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
-    >>> phdb.conn._execute('DELETE FROM Dict')
-    0
-    >>> phdb.insertMany('Dict',[{'k':'Zhi','v':'32'},{'k':'Hu','v':'28'},{'k':'Russ','v':'31'},{'k':'Lala','v':'31'},{'k':'Franklin','v':'31'},{'k':'Yang','v':'31'}])
-    0
-    >>> _,res = phdb.selectDistinct('Dict',['k','v'])
-    >>> print res
-    (('Zhi', '32'), ('Hu', '28'), ('Russ', '31'), ('Lala', '31'), ('Franklin', '31'), ('Yang', '31'))
-    >>> ld = [{'k':'Zhi', 'x':'y'},{'k':'Franklin', 'z':'w'}]
-    >>> replaceKeyValuePair(phdb, ld, 'Dict', 'k', 'v')
-    0
-    >>> ld
-    [{'x': 'y', 'v': '32'}, {'z': 'w', 'v': '31'}]
-    >>> phdb.close()    
-    '''
-    _, res = db.selectDistinct(tableName, [keyOld, keyNew])
-    dictKeyOld2New = dict(map(str, x) for x in res) # map everything to string
-    rf = 0
-    for d in listDict:
-        try:
-            d[keyNew] = dictKeyOld2New[d[keyOld]]
-            d.pop(keyOld,None)
-        except Exception as e:
-            logging.warning(e)
-            rf = 1                
-        logging.debug(d)
-        
-    return rf
 
 def constructPubmedQueryList(phdb):
     '''
@@ -139,8 +105,8 @@ def constructPubmedQueryList(phdb):
                                              "phrase = '%s'" % j)
         subscribers = singleStrip(subscribers)
         
-        logging.debug('query: '+query)
-        logging.debug('subscribers: '+str(subscribers))
+        debug('query: '+query)
+        debug('subscribers: '+str(subscribers))
         
         listQuery.append((query, subscribers))
         
@@ -171,12 +137,12 @@ def constructPubmedQueryList(phdb):
                 query += r'"%s"[Journal] OR ' % j
             query += r'"%s"[Journal] )' % subscriberJournals[-1]
             
-            logging.debug('query: '+query)
+            debug('query: '+query)
 
             subscribers = [i]
             listQuery.append((query, subscribers))
             
-    logging.debug('constructed Pubmed query list:\n'+ pprint.pformat(listQuery))
+    debug('constructed Pubmed query list:\n'+ pprint.pformat(listQuery))
             
     return listQuery
 
@@ -198,6 +164,9 @@ def queryPubmedAndStoreResults(lastQueryTime):
     res = constructPubmedQueryList(phdb)
     for queryStr, listSubscriber in res:
         
+        print 'query: '+queryStr
+        print 'subscribers: '+str(listSubscriber)
+        
         'add time constraint'
         queryStr += ' AND '+ timeStr
         
@@ -207,7 +176,7 @@ def queryPubmedAndStoreResults(lastQueryTime):
         'replace space with +'
         queryStr = queryStr.replace(' ', '+')
         
-        logging.info('query: \n\n'+queryStr+'\n')
+        debug('query: \n\n'+queryStr+'\n')
         
         'query pubmed'
         pa = PubmedApi()
@@ -271,7 +240,7 @@ def getListArticlePage(subscriberId, sinceDaysAgo, displayType = 'web'):
     < article.DateCreated;''' % (subscriberId,sinceDaysAgo))
     timeElapsed = time.time()-queryStartTime
     if timeElapsed > 0.1:
-        logging.warning("showListArticle 4 tables join takes %.2f sec!" % timeElapsed)
+        warning("showListArticle 4 tables join takes %.2f sec!" % timeElapsed)
     
     phdb.close()
     

@@ -1,5 +1,7 @@
 '''
-Functions to send email to subscriber.
+
+Methods for sending email to subscribers.
+
 Created on May 3, 2014
 
 @author: zhil2

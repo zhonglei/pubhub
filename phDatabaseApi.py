@@ -1,6 +1,6 @@
 '''
 
-API for database.
+Classes and methods for accessing the Pubhub database.
 
 Created on Apr 25, 2014
 
@@ -9,9 +9,16 @@ Created on Apr 25, 2014
 
 import MySQLdb
 import logging
+from logging import warning, debug
 import pprint
 import time
+from phInfo import BiologyResearchInfo, TestSubscriberInfo
+from phTools import replaceKeyValuePair
 
+'''
+format '%(asctime)s %(name)s %(levelname)s: %(message)s'
+level DEBUG, INFO
+'''
 logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
                     level=logging.INFO)
 
@@ -36,7 +43,9 @@ class MysqlConnection(DbConnection):
     Example:
     >>> from phInfo import testDbInfo
     >>> conn = MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password'])
-    >>> conn._execute('DELETE FROM Dict')
+    >>> conn._execute('Drop table Dict')
+    0
+    >>> conn._execute('CREATE TABLE Dict (k VARCHAR(255), v VARCHAR(255));')
     0
     >>> conn._execute('INSERT INTO Dict (k, v) VALUES (%s,%s)', ("Zhi","32"))
     0
@@ -52,17 +61,15 @@ class MysqlConnection(DbConnection):
     >>> conn._close()
     0
     '''
-#     >>> conn._execute('CREATE TABLE Dict (k VARCHAR(255), v VARCHAR(255));')
-#     0
 
     def __init__(self, n, h, u, p):
         super(MysqlConnection,self).__init__(n,h,u,p)
         try:
             self.conn = MySQLdb.connect(self.host,self.user,self.password,self.dbName)
         except MySQLdb.Error as e:
-            logging.warning(e)
+            warning(e)
         except Exception as e:
-            logging.warning(e)        
+            warning(e)        
     
     def _execute(self,query,fields=None):
         if self.conn:
@@ -73,10 +80,10 @@ class MysqlConnection(DbConnection):
                 else:
                     cursor.execute(query,fields)
             except MySQLdb.Error as e:
-                logging.warning(e)
+                warning(e)
                 return 1
             except Exception as e:
-                logging.warning(e)
+                warning(e)
                 return 2
             else:
                 return 0
@@ -91,10 +98,10 @@ class MysqlConnection(DbConnection):
                 else:
                     cursor.execute(query,fields)
             except MySQLdb.Error as e:
-                logging.warning(e)
+                warning(e)
                 return (1, None)
             except Exception as e:
-                logging.warning(e)
+                warning(e)
                 return (2, None)
             else:
                 res = cursor.fetchall()
@@ -106,15 +113,15 @@ class MysqlConnection(DbConnection):
             try:
                 self.conn.commit()
             except MySQLdb.Error as e:
-                logging.debug("database commit failed. roll back.")
+                debug("database commit failed. roll back.")
                 self.conn.rollback()
-                logging.warning(e)
+                warning(e)
                 return 1
             except Exception as e:
-                logging.warning(e)
+                warning(e)
                 return 2
             else:
-                logging.debug("database commit successful.")
+                debug("database commit successful.")
                 return 0
         return -1
 
@@ -127,63 +134,168 @@ class Database(object):
         self.conn._close()
                 
 class PhDatabase(Database):
-    '''
-    Example:
-    >>> from phInfo import testDbInfo
-    >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
-    >>> phdb.conn._execute("DROP TABLE subscriber_articleEvent")
-    0
-    >>> phdb.conn._execute("DROP TABLE subscriber_article")
-    0
-    >>> phdb.conn._execute("DROP TABLE author")
-    0
-    >>> phdb.conn._execute("DROP TABLE article")
-    0
-    >>> phdb.conn._execute("DROP TABLE interest")
-    0
-    >>> phdb.conn._execute("DROP TABLE subscriber")
-    0
-    >>> phdb.createTableArticle()
-    0
-    >>> phdb.createTableAuthor()
-    0
-    >>> phdb.createTableSubscriber()
-    0
-    >>> phdb.createTableInterest()
-    0
-    >>> phdb.createTableSubscriber_Article()
-    0
-    >>> phdb.createTableSubscriber_ArticleEvent()
-    0
-    >>> phdb.conn._execute('DELETE FROM Dict')
-    0
-    >>> phdb.conn._execute('INSERT INTO Dict (k, v) VALUES (%s,%s)', ("Zhi","32"))
-    0
-    >>> phdb.conn._execute('INSERT INTO Dict (k, v) VALUES (%s,%s)', ("Hu","28"))
-    0
-    >>> phdb.conn._execute('INSERT INTO Dict (k, v) VALUES (%s,%s)', ("Russ","31"))
-    0
-    >>> phdb.conn._commit()
-    0
-    >>> phdb.insertMany('Dict',[{'k':'Lala','v':'31'},{'k':'Franklin','v':'31'},{'k':'Yang','v':'31'}])
-    0
-    >>> _,res = phdb.selectDistinct('Dict',['k','v'])
-    >>> print res
-    (('Zhi', '32'), ('Hu', '28'), ('Russ', '31'), ('Lala', '31'), ('Franklin', '31'), ('Yang', '31'))
-    >>> phdb.close()
-    '''
 
-    def createTables(self):
-        self.createTableArticle()
-        self.createTableAuthor()
-        self.createViewFirstAuthor()
-        self.createViewLastAuthor()
-        self.createTableSubscriber()
-        self.createTableInterest()
-        self.createTableSubscriber_Article()
-        self.createTableSubscriber_ArticleEvent()
-        'add all the table creation funcs...'
+    def formatDatabase(self):
+        '''
+        Format database by cleaning data. Proceed with caution!!
+        
+        Example:
+        >>> from phInfo import testDbInfo
+        >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
+        >>> phdb.formatDatabase()
+        >>> phdb.close()
+        '''
+        if self.conn:
+            pass
+            
+            self.conn._execute('DROP TABLE subscriber_articleEvent')
+            self.conn._execute('DROP TABLE subscriber_article')
+            self.conn._execute('DROP VIEW firstAuthor')
+            self.conn._execute('DROP VIEW lastAuthor')
+            self.conn._execute('DROP TABLE author')
+            self.conn._execute('DROP TABLE article')
+            self.conn._execute('DROP TABLE interest')
+            self.conn._execute('DROP TABLE subscriber')
+            self.conn._execute('DROP TABLE journal_area')
+            self.conn._execute('DROP TABLE journal')
+            self.conn._execute('DROP TABLE area')
+             
+            self.createTableArea()
+            self.preloadTableArea()
+ 
+            self.createTableJournal()
+            self.preloadTableJournal()
+
+            self.createTableJournal_Area()
+            self.preloadTableJournal_Area()
+ 
+            self.createTableSubscriber()
+            self.createTableInterest()
+            self.preloadTableSubscriberAndInterestWithSample()
+                 
+            self.createTableArticle()
+             
+            self.createTableAuthor()
+            self.createViewLastAuthor()
+            self.createViewFirstAuthor()
+             
+            self.createTableSubscriber_Article()
+            self.createTableSubscriber_ArticleEvent()
+
+    '===================================================='
+    '==============create table begins==================='
+    '===================================================='
+            
+    def createTableArea(self):
+        query='''CREATE TABLE area(
+            areaId TINYINT NOT NULL,
+            areaName VARCHAR(255) NOT NULL,
+            PRIMARY KEY (areaId),
+            CONSTRAINT uc_areaName UNIQUE (areaName)
+            );
+        '''
+        debug('query:\n'+query)
+        if self.conn:
+            return self.conn._execute(query)
+        return -1
     
+    
+    def preloadTableArea(self):
+        preload=[]
+        listArea = BiologyResearchInfo.getListArea()
+        for areaId, areaName in listArea:
+            preload.append({'areaId':areaId,'areaName':areaName})
+        return self.insertMany('area',preload)
+
+    def createTableJournal(self):
+        query='''CREATE TABLE journal(
+            journalId INT NOT NULL AUTO_INCREMENT,
+            journalTitle VARCHAR(255) NOT NULL,
+            journalAbbrName VARCHAR(255),
+            PRIMARY KEY (journalId),
+            CONSTRAINT uc_journalTitle UNIQUE (journalTitle)
+            );
+        '''
+        debug('query:\n'+query)
+        if self.conn:
+            return self.conn._execute(query)
+        return -1
+
+    def preloadTableJournal(self):
+        preload=[]
+        dictJournal_Area = BiologyResearchInfo.getDictJournal_Area()
+        for journalTitle in dictJournal_Area.keys():
+            preload.append({'journalTitle':journalTitle})
+        
+        return self.insertMany('journal',preload)
+
+    def createTableJournal_Area(self):
+        query='''CREATE TABLE journal_area(
+                journal_areaId INT NOT NULL AUTO_INCREMENT,
+                journalId INT NOT NULL,
+                areaId TINYINT NOT NULL,
+                PRIMARY KEY (journal_areaId),
+                FOREIGN KEY (journalId) REFERENCES journal(journalId),
+                FOREIGN KEY (areaId) REFERENCES area(areaId),
+                CONSTRAINT uc_journal_area UNIQUE (journalId,areaId)
+                );
+        '''
+        debug('query:\n'+query)
+        if self.conn:
+            return self.conn._execute(query)
+        return -1
+    
+    def preloadTableJournal_Area(self):
+        preload=[]
+        dictJournal_Area = BiologyResearchInfo.getDictJournal_Area()
+        for journalTitle in dictJournal_Area.keys():
+            listAreaId = dictJournal_Area[journalTitle]
+            for areaId in listAreaId:
+                preload.append({'journalTitle':journalTitle, 'areaId':areaId})
+        replaceKeyValuePair(self,preload,'journal','journalTitle','journalId')
+        
+        return self.insertMany('journal_area',preload)
+
+    def createTableSubscriber(self):
+        query='''CREATE TABLE subscriber(
+            subscriberId INT NOT NULL AUTO_INCREMENT,
+            firstName VARCHAR(255),
+            lastName VARCHAR(255),
+            email VARCHAR(255) NOT NULL,
+            password VARCHAR(255),
+            PRIMARY KEY (subscriberId),
+            CONSTRAINT uc_email UNIQUE (email)
+            );
+        '''
+        debug('query:\n'+query)
+        if self.conn:
+            return self.conn._execute(query)
+        return -1
+
+    def createTableInterest(self):
+        query='''CREATE TABLE interest(
+                InterestId INT NOT NULL AUTO_INCREMENT,
+                subscriberId INT NOT NULL,
+                category TINYINT NOT NULL COMMENT 'category: 1 - area, 2- generalJournal, 3 - expertJournal, 4 - keyword, 5 - author, ...',
+                phrase VARCHAR(255) NOT NULL,
+                PRIMARY KEY (interestId),
+                FOREIGN KEY (subscriberId) REFERENCES subscriber(subscriberId),
+                CONSTRAINT uc_subscriber_category_phrase UNIQUE (subscriberId, category, phrase)
+                );
+        '''
+        debug('query:\n'+query)
+        if self.conn:
+            return self.conn._execute(query)
+        return -1 
+
+    def preloadTableSubscriberAndInterestWithSample(self):
+        
+        ldSubscriber = TestSubscriberInfo.getLdSubscriber()
+        ldInterest = TestSubscriberInfo.getLdInterest()
+        self.insertMany('subscriber', ldSubscriber)        
+        replaceKeyValuePair(self,ldInterest,'subscriber','email','subscriberId')
+        self.insertMany('interest', ldInterest)
+
     def createTableArticle(self):
         query='''CREATE TABLE article(
                 articleId INT NOT NULL AUTO_INCREMENT, 
@@ -201,7 +313,7 @@ class PhDatabase(Database):
                 CONSTRAINT uc_PMID UNIQUE (PMID)
                 );
         '''
-        logging.debug('query:\n'+query)
+        debug('query:\n'+query)
         if self.conn:
             return self.conn._execute(query)
         return -1
@@ -223,7 +335,7 @@ class PhDatabase(Database):
                 CONSTRAINT uc_author_article UNIQUE (articleId,ForeName,LastName)
                 );
         '''
-        logging.debug('query:\n'+query)
+        debug('query:\n'+query)
         if self.conn:
             return self.conn._execute(query)
         return -1
@@ -239,51 +351,19 @@ class PhDatabase(Database):
                     (SELECT MIN(authorId),articleId 
                     FROM author GROUP BY articleId);
         '''
-        logging.debug('query:\n'+query)
+        debug('query:\n'+query)
         if self.conn:
             return self.conn._execute(query)
         return -1
 
     def createViewLastAuthor(self):
-        query='''CREATE VIEW firstAuthor AS 
+        query='''CREATE VIEW lastAuthor AS 
                     SELECT * FROM author WHERE 
                     (authorId,articleId) IN 
                     (SELECT MAX(authorId),articleId 
                     FROM author GROUP BY articleId);
         '''
-        logging.debug('query:\n'+query)
-        if self.conn:
-            return self.conn._execute(query)
-        return -1
-    
-
-    def createTableSubscriber(self):
-        query='''CREATE TABLE subscriber(
-            subscriberId INT NOT NULL AUTO_INCREMENT,
-            firstName VARCHAR(255),
-            lastName VARCHAR(255),
-            email VARCHAR(255) NOT NULL,
-            PRIMARY KEY (subscriberId),
-            CONSTRAINT uc_email UNIQUE (email)
-            );
-        '''
-        logging.debug('query:\n'+query)
-        if self.conn:
-            return self.conn._execute(query)
-        return -1
-
-    def createTableInterest(self):
-        query='''CREATE TABLE interest(
-                InterestId INT NOT NULL AUTO_INCREMENT,
-                subscriberId INT NOT NULL,
-                category TINYINT NOT NULL COMMENT 'category: 1 - area, 2- generalJournal, 3 - expertJournal, 4 - keyword, 5 - author, ...',
-                phrase VARCHAR(255) NOT NULL,
-                PRIMARY KEY (interestId),
-                FOREIGN KEY (subscriberId) REFERENCES subscriber(subscriberId),
-                CONSTRAINT uc_subscriber_category_phrase UNIQUE (subscriberId, category, phrase)
-                );
-        '''
-        logging.debug('query:\n'+query)
+        debug('query:\n'+query)
         if self.conn:
             return self.conn._execute(query)
         return -1    
@@ -299,7 +379,7 @@ class PhDatabase(Database):
                 CONSTRAINT uc_subscriber_article UNIQUE (subscriberId,articleId)
                 );
         '''
-        logging.debug('query:\n'+query)
+        debug('query:\n'+query)
         if self.conn:
             return self.conn._execute(query)
         return -1
@@ -323,11 +403,15 @@ class PhDatabase(Database):
                 FOREIGN KEY (subscriber_articleId) REFERENCES subscriber_article(subscriber_articleId)
                 );
         '''
-        logging.debug('query:\n'+query)
+        debug('query:\n'+query)
         if self.conn:
             return self.conn._execute(query)
         return -1
-    
+        
+    '===================================================='
+    '================create table ends==================='
+    '===================================================='
+            
     def insertOneReturnLastInsertId(self,tableName,d):
         '''
         Insert one record and return the last insert id (MySQL LAST_INSERT_ID()
@@ -338,28 +422,13 @@ class PhDatabase(Database):
         Example:
         >>> from phInfo import testDbInfo
         >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
-        >>> phdb.conn._execute("DROP TABLE subscriber_articleEvent")
-        0
-        >>> phdb.conn._execute("DROP TABLE subscriber_article")
-        0
-        >>> phdb.conn._execute("DROP TABLE interest")
-        0
-        >>> phdb.conn._execute("DROP TABLE subscriber")
-        0
-        >>> phdb.createTableSubscriber()
-        0
-        >>> phdb.createTableInterest()
-        0
-        >>> phdb.createTableSubscriber_Article()
-        0
-        >>> phdb.createTableSubscriber_ArticleEvent()
-        0
-        >>> dSubscriber1 = {'subscriberId':None,'firstName':'Franklin', 'lastName':'Zhong', 'email':'franklin.zhong@gmail.com'}
+        >>> phdb.formatDatabase()
+        >>> dSubscriber1 = {'subscriberId':None,'firstName':'Russ', 'lastName':'Li', 'email':'iamjingxian@gmail.com'}
         >>> phdb.insertOneReturnLastInsertId('subscriber',dSubscriber1)
-        1L
-        >>> dSubscriber2 = {'subscriberId':None,'firstName':'Zhi', 'lastName':'Li', 'email':'henrylee18@yahoo.com'}
+        3L
+        >>> dSubscriber2 = {'subscriberId':None,'firstName':'Hu', 'lastName':'Wang', 'email':'wanghugigi@gmail.com'}
         >>> phdb.insertOneReturnLastInsertId('subscriber',dSubscriber2)
-        2L
+        4L
         >>> phdb.close()
         '''
         ret = self.insertMany(tableName,[d,])
@@ -375,7 +444,26 @@ class PhDatabase(Database):
     
     def insertMany(self,tableName,listDict):
         '''
-        conn._execute('INSERT INTO Dict (k, v) VALUES (%s, %s)', ("Hu", "28"))
+        >>> from phInfo import testDbInfo
+        >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
+        >>> phdb.conn._execute('Drop table Dict')
+        0
+        >>> phdb.conn._execute('CREATE TABLE Dict (k VARCHAR(255), v VARCHAR(255));')
+        0
+        >>> phdb.conn._execute('INSERT INTO Dict (k, v) VALUES (%s,%s)', ("Zhi","32"))
+        0
+        >>> phdb.conn._execute('INSERT INTO Dict (k, v) VALUES (%s,%s)', ("Hu","28"))
+        0
+        >>> phdb.conn._execute('INSERT INTO Dict (k, v) VALUES (%s,%s)', ("Russ","31"))
+        0
+        >>> phdb.conn._commit()
+        0
+        >>> phdb.insertMany('Dict',[{'k':'Lala','v':'31'},{'k':'Franklin','v':'31'},{'k':'Yang','v':'31'}])
+        0
+        >>> _,res = phdb.selectDistinct('Dict',['k','v'])
+        >>> print res
+        (('Zhi', '32'), ('Hu', '28'), ('Russ', '31'), ('Lala', '31'), ('Franklin', '31'), ('Yang', '31'))
+        >>> phdb.close()
         '''
     
         nSuccessful = 0
@@ -392,8 +480,8 @@ class PhDatabase(Database):
             
             fields = tuple(d.values())
 
-            logging.debug('query:\n'+query)
-            logging.debug('fields:\n'+str(fields))
+            debug('query:\n'+query)
+            debug('fields:\n'+str(fields))
             
             if self.conn:
                 ret = self.conn._execute(query,fields)
@@ -403,15 +491,15 @@ class PhDatabase(Database):
         r = self.conn._commit()
         if r == 0:
             if nSuccessful == len(listDict):
-                logging.info('%d of %d records inserted into %s successfully.' \
-                              % (nSuccessful, len(listDict), tableName))
+                #debug('%d of %d records inserted into %s successfully.' \
+                #              % (nSuccessful, len(listDict), tableName))
                 return 0
             else: 
-                logging.warning('%d of %d inserted into %s successfully.' \
+                warning('%d of %d inserted into %s successfully.' \
                               % (nSuccessful, len(listDict), tableName))
                 return 1
         else:
-            logging.warning('insertMany commit failed.')
+            warning('insertMany commit failed.')
             return 2
     
     def selectDistinct(self,tableName,listColumn,condition=None):
@@ -428,19 +516,20 @@ class PhDatabase(Database):
         if condition:
             query += ' WHERE '+condition
                 
-        logging.debug('query:\n'+query)
+        debug('query:\n'+query)
         
         ret, res = self.conn._fetchall(query)
         
-        logging.debug('fetched result:\n'+ pprint.pformat(res))
+        debug('fetched result:\n'+ pprint.pformat(res))
         
         return (ret, res)
     
     def fetchall(self,query):
-        logging.debug('query:\n'+query)
+        debug('query:\n'+query)
         ret, res = self.conn._fetchall(query)
-        logging.debug('fetched result:\n'+ pprint.pformat(res))        
+        debug('fetched result:\n'+ pprint.pformat(res))        
         return (ret, res)
+        
         
 def constructMysqlDatetimeStr(t):
     '''
