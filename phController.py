@@ -17,28 +17,26 @@ import pprint
 import time
 from phInfo import phDbInfo, webServerInfo
 from bottle import template
+from phTools import replaceKeyValuePair
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
 '''
-logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
-                    level=logging.INFO)
+# logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
+#                     level=logging.DEBUG)
 
 def constructPubmedQueryList(phdb):
     '''
     Return a list of Pubmed queries and their corresponding subscriberIds 
     based on information in the interest table of database phdb.
     Rules to construct the list:
-    1) All categorized as general_journal (category = 1) should be queried 
+    1) All categorized as general_journal (category = 2) should be queried 
     with no specific keyword. e.g. Nature[Journal]
-    2) All categorized as expert_journal (category = 2) should be queried 
-    with keywords (category = 3) for a specific subscriber.
+    2) All categorized as expert_journal (category = 3) should be queried 
+    with keywords (category = 4) for a specific subscriber.
     e.g.: (telomerase) AND ("Nature"[Journal] OR "Nature medicine"[Journal] )    
-    
-    category: 0 - area, 1- general_journal, 2 - expert_journal, 3 - keyword, 
-    4 - author
-            
+                
     Example:
     >>> from phInfo import testDbInfo
     >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))

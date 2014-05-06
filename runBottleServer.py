@@ -6,7 +6,7 @@ Created on Apr 30, 2014
 
 @author: zhil2
 '''
-from bottle import route, run, request, static_file, redirect
+from bottle import route, run, request, static_file, redirect, template
 #from bottle import response, get, post
 from phDatabaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
 from phInfo import phDbInfo
@@ -21,8 +21,8 @@ from phController import getListArticlePage
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
 '''
-logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
-                    level=logging.INFO)
+# logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
+#                     level=logging.DEBUG)
 
 @route('/')
 def greet():
@@ -87,74 +87,95 @@ def recordSubscriberArticleAndredirect():
     
 @route('/signup')
 def signup():
-    return '''
-        <h1>You are invited to Scooply's alpha test!</h1>
-        <form action="/signup" method="post">
-        
-            <h3>Sign up with your Stanford email address</h3>
-            
-            <p>
-                Email: <input name="email" type="text" required />@stanford.edu <br>
-                Password: <input name="password" type="password" required/>  <br>
-                Confirm password: <input name="passwordAgain" type="password" required />  
-            </p>
-
-            <h3>Tell us a bit more about yourself</h3>
-
-            <p>
-                <b>What's your name?</b><br>
-                First: <input name="firstName" type="text" /> Last: <input name="lastName" type="text" />
-            </p>
-            
-            <p>
-                <b>What's your primary research area?</b><br>
-                <select name="area">
-                    <option value="1">Bioinformatics and computational genomics</option>
-                    <option value="2">Biophysics and bioengineering</option>
-                    <option value="3">Developmental biology, stem cell biology and genetics</option>
-                    <option value="4">Microbiology and immunology</option>
-                    <option value="5">Biochemistry, cell biology and molecular biology</option>
-                    <option value="6">Neurosciences</option>
-                    <option value="7">Clinical sciences</option>
-                </select> 
-            </p>
-            
-            <p>
-                <b>What specific research topics would you like to receive Scooply alerts on?</b> <br>
-                <textarea name="keywords" rows="8" cols="50" required placeholder="For example: telomeres and telomerase, noncoding RNA, mechanisms of aging. Please type each topic in a separate line."></textarea>
-            </p>
-            
-            <h3></h3>
-            
-            <p>
-                <input value="Sign up" type="submit" /> <br>
-                Already have an account? <a href="/signin">Sign in</a>
-            </p>
-            
-        </form>
-    '''
-    '''
-    <p>By clicking on Sign up, you agree to Scooply's terms & conditions 
-    and privacy policy</p>
-    '''
+    output = template('views/signup')
+    return output
 
 @route('/signup', method='POST')
 def do_signup():
     email = request.forms.get('email')
-    password = request.forms.get('password')
-    passwordAgain = request.forms.get('passwordAgain')
+    email += '@stanford.edu'    
+    #password = request.forms.get('password')
+    #passwordAgain = request.forms.get('passwordAgain')
     firstName = request.forms.get('firstName') or ""
     lastName = request.forms.get('lastName') or ""
-    area = request.forms.get('area')
+    areaId = request.forms.get('areaId')
     keywords = request.forms.get('keywords')
-    return ("<h3>Email: " + email + "</h3>"
-            + "<h3>Password: " + password + "</h3>"
-            + "<h3>Confirm password: "+ passwordAgain + "</h3>"
-            + "<h3>First Name: "+ firstName + "</h3>"
-            + "<h3>Last Name: "+ lastName + "</h3>"
-            + "<h3>Area: "+ area + "</h3>"
-            + "<h3>Keywords: "+ str(keywords) + "</h3>"
-            )
+    
+    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
+                                      phDbInfo['user'],phDbInfo['password']))
+    
+    '====insert subscriber===='
+    s={}
+    s['subscriberId'] = None # prepare for return
+    s['firstName'] = firstName
+    s['lastName'] = lastName
+    s['email'] = email
+    subscriberId = phdb.insertOneReturnLastInsertId('subscriber',s)
+    
+    '====insert interest===='
+    if subscriberId !=-1: #subscriber inserted without error
+        si=[]
+        _, areaName = phdb.selectDistinct('area',['areaName'],'areaId = '+areaId)
+        areaName = singleStrip(areaName)[0] #double strip
+        '==area=='
+        a={}
+        a['subscriberId'] = subscriberId
+        a['category'] = '1' # area. FIXME: can do better
+        a['phrase'] = areaName
+        si.append(a)
+        '==generalJournl=='
+        _, listGeneralJournalTitle = phdb.fetchall('''
+        SELECT DISTINCT journal.journalTitle FROM journal
+        LEFT JOIN journal_area ON journal.journalId = journal_area.journalId
+        WHERE journal_area.areaId = %s AND journal.isGeneral = 1
+        ''' % areaId)
+        listGeneralJournalTitle = singleStrip(listGeneralJournalTitle)
+        for journalTitle in listGeneralJournalTitle:
+            j={}
+            j['subscriberId'] = subscriberId
+            j['category'] = '2' #general journal. FIXME: can do better
+            j['phrase'] = journalTitle
+            si.append(j)
+        '==expertJournal=='
+        _, listExpertJournalTitle = phdb.fetchall('''
+        SELECT DISTINCT journal.journalTitle FROM journal
+        LEFT JOIN journal_area ON journal.journalId = journal_area.journalId
+        WHERE journal_area.areaId = %s AND journal.isGeneral = 0
+        ''' % areaId)
+        listExpertJournalTitle = singleStrip(listExpertJournalTitle)
+        for journalTitle in listExpertJournalTitle:
+            j={}
+            j['subscriberId'] = subscriberId
+            j['category'] = '3' #expert journal. FIXME: can do better
+            j['phrase'] = journalTitle
+            si.append(j)
+        '==keyword=='
+        for keyword in keywords.split():
+            k={}
+            k['subscriberId'] = subscriberId
+            k['category'] = '4' #keyword. FIXME: can do better
+            k['phrase'] = keyword
+            si.append(k)
+    
+        phdb.insertMany('interest',si)
+ 
+    phdb.close()
+     
+    '====return===='
+    if subscriberId ==-1:
+        retMsg = "<h1>Oops... Looks like you already registered. Try using a new email address.</h1>"
+    else:
+        retMsg = "<h1>Congrats! You've signed up to Scoooply.</h1>"
+    
+    return retMsg
+#     return ("<h3>Email: " + email + "</h3>"
+#             #+ "<h3>Password: " + password + "</h3>"
+#             #+ "<h3>Confirm password: "+ passwordAgain + "</h3>"
+#             + "<h3>First Name: "+ firstName + "</h3>"
+#             + "<h3>Last Name: "+ lastName + "</h3>"
+#             + "<h3>AreaId: "+ areaId + "</h3>"
+#             + "<h3>Keywords: "+ str(keywords) + "</h3>"
+#             )
     
 @route('/signin')
 def signin():

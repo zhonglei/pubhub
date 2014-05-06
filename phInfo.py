@@ -72,6 +72,15 @@ class BiologyResearchInfo(object):
         l.append((7,'Clinical sciences'))
         
         return l
+
+    @staticmethod
+    def getListGeneralJournal():
+        l=[]
+        l.append('Nature')
+        l.append('Cell')
+        l.append('Science')
+        
+        return l
     
     @staticmethod
     def getDictJournal_Area():
@@ -80,9 +89,9 @@ class BiologyResearchInfo(object):
         dictJournal_Area['Cell'] = (1,2,3,4,5,6,7,)
         dictJournal_Area['Science'] = (1,2,3,4,5,6,7,)
         dictJournal_Area['Nature Genetics'] = (1,2,3,4,5,6,7,)
-        dictJournal_Area['? Current Biology'] = (1,2,3,4,5,6,)
-        dictJournal_Area['? EMBO Journal'] = (1,2,3,4,5,6,7,)
-        dictJournal_Area['? Proceedings of National Academy of Sciences'] = (1,2,3,4,5,6,7,)
+        dictJournal_Area['Curr Biol.'] = (1,2,3,4,5,6,)
+        dictJournal_Area['EMBO J.'] = (1,2,3,4,5,6,7,)
+        dictJournal_Area['Proc. Natl. Acad. Sci. U.S.A.'] = (1,2,3,4,5,6,7,)
         dictJournal_Area['Nature Biotechnology'] = (1,2,3,4,5,6,7,)
         dictJournal_Area['Nature Medicine'] = (1,2,3,4,5,6,7,)
         dictJournal_Area['Nature Methods'] = (1,2,3,4,5,6,)
@@ -100,24 +109,24 @@ class BiologyResearchInfo(object):
         dictJournal_Area['Molecular and Cellular Biology'] = (1,2,3,4,5,6,7,)
         dictJournal_Area['Genome Biology'] = (1,)
         dictJournal_Area['Genome Research'] = (1,)
-        dictJournal_Area['? Nucleic Acid Research'] = (1,2,5,)
+        dictJournal_Area['Nucleic Acids Res.'] = (1,2,5,)
         dictJournal_Area['Biophysical Journal'] = (2,)
         dictJournal_Area['Development'] = (3,)
         dictJournal_Area['PLoS Biology'] = (1,2,3,4,5,6,7,)
         dictJournal_Area['PLoS Medicine'] = (7,)
         dictJournal_Area['PLoS Genetics'] = (1,2,3,4,5,6,7,)
         dictJournal_Area['Immunity'] = (4,)
-        dictJournal_Area['? Journal of Immunology'] = (4,)
+        dictJournal_Area['J Immunol'] = (4,)
         dictJournal_Area['Blood'] = (4,)
         dictJournal_Area['Cell Host & Microbe'] = (4,)
         dictJournal_Area['Structure'] = (5,)
         dictJournal_Area['Neuron'] = (6,)
-        dictJournal_Area['? Journal of Biological Chemistry'] = (5,)
+        dictJournal_Area['J Biol Chem.'] = (5,)
         dictJournal_Area['Nature Neuroscience'] = (6,)
-        dictJournal_Area['? Journal of Neuroscience'] = (6,)
-        dictJournal_Area['? Journal of Experimental Medicine'] = (7,)
-        dictJournal_Area['? Journal of Clinical Research'] = (7,)
-        dictJournal_Area['? New England Journal of Medicine'] = (7,)
+        dictJournal_Area['J. Neurosci.'] = (6,)
+        dictJournal_Area['J Exp Med.'] = (7,)
+        dictJournal_Area['J Clin Invest.'] = (7,)
+        dictJournal_Area['N Engl J Med'] = (7,)
         dictJournal_Area['Lancet'] = (7,)
         dictJournal_Area['Cancer Research'] = (3,5,7,)
         dictJournal_Area['PLoS Computational Biology'] = (1,)

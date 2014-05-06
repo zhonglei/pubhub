@@ -19,8 +19,8 @@ import pprint
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
 '''
-logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
-                    level=logging.INFO)
+# logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
+#                     level=logging.DEBUG)
 
 class PubmedApi(object):
     '''
@@ -352,15 +352,6 @@ class PubmedApi(object):
                                 print e
                                 continue
             try:
-
-#                 JournalTitle=JournalTitle.encode('ASCII', 'ignore')
-#                 JournalISOAbbreviation=JournalISOAbbreviation.encode('ASCII', 'ignore')
-#                 ArticleTitle=ArticleTitle.encode('ASCII', 'ignore')
-#                 Abstract=Abstract.encode('ASCII', 'ignore')
-#                 for t in ListAuthorForeName: t=t.encode('ASCII', 'ignore')
-#                 for t in ListAuthorInitials: t=t.encode('ASCII', 'ignore')
-#                 for t in ListAuthorLastName: t=t.encode('ASCII', 'ignore')
-#                 for t in ListAuthorAffiliation: t=t.encode('ASCII', 'ignore')
 
                 'FIXME'
                 

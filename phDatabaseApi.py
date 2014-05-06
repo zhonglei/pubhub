@@ -19,8 +19,8 @@ from phTools import replaceKeyValuePair
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
 '''
-logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
-                    level=logging.INFO)
+# logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
+#                     level=logging.DEBUG)
 
 class DbConnection(object):
     
@@ -57,7 +57,7 @@ class MysqlConnection(DbConnection):
     0
     >>> _,ret = conn._fetchall('SELECT DISTINCT k FROM Dict')
     >>> print ret
-    (('Zhi',), ('Hu',), ('Russ',))
+    ((u'Zhi',), (u'Hu',), (u'Russ',))
     >>> conn._close()
     0
     '''
@@ -65,7 +65,8 @@ class MysqlConnection(DbConnection):
     def __init__(self, n, h, u, p):
         super(MysqlConnection,self).__init__(n,h,u,p)
         try:
-            self.conn = MySQLdb.connect(self.host,self.user,self.password,self.dbName)
+            self.conn = MySQLdb.connect(self.host,self.user,self.password,
+                            self.dbName,use_unicode=True, charset='utf8')
         except MySQLdb.Error as e:
             warning(e)
         except Exception as e:
@@ -211,7 +212,8 @@ class PhDatabase(Database):
         query='''CREATE TABLE journal(
             journalId INT NOT NULL AUTO_INCREMENT,
             journalTitle VARCHAR(255) NOT NULL,
-            journalAbbrName VARCHAR(255),
+            journalBriefTitle VARCHAR(255),
+            isGeneral BOOLEAN NOT NULL,
             PRIMARY KEY (journalId),
             CONSTRAINT uc_journalTitle UNIQUE (journalTitle)
             );
@@ -224,8 +226,15 @@ class PhDatabase(Database):
     def preloadTableJournal(self):
         preload=[]
         dictJournal_Area = BiologyResearchInfo.getDictJournal_Area()
+        listGeneralJournal = BiologyResearchInfo.getListGeneralJournal()
         for journalTitle in dictJournal_Area.keys():
-            preload.append({'journalTitle':journalTitle})
+            d = {}
+            d['journalTitle'] = journalTitle
+            if journalTitle in listGeneralJournal:
+                d['isGeneral'] = 1 #True for BOOLEAN type
+            else:
+                d['isGeneral'] = 0 #False for BOOLEAN type
+            preload.append(d)
         
         return self.insertMany('journal',preload)
 

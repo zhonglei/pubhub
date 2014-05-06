@@ -13,8 +13,8 @@ from logging import warning, debug
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
 '''
-logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
-                    level=logging.INFO)
+# logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
+#                     level=logging.DEBUG)
 
 def findAllAndAssert(node,tag,reSymbol):
     '''

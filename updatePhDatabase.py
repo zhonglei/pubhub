@@ -19,8 +19,8 @@ import sys
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
 '''
-logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
-                    level=logging.INFO)
+# logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
+#                     level=logging.DEBUG)
 
 if __name__ == '__main__':
     
@@ -28,67 +28,42 @@ if __name__ == '__main__':
     print doctest.testmod()
     
     'if with argument --doctest-only, skip the rest'
+    'if with argument --format, also call formatDatabase'
+    formatFlag = False
     if len(sys.argv) > 1:
-        for a in sys.argv[1:]: 
-            if a =='--doctest-only':
+        for a in sys.argv[1:]:
+            if a == '--doctest-only':
+                sys.exit()
+            elif a == '--format-database':
+                print 'Format database: all data will be lost! Sure? (Yes/No)'
+                line = sys.stdin.readline()
+                if line == 'Yes\n':
+                    print 'Are you absolutely sure you want to proceed? (Yes/No)'
+                    line = sys.stdin.readline()
+                    if line == 'Yes\n':
+                        formatFlag = True
+                        continue                
                 sys.exit()
 
     '================================'
-    'clear up data'
+    'format Pubhub database'
     '================================'
-    #delete from subscriber_articleEvent;delete from subscriber_article;delete from author;delete from article;
-    #delete from interest; delete from subscriber;
-    
-    '================================'
-    'add subscribers and interests'
-    '================================'
-
-    if False:
-        phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],phDbInfo['user'],phDbInfo['password']))    
-        phdb.createTableSubscriber()
-        phdb.createTableInterest()
-        ldSubscriber = [
-                        {'firstName':'Franklin', 'lastName':'Zhong', 'email':'franklin.zhong@gmail.com'}, 
-                        {'firstName':'Zhi', 'lastName':'Li', 'email':'henrylee18@yahoo.com'}, 
-                        ]
-        ldInterest = [
-                        {'subscriberId':'7', 'category':'1', 'phrase':'biochemistry'}, 
-                        {'subscriberId':'7', 'category':'1', 'phrase':'cell biology'}, 
-                        {'subscriberId':'7', 'category':'2', 'phrase':'Nature'}, 
-                        {'subscriberId':'7', 'category':'2', 'phrase':'Science'}, 
-                        {'subscriberId':'7', 'category':'2', 'phrase':'Cell'}, 
-                        {'subscriberId':'7', 'category':'3', 'phrase':'Molecular Cell'}, 
-                        {'subscriberId':'7', 'category':'3', 'phrase':'Nature structural and Molecular Biology'}, 
-                        {'subscriberId':'7', 'category':'3', 'phrase':'Molecular and Cellular Biology'}, 
-                        {'subscriberId':'7', 'category':'4', 'phrase':'telomerase and cancer biology'}, 
-                        {'subscriberId':'7', 'category':'4', 'phrase':'telomere and DNA replication'}, 
-                          
-                        {'subscriberId':'8', 'category':'1', 'phrase':'biochemistry'}, 
-                        {'subscriberId':'8', 'category':'1', 'phrase':'Immunology'}, 
-                        {'subscriberId':'8', 'category':'2', 'phrase':'Cell'}, 
-                        {'subscriberId':'8', 'category':'2', 'phrase':'Science'}, 
-                        {'subscriberId':'8', 'category':'3', 'phrase':'Immunity'}, 
-                        {'subscriberId':'8', 'category':'3', 'phrase':'Journal of Immunology'}, 
-                        {'subscriberId':'8', 'category':'3', 'phrase':'Molecular Cell'}, 
-                        {'subscriberId':'8', 'category':'3', 'phrase':'Nature structural and Molecular Biology'}, 
-                        {'subscriberId':'8', 'category':'4', 'phrase':'noncoding RNA'}, 
-      
-                        ]
-        phdb.insertMany('subscriber', ldSubscriber)
-        phdb.insertMany('interest', ldInterest)
-          
-        'close pubhub database'    
+    if formatFlag:
+        print 'proceed to format database...'
+        phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
+                                    phDbInfo['user'],phDbInfo['password']))
+        phdb.formatDatabase()
         phdb.close()
-    
+            
     '================================'
-    'Query Pubmed and store results'
+    'query Pubmed and store results'
     '================================'
 
-    if True:
-        pubmedQueryInterval = 28 * 24 * 3600 # 7 days in seconds 
-        lastQueryTime = time.time() - pubmedQueryInterval
-        
-        queryPubmedAndStoreResults(lastQueryTime)
+    print 'query Pubmed and store results...'
+    pubmedQueryInterval = 28 * 24 * 3600 # 7 days in seconds 
+    lastQueryTime = time.time() - pubmedQueryInterval
+    
+    queryPubmedAndStoreResults(lastQueryTime)
     
     '================================'
     'Query Pubmed and store results'
@@ -125,4 +100,4 @@ if __name__ == '__main__':
 #     'close pubhub database'
 #     phdb.close()
 
-    info("\n\nDone.")
+    print '\nDone.'
