@@ -116,7 +116,7 @@ def replaceKeyValuePair(db, listDict, tableName, keyOld, keyNew):
     0
     >>> _,res = phdb.selectDistinct('Dict',['k','v'])
     >>> print res
-    (('Zhi', '32'), ('Hu', '28'), ('Russ', '31'), ('Lala', '31'), ('Franklin', '31'), ('Yang', '31'))
+    ((u'Zhi', u'32'), (u'Hu', u'28'), (u'Russ', u'31'), (u'Lala', u'31'), (u'Franklin', u'31'), (u'Yang', u'31'))
     >>> ld = [{'k':'Zhi', 'x':'y'},{'k':'Franklin', 'z':'w'}]
     >>> replaceKeyValuePair(phdb, ld, 'Dict', 'k', 'v')
     0

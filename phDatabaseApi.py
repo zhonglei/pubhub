@@ -32,6 +32,9 @@ class DbConnection(object):
         self.conn = None
         
     def _close(self):
+        '''
+        Return value: -1 if connection does not exist; 0 otherwise.
+        '''
         if self.conn:
             self.conn.close()
             return 0
@@ -73,6 +76,10 @@ class MysqlConnection(DbConnection):
             warning(e)        
     
     def _execute(self,query,fields=None):
+        '''
+        Return value: -1 if connection does not exist; 0 if execution succeeds;
+        1 if MySQLdb error; 2 if other errors.
+        '''
         if self.conn:
             try:            
                 cursor=self.conn.cursor()
@@ -80,6 +87,9 @@ class MysqlConnection(DbConnection):
                     cursor.execute(query)
                 else:
                     cursor.execute(query,fields)
+            except MySQLdb.IntegrityError as e:
+                warning(e)
+                raise e
             except MySQLdb.Error as e:
                 warning(e)
                 return 1
@@ -91,6 +101,11 @@ class MysqlConnection(DbConnection):
         return -1
 
     def _fetchall(self,query,fields=None):
+        '''
+        Return values: First argument: -1 if connection does not exist; 0 if 
+        execution succeeds; 1 if MySQLdb error; 2 if other errors. Second
+        argument: fetched values in tuples if execution succeeds; None otherwise.
+        '''        
         if self.conn:
             try:            
                 cursor=self.conn.cursor()
@@ -110,6 +125,10 @@ class MysqlConnection(DbConnection):
         return (-1, None)
         
     def _commit(self):
+        '''
+        Return value: -1 if connection does not exist; 0 if commit succeeds;
+        1 if MySQLdb error; 2 if other errors.
+        '''
         if self.conn:
             try:
                 self.conn.commit()
@@ -172,7 +191,7 @@ class PhDatabase(Database):
  
             self.createTableSubscriber()
             self.createTableInterest()
-            self.preloadTableSubscriberAndInterestWithSample()
+            #self.preloadTableSubscriberAndInterestWithSample()
                  
             self.createTableArticle()
              
@@ -428,16 +447,18 @@ class PhDatabase(Database):
         The input dict must contains a key corresponding to a field with
         AUTO_INCREMENT property in the table tableName.
         
+        Returned value: 
+        
         Example:
         >>> from phInfo import testDbInfo
         >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
         >>> phdb.formatDatabase()
         >>> dSubscriber1 = {'subscriberId':None,'firstName':'Russ', 'lastName':'Li', 'email':'iamjingxian@gmail.com'}
         >>> phdb.insertOneReturnLastInsertId('subscriber',dSubscriber1)
-        3L
+        1L
         >>> dSubscriber2 = {'subscriberId':None,'firstName':'Hu', 'lastName':'Wang', 'email':'wanghugigi@gmail.com'}
         >>> phdb.insertOneReturnLastInsertId('subscriber',dSubscriber2)
-        4L
+        2L
         >>> phdb.close()
         '''
         ret = self.insertMany(tableName,[d,])
@@ -453,6 +474,10 @@ class PhDatabase(Database):
     
     def insertMany(self,tableName,listDict):
         '''
+        Return value: 0 if all insertions succeed; 1 if commit succeeds but not
+        all insertion succeeds; 2 if commit fails.
+        
+        Examples:
         >>> from phInfo import testDbInfo
         >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
         >>> phdb.conn._execute('Drop table Dict')
@@ -469,9 +494,9 @@ class PhDatabase(Database):
         0
         >>> phdb.insertMany('Dict',[{'k':'Lala','v':'31'},{'k':'Franklin','v':'31'},{'k':'Yang','v':'31'}])
         0
-        >>> _,res = phdb.selectDistinct('Dict',['k','v'])
+        >>> _, res = phdb.selectDistinct('Dict',['k','v'])
         >>> print res
-        (('Zhi', '32'), ('Hu', '28'), ('Russ', '31'), ('Lala', '31'), ('Franklin', '31'), ('Yang', '31'))
+        ((u'Zhi', u'32'), (u'Hu', u'28'), (u'Russ', u'31'), (u'Lala', u'31'), (u'Franklin', u'31'), (u'Yang', u'31'))
         >>> phdb.close()
         '''
     

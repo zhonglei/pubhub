@@ -6,6 +6,7 @@ Created on Apr 30, 2014
 
 @author: zhil2
 '''
+import MySQLdb
 from bottle import route, run, request, static_file, redirect, template
 #from bottle import response, get, post
 from phDatabaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
@@ -51,7 +52,7 @@ def showListArticle():
     output = getListArticlePage(subscriberId, sinceDaysAgo)
     return output
 
-@route('/redirect')     #/redirect?subscriberId=1&articleId=2&redirectUrl=http://www.google.com
+@route('/redirect') #/redirect?subscriberId=1&articleId=2&redirectUrl=http://www.google.com
 def recordSubscriberArticleAndredirect():
     subscriberId = request.query.subscriberId
     articleId = request.query.articleId
@@ -110,10 +111,13 @@ def do_signup():
     s['firstName'] = firstName
     s['lastName'] = lastName
     s['email'] = email
-    subscriberId = phdb.insertOneReturnLastInsertId('subscriber',s)
-    
+    try:
+        subscriberId = phdb.insertOneReturnLastInsertId('subscriber',s)
+    except MySQLdb.IntegrityError:
+        subscriberId = -2 #FIXME: very ad hoc subscriberId is +ve if successful
+        
     '====insert interest===='
-    if subscriberId !=-1: #subscriber inserted without error
+    if subscriberId > 0: #subscriber inserted without error
         si=[]
         _, areaName = phdb.selectDistinct('area',['areaName'],'areaId = '+areaId)
         areaName = singleStrip(areaName)[0] #double strip
@@ -150,7 +154,7 @@ def do_signup():
             j['phrase'] = journalTitle
             si.append(j)
         '==keyword=='
-        for keyword in keywords.split():
+        for keyword in keywords.split('\r\n'):
             k={}
             k['subscriberId'] = subscriberId
             k['category'] = '4' #keyword. FIXME: can do better
@@ -162,8 +166,11 @@ def do_signup():
     phdb.close()
      
     '====return===='
-    if subscriberId ==-1:
-        retMsg = "<h1>Oops... Looks like you already registered. Try using a new email address.</h1>"
+    if subscriberId == -1:
+        retMsg = "<h1>Oops... Looks like there are some issues.</h1>"
+    elif subscriberId == -2:
+        retMsg = "<h1>Oops... Looks like this email is already registered." \
+                +" Try to use a new one.</h1>"
     else:
         retMsg = "<h1>Congrats! You've signed up to Scoooply.</h1>"
     
@@ -181,12 +188,13 @@ def do_signup():
 def signin():
     return '<h1>Scooply sign in page placeholder.</h1>'
 
-@route('/add')
-def addition():
-    x = request.query.x
-    y = request.query.y or 5
-    return ("<h1>%d</h1>" % (int(x)+int(y)))
-
+@route('/artandilab')
+def artandilab():
+    redirect('/listArticle?subscriberId=1&sinceDaysAgo=7')
+    
+@route('/changlab')
+def changlab():
+    redirect('/listArticle?subscriberId=2&sinceDaysAgo=7')
 
 if __name__ == '__main__':
 

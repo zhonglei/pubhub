@@ -7,7 +7,8 @@ Created on Apr 26, 2014
 
 @author: zhil2
 '''
-
+import MySQLdb
+import urllib2
 from pubmedApi import PubmedApi
 from phDatabaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
 import logging
@@ -86,7 +87,7 @@ def constructPubmedQueryList(phdb):
     >>> phdb.insertMany('interest', ldInterest)
     0
     >>> constructPubmedQueryList(phdb)
-    [('("Cell"[Journal])', [1L]), ('("Nature"[Journal])', [1L, 2L]), ('("Science"[Journal])', [1L, 2L]), ('(telomerase and cancer biology) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L]), ('(telomere and DNA replication) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L]), ('(noncoding RNA) AND ("Nature"[Journal] OR "Science"[Journal] OR "Immunity"[Journal] OR "Journal of Immunology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [2L])]
+    [(u'("Cell"[Journal])', [1L]), (u'("Nature"[Journal])', [1L, 2L]), (u'("Science"[Journal])', [1L, 2L]), (u'(telomerase and cancer biology) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L]), (u'(telomere and DNA replication) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L]), (u'(noncoding RNA) AND ("Nature"[Journal] OR "Science"[Journal] OR "Immunity"[Journal] OR "Journal of Immunology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [2L])]
     >>> phdb.close()
     '''
     
@@ -162,17 +163,17 @@ def queryPubmedAndStoreResults(lastQueryTime):
     res = constructPubmedQueryList(phdb)
     for queryStr, listSubscriber in res:
         
-        print 'query: '+queryStr
-        print 'subscribers: '+str(listSubscriber)
-        
         'add time constraint'
         queryStr += ' AND '+ timeStr
         
         'add type: journal article'
         queryStr += ' AND (Journal Article[ptyp])'
+
+        print 'query: '+queryStr
+        print 'subscribers: '+str(listSubscriber)        
             
-        'replace space with +'
-        queryStr = queryStr.replace(' ', '+')
+        'URL encoding'
+        queryStr = urllib2.quote(queryStr.encode("ascii"))
         
         debug('query: \n\n'+queryStr+'\n')
         
@@ -184,8 +185,15 @@ def queryPubmedAndStoreResults(lastQueryTime):
                                        
             'record article'
             dArticle['articleId'] = None #prepare to get LAST_INSERT_ID
-            articleId = phdb.insertOneReturnLastInsertId('article', dArticle) 
             
+            try:
+                articleId = phdb.insertOneReturnLastInsertId('article', dArticle) 
+            except MySQLdb.IntegrityError:
+                'key duplication. already in database. try to select'
+                _, articleId = phdb.selectDistinct('article',['articleId',],
+                                                'PMID = '+dArticle['PMID'])                
+                articleId = singleStrip(articleId)[0]
+                
             if articleId == -1: #article insertion fails (could be already in db)
                 continue
             
@@ -197,8 +205,11 @@ def queryPubmedAndStoreResults(lastQueryTime):
                 dSubscriber_article['subscriberId'] = s
                 dSubscriber_article['articleId'] = articleId
                 
-                subscriber_articleId = phdb.insertOneReturnLastInsertId(
-                                    'subscriber_article', dSubscriber_article)
+                try:
+                    subscriber_articleId = phdb.insertOneReturnLastInsertId(
+                                        'subscriber_article', dSubscriber_article)
+                except MySQLdb.IntegrityError:
+                    continue
                 
                 'record subscriber_articleEvent'
                 dSubscriber_articleEvent = {}
@@ -207,15 +218,21 @@ def queryPubmedAndStoreResults(lastQueryTime):
                 dSubscriber_articleEvent['category'] = 1 #created
                 dSubscriber_articleEvent['status'] = 1 #yes
 
-                phdb.insertOne('subscriber_articleEvent', dSubscriber_articleEvent)
+                try:
+                    phdb.insertOne('subscriber_articleEvent', dSubscriber_articleEvent)
+                except MySQLdb.IntegrityError:
+                    pass
 
         'record author'
         #ldAuthorForArticle = [l for l in ldAuthor if l['PMID']==dArticle['PMID']]
         replaceKeyValuePair(phdb, ldAuthor, 'article', 'PMID', 'articleId')
                                 # Need to look up articleId in article, 
                                 # and replace key PMID with articleID
-        phdb.insertMany('author', ldAuthor)
-            
+        try:
+            phdb.insertMany('author', ldAuthor)
+        except MySQLdb.IntegrityError:
+            pass
+        
     'close pubhub database'
     phdb.close()
     
@@ -265,12 +282,12 @@ def getListArticlePage(subscriberId, sinceDaysAgo, displayType = 'web'):
         recordAndRedirectStr = 'http://'+webServerInfo['addr']+ '/' \
                     'redirect?subscriberId=%s&articleId=%ld&redirectUrl=%s' \
                     % (subscriberId,articleId,www)
-        if firstAuthorLastName != '':
+        if firstAuthorLastName and firstAuthorLastName != '':
             if firstAuthorId != lastAuthorId:
                 authorField = firstAuthorLastName+' et al., '+lastAuthorLastName+' Lab'
             else:
                 authorField = ''
-                if firstAuthorInitials != '':
+                if firstAuthorInitials and firstAuthorInitials != '':
                     authorField += firstAuthorInitials+' '
                 authorField += firstAuthorLastName
         else:

@@ -18,6 +18,9 @@ python pubmedApi.py
 echo "runBottleServer.py:"
 python runBottleServer.py --doctest-only
 
+echo "formatPhDatabase.py:"
+python formatPhDatabase.py --doctest-only
+
 echo "updatePhDatabase.py:"
 python updatePhDatabase.py --doctest-only
 
