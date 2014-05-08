@@ -5,20 +5,20 @@ Created on Apr 25, 2014
 
 @author: zhil2
 '''
-import sys
+
 import time
 import httplib2
 import xml.etree.ElementTree as et
-import logging
 from logging import debug, warning
-import phTools
 import pprint
 
+import phTools
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
 '''
+# import logging
 # logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
 #                     level=logging.DEBUG)
 

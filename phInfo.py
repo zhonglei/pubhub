@@ -18,45 +18,45 @@ emailInfo = {'server':'smtp.gmail.com', 'port':587, 'user':'pubhub2@gmail.com',
            'password':'lymanDelmedio123', 'mainEmail':'scooply@scooply.info',
            }
 
-class TestSubscriberInfo(object):
-    
-    @staticmethod
-    def getLdSubscriber():
-        ldSubscriber = [
-                        {'firstName':'Franklin', 'lastName':'Zhong', 'email':'franklin.zhong@gmail.com'}, 
-                        {'firstName':'Zhi', 'lastName':'Li', 'email':'lizhi1981@gmail.com'},
-                        ]
-
-        ld=ldSubscriber[:]
-        return ld
-    
-    @staticmethod
-    def getLdInterest():
-        ldInterest = [
-                        {'email':'franklin.zhong@gmail.com', 'category':'1', 'phrase':'biochemistry'}, 
-                        {'email':'franklin.zhong@gmail.com', 'category':'1', 'phrase':'cell biology'}, 
-                        {'email':'franklin.zhong@gmail.com', 'category':'2', 'phrase':'Nature'}, 
-                        {'email':'franklin.zhong@gmail.com', 'category':'2', 'phrase':'Science'}, 
-                        {'email':'franklin.zhong@gmail.com', 'category':'2', 'phrase':'Cell'}, 
-                        {'email':'franklin.zhong@gmail.com', 'category':'3', 'phrase':'Molecular Cell'}, 
-                        {'email':'franklin.zhong@gmail.com', 'category':'3', 'phrase':'Nature structural and Molecular Biology'}, 
-                        {'email':'franklin.zhong@gmail.com', 'category':'3', 'phrase':'Molecular and Cellular Biology'}, 
-                        {'email':'franklin.zhong@gmail.com', 'category':'4', 'phrase':'telomerase and cancer biology'}, 
-                        {'email':'franklin.zhong@gmail.com', 'category':'4', 'phrase':'telomere and DNA replication'}, 
-                          
-                        {'email':'lizhi1981@gmail.com', 'category':'1', 'phrase':'biochemistry'}, 
-                        {'email':'lizhi1981@gmail.com', 'category':'1', 'phrase':'Immunology'}, 
-                        {'email':'lizhi1981@gmail.com', 'category':'2', 'phrase':'Cell'}, 
-                        {'email':'lizhi1981@gmail.com', 'category':'2', 'phrase':'Science'}, 
-                        {'email':'lizhi1981@gmail.com', 'category':'3', 'phrase':'Immunity'}, 
-                        {'email':'lizhi1981@gmail.com', 'category':'3', 'phrase':'Journal of Immunology'}, 
-                        {'email':'lizhi1981@gmail.com', 'category':'3', 'phrase':'Molecular Cell'}, 
-                        {'email':'lizhi1981@gmail.com', 'category':'3', 'phrase':'Nature structural and Molecular Biology'}, 
-                        {'email':'lizhi1981@gmail.com', 'category':'4', 'phrase':'noncoding RNA'}, 
-      
-                        ]# category: 1 - area, 2 - generalJournal, 3 - expertJournal, 4: keyword, 5 - author
-        ld=ldInterest[:]
-        return ld
+# class TestSubscriberInfo(object):
+#     
+#     @staticmethod
+#     def getLdSubscriber():
+#         ldSubscriber = [
+#                         {'firstName':'Franklin', 'lastName':'Zhong', 'email':'franklin.zhong@gmail.com'}, 
+#                         {'firstName':'Zhi', 'lastName':'Li', 'email':'lizhi1981@gmail.com'},
+#                         ]
+# 
+#         ld=ldSubscriber[:]
+#         return ld
+#     
+#     @staticmethod
+#     def getLdInterest():
+#         ldInterest = [
+#                         {'email':'franklin.zhong@gmail.com', 'category':'1', 'phrase':'biochemistry'}, 
+#                         {'email':'franklin.zhong@gmail.com', 'category':'1', 'phrase':'cell biology'}, 
+#                         {'email':'franklin.zhong@gmail.com', 'category':'2', 'phrase':'Nature'}, 
+#                         {'email':'franklin.zhong@gmail.com', 'category':'2', 'phrase':'Science'}, 
+#                         {'email':'franklin.zhong@gmail.com', 'category':'2', 'phrase':'Cell'}, 
+#                         {'email':'franklin.zhong@gmail.com', 'category':'3', 'phrase':'Molecular Cell'}, 
+#                         {'email':'franklin.zhong@gmail.com', 'category':'3', 'phrase':'Nature structural and Molecular Biology'}, 
+#                         {'email':'franklin.zhong@gmail.com', 'category':'3', 'phrase':'Molecular and Cellular Biology'}, 
+#                         {'email':'franklin.zhong@gmail.com', 'category':'4', 'phrase':'telomerase and cancer biology'}, 
+#                         {'email':'franklin.zhong@gmail.com', 'category':'4', 'phrase':'telomere and DNA replication'}, 
+#                           
+#                         {'email':'lizhi1981@gmail.com', 'category':'1', 'phrase':'biochemistry'}, 
+#                         {'email':'lizhi1981@gmail.com', 'category':'1', 'phrase':'Immunology'}, 
+#                         {'email':'lizhi1981@gmail.com', 'category':'2', 'phrase':'Cell'}, 
+#                         {'email':'lizhi1981@gmail.com', 'category':'2', 'phrase':'Science'}, 
+#                         {'email':'lizhi1981@gmail.com', 'category':'3', 'phrase':'Immunity'}, 
+#                         {'email':'lizhi1981@gmail.com', 'category':'3', 'phrase':'Journal of Immunology'}, 
+#                         {'email':'lizhi1981@gmail.com', 'category':'3', 'phrase':'Molecular Cell'}, 
+#                         {'email':'lizhi1981@gmail.com', 'category':'3', 'phrase':'Nature structural and Molecular Biology'}, 
+#                         {'email':'lizhi1981@gmail.com', 'category':'4', 'phrase':'noncoding RNA'}, 
+#       
+#                         ]# category: 1 - area, 2 - generalJournal, 3 - expertJournal, 4: keyword, 5 - author
+#         ld=ldInterest[:]
+#         return ld
 
 class BiologyResearchInfo(object):
     

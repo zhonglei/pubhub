@@ -6,13 +6,13 @@ Created on Apr 12, 2014
 @author: zhil2
 '''
 
-import logging
 from logging import warning, debug
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
 '''
+# import logging
 # logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
 #                     level=logging.DEBUG)
 

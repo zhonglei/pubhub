@@ -7,23 +7,24 @@ Created on Apr 26, 2014
 
 @author: zhil2
 '''
+
 import MySQLdb
 import urllib2
-from pubmedApi import PubmedApi
-from phDatabaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
-import logging
+from bottle import template
 from logging import warning, debug
-from phTools import singleStrip
 import pprint
 import time
+
+from phTools import singleStrip, replaceKeyValuePair
 from phInfo import phDbInfo, webServerInfo
-from bottle import template
-from phTools import replaceKeyValuePair
+from pubmedApi import PubmedApi
+from phDatabaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
 '''
+# import logging
 # logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
 #                     level=logging.DEBUG)
 
@@ -87,7 +88,7 @@ def constructPubmedQueryList(phdb):
     >>> phdb.insertMany('interest', ldInterest)
     0
     >>> constructPubmedQueryList(phdb)
-    [(u'("Cell"[Journal])', [1L]), (u'("Nature"[Journal])', [1L, 2L]), (u'("Science"[Journal])', [1L, 2L]), (u'(telomerase and cancer biology) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L]), (u'(telomere and DNA replication) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L]), (u'(noncoding RNA) AND ("Nature"[Journal] OR "Science"[Journal] OR "Immunity"[Journal] OR "Journal of Immunology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [2L])]
+    [(u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Cell"[Journal])', [1L]), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Nature"[Journal])', [1L, 2L]), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Science"[Journal])', [1L, 2L]), (u'(telomerase and cancer biology) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L]), (u'(telomere and DNA replication) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L]), (u'(noncoding RNA) AND ("Nature"[Journal] OR "Science"[Journal] OR "Immunity"[Journal] OR "Journal of Immunology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [2L])]
     >>> phdb.close()
     '''
     
@@ -98,7 +99,13 @@ def constructPubmedQueryList(phdb):
     generalJournals = singleStrip(generalJournals)    
         
     for j in generalJournals:
-        query = r'("%s"[Journal])' % j
+        
+        query = ''
+
+        'for biology-related field, add filter'
+        query += r'(biology OR medical OR neuroscience OR gene OR brain) AND '
+        
+        query += r'("%s"[Journal])' % j
         
         _, subscribers = phdb.selectDistinct('interest',['subscriberId',], 
                                              "phrase = '%s'" % j)
@@ -145,17 +152,19 @@ def constructPubmedQueryList(phdb):
             
     return listQuery
 
-def constructPubmedTimeStr(t):
+def constructPubmedTimeStr(startTime, endTime):
     '''
     Example:
-    >>> constructPubmedTimeStr(1398036175.4)
-    '(2014/04/20[PDAT] : 3000/01/01[PDAT])'
+    >>> constructPubmedTimeStr(1398036175.4, 1399531966.5)
+    '(2014/04/20[PDAT] : 2014/05/08[PDAT])'
     '''
-    return time.strftime('(%Y/%m/%d[PDAT] : 3000/01/01[PDAT])', time.gmtime(t))
+    startT = time.strftime('%Y/%m/%d[PDAT]', time.gmtime(startTime))
+    endT = time.strftime('%Y/%m/%d[PDAT]', time.gmtime(endTime))
+    return '(' + startT + ' : ' + endT + ')'
 
-def queryPubmedAndStoreResults(lastQueryTime):
+def queryPubmedAndStoreResults(queryStartTime, queryEndTime):
 
-    timeStr = constructPubmedTimeStr(lastQueryTime)
+    timeStr = constructPubmedTimeStr(queryStartTime, queryEndTime)
 
     'connect pubhub database'
     phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],phDbInfo['user'],phDbInfo['password']))    
@@ -167,7 +176,7 @@ def queryPubmedAndStoreResults(lastQueryTime):
         queryStr += ' AND '+ timeStr
         
         'add type: journal article'
-        queryStr += ' AND (Journal Article[ptyp])'
+        #queryStr += ' AND (Journal Article[ptyp])'
 
         print 'query: '+queryStr
         print 'subscribers: '+str(listSubscriber)        
@@ -298,6 +307,111 @@ def getListArticlePage(subscriberId, sinceDaysAgo, displayType = 'web'):
     output = template('views/listArticle', rows = rows, displayType = displayType)
     
     return output
+
+def recordSubscriberArticle(subscriberId, articleId, header):
+    
+    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
+                                      phDbInfo['user'],phDbInfo['password']))
+    'record'
+    _, s_aId = phdb.selectDistinct('subscriber_article',['subscriber_articleId'],
+                                 'subscriberId = %s AND articleId = %s' %
+                                 (subscriberId, articleId))
+    
+    s_aId = singleStrip(s_aId)[0] # need double strip
+    
+    s_aEventDict={}
+    s_aEventDict['subscriber_articleId'] = s_aId
+    s_aEventDict['timestamp'] = constructMysqlDatetimeStr(time.time())
+    s_aEventDict['category'] = 4 #extlinkClicked
+    s_aEventDict['status'] = 1 #yes
+    s_aEventDict['requestHeader'] = header
+    phdb.insertOne('subscriber_articleEvent',s_aEventDict)
+
+    phdb.close()
+    
+def signUpSubscriber(email, firstName, lastName, areaId, keywords):
+    'Return: subscriberId'
+
+    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
+                                      phDbInfo['user'],phDbInfo['password']))
+    
+    '====insert subscriber===='
+    s={}
+    s['subscriberId'] = None # prepare for return
+    s['firstName'] = firstName
+    s['lastName'] = lastName
+    s['email'] = email
+    try:
+        subscriberId = phdb.insertOneReturnLastInsertId('subscriber',s)
+    except MySQLdb.IntegrityError:
+        subscriberId = -2 #FIXME: very ad hoc subscriberId is +ve if successful
+        
+    '====insert interest===='
+    if subscriberId > 0: #subscriber inserted without error
+        si=[]
+        _, areaName = phdb.selectDistinct('area',['areaName'],'areaId = ' 
+                                                                + str(areaId))
+        areaName = singleStrip(areaName)[0] #double strip
+        '==area=='
+        a={}
+        a['subscriberId'] = subscriberId
+        a['category'] = '1' # area. FIXME: can do better
+        a['phrase'] = areaName
+        si.append(a)
+        '==generalJournl=='
+        _, listGeneralJournalTitle = phdb.fetchall('''
+        SELECT DISTINCT journal.journalTitle FROM journal
+        LEFT JOIN journal_area ON journal.journalId = journal_area.journalId
+        WHERE journal_area.areaId = %s AND journal.isGeneral = 1
+        ''' % str(areaId))
+        listGeneralJournalTitle = singleStrip(listGeneralJournalTitle)
+        for journalTitle in listGeneralJournalTitle:
+            j={}
+            j['subscriberId'] = subscriberId
+            j['category'] = '2' #general journal. FIXME: can do better
+            j['phrase'] = journalTitle
+            si.append(j)
+        '==expertJournal=='
+        _, listExpertJournalTitle = phdb.fetchall('''
+        SELECT DISTINCT journal.journalTitle FROM journal
+        LEFT JOIN journal_area ON journal.journalId = journal_area.journalId
+        WHERE journal_area.areaId = %s AND journal.isGeneral = 0
+        ''' % str(areaId))
+        listExpertJournalTitle = singleStrip(listExpertJournalTitle)
+        for journalTitle in listExpertJournalTitle:
+            j={}
+            j['subscriberId'] = subscriberId
+            j['category'] = '3' #expert journal. FIXME: can do better
+            j['phrase'] = journalTitle
+            si.append(j)
+        '==keyword=='
+        for keyword in keywords:
+            k={}
+            k['subscriberId'] = subscriberId
+            k['category'] = '4' #keyword. FIXME: can do better
+            k['phrase'] = keyword
+            si.append(k)
+    
+        phdb.insertMany('interest',si)
+ 
+    phdb.close()
+    
+    return subscriberId
+
+def getSubscriberEmail(subscriberId):
+    'Return email address'
+
+    'look up subscriber email address'
+    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
+                                      phDbInfo['user'],phDbInfo['password']))
+    _, email = phdb.selectDistinct('subscriber', ['email'], 
+                                      'subscriberId = '+str(subscriberId))
+    email = singleStrip(email)[0]
+    
+    phdb.close()
+    
+    return email
+    
     
 if __name__ == '__main__':
 

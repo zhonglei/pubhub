@@ -8,17 +8,20 @@ Created on Apr 25, 2014
 '''
 
 import MySQLdb
-import logging
 from logging import warning, debug
 import pprint
 import time
-from phInfo import BiologyResearchInfo, TestSubscriberInfo
+
+from phInfo import BiologyResearchInfo
+# from phInfo import TestSubscriberInfo
 from phTools import replaceKeyValuePair
+
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
 '''
+# import logging
 # logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
 #                     level=logging.DEBUG)
 
@@ -316,13 +319,13 @@ class PhDatabase(Database):
             return self.conn._execute(query)
         return -1 
 
-    def preloadTableSubscriberAndInterestWithSample(self):
-        
-        ldSubscriber = TestSubscriberInfo.getLdSubscriber()
-        ldInterest = TestSubscriberInfo.getLdInterest()
-        self.insertMany('subscriber', ldSubscriber)        
-        replaceKeyValuePair(self,ldInterest,'subscriber','email','subscriberId')
-        self.insertMany('interest', ldInterest)
+#     def preloadTableSubscriberAndInterestWithSample(self):
+#         
+#         ldSubscriber = TestSubscriberInfo.getLdSubscriber()
+#         ldInterest = TestSubscriberInfo.getLdInterest()
+#         self.insertMany('subscriber', ldSubscriber)        
+#         replaceKeyValuePair(self,ldInterest,'subscriber','email','subscriberId')
+#         self.insertMany('interest', ldInterest)
 
     def createTableArticle(self):
         query='''CREATE TABLE article(

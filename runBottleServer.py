@@ -6,22 +6,20 @@ Created on Apr 30, 2014
 
 @author: zhil2
 '''
-import MySQLdb
+
 from bottle import route, run, request, static_file, redirect, template
 #from bottle import response, get, post
-from phDatabaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
-from phInfo import phDbInfo
-from phTools import singleStrip
-import logging
 from logging import debug
-import time
 import sys
-from phController import getListArticlePage
+
+from phController import getListArticlePage, \
+                         recordSubscriberArticle, signUpSubscriber
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
 '''
+# import logging
 # logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
 #                     level=logging.DEBUG)
 
@@ -53,7 +51,7 @@ def showListArticle():
     return output
 
 @route('/redirect') #/redirect?subscriberId=1&articleId=2&redirectUrl=http://www.google.com
-def recordSubscriberArticleAndredirect():
+def recordSubscriberArticleAndRedirect():
     subscriberId = request.query.subscriberId
     articleId = request.query.articleId
     redirectUrl = request.query.redirectUrl
@@ -62,28 +60,10 @@ def recordSubscriberArticleAndredirect():
     headerFields = request.headers.keys()
     for field in headerFields:
         header += str(field) + " | " + str(request.get_header(field)) + " || "
-
     debug(header)
     
-    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
-                                      phDbInfo['user'],phDbInfo['password']))
-    'record'
-    _, s_aId = phdb.selectDistinct('subscriber_article',['subscriber_articleId'],
-                                 'subscriberId = %s AND articleId = %s' %
-                                 (subscriberId, articleId))
-    
-    s_aId = singleStrip(s_aId)[0] # need double strip
-    
-    s_aEventDict={}
-    s_aEventDict['subscriber_articleId'] = s_aId
-    s_aEventDict['timestamp'] = constructMysqlDatetimeStr(time.time())
-    s_aEventDict['category'] = 4 #extlinkClicked
-    s_aEventDict['status'] = 1 #yes
-    s_aEventDict['requestHeader'] = header
-    phdb.insertOne('subscriber_articleEvent',s_aEventDict)
-
-    phdb.close()
-    
+    recordSubscriberArticle(subscriberId, articleId, header)
+        
     redirect(redirectUrl)
     
 @route('/signup')
@@ -101,69 +81,9 @@ def do_signup():
     lastName = request.forms.get('lastName') or ""
     areaId = request.forms.get('areaId')
     keywords = request.forms.get('keywords')
+    keywords = keywords.split('\r\n')
     
-    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
-                                      phDbInfo['user'],phDbInfo['password']))
-    
-    '====insert subscriber===='
-    s={}
-    s['subscriberId'] = None # prepare for return
-    s['firstName'] = firstName
-    s['lastName'] = lastName
-    s['email'] = email
-    try:
-        subscriberId = phdb.insertOneReturnLastInsertId('subscriber',s)
-    except MySQLdb.IntegrityError:
-        subscriberId = -2 #FIXME: very ad hoc subscriberId is +ve if successful
-        
-    '====insert interest===='
-    if subscriberId > 0: #subscriber inserted without error
-        si=[]
-        _, areaName = phdb.selectDistinct('area',['areaName'],'areaId = '+areaId)
-        areaName = singleStrip(areaName)[0] #double strip
-        '==area=='
-        a={}
-        a['subscriberId'] = subscriberId
-        a['category'] = '1' # area. FIXME: can do better
-        a['phrase'] = areaName
-        si.append(a)
-        '==generalJournl=='
-        _, listGeneralJournalTitle = phdb.fetchall('''
-        SELECT DISTINCT journal.journalTitle FROM journal
-        LEFT JOIN journal_area ON journal.journalId = journal_area.journalId
-        WHERE journal_area.areaId = %s AND journal.isGeneral = 1
-        ''' % areaId)
-        listGeneralJournalTitle = singleStrip(listGeneralJournalTitle)
-        for journalTitle in listGeneralJournalTitle:
-            j={}
-            j['subscriberId'] = subscriberId
-            j['category'] = '2' #general journal. FIXME: can do better
-            j['phrase'] = journalTitle
-            si.append(j)
-        '==expertJournal=='
-        _, listExpertJournalTitle = phdb.fetchall('''
-        SELECT DISTINCT journal.journalTitle FROM journal
-        LEFT JOIN journal_area ON journal.journalId = journal_area.journalId
-        WHERE journal_area.areaId = %s AND journal.isGeneral = 0
-        ''' % areaId)
-        listExpertJournalTitle = singleStrip(listExpertJournalTitle)
-        for journalTitle in listExpertJournalTitle:
-            j={}
-            j['subscriberId'] = subscriberId
-            j['category'] = '3' #expert journal. FIXME: can do better
-            j['phrase'] = journalTitle
-            si.append(j)
-        '==keyword=='
-        for keyword in keywords.split('\r\n'):
-            k={}
-            k['subscriberId'] = subscriberId
-            k['category'] = '4' #keyword. FIXME: can do better
-            k['phrase'] = keyword
-            si.append(k)
-    
-        phdb.insertMany('interest',si)
- 
-    phdb.close()
+    subscriberId = signUpSubscriber(email, firstName, lastName, areaId, keywords)
      
     '====return===='
     if subscriberId == -1:

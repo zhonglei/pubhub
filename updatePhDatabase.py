@@ -8,17 +8,15 @@ Created on May 2, 2014
 '''
 
 import time
-from phController import queryPubmedAndStoreResults
-from phDatabaseApi import PhDatabase, MysqlConnection
-from phInfo import phDbInfo
-import logging
-from logging import info
 import sys
+
+from phController import queryPubmedAndStoreResults
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
 '''
+# import logging
 # logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
 #                     level=logging.DEBUG)
 
@@ -38,10 +36,12 @@ if __name__ == '__main__':
     '================================'
 
     print 'query Pubmed and store results...'
-    pubmedQueryInterval = 28 * 24 * 3600 # 7 days in seconds 
-    lastQueryTime = time.time() - pubmedQueryInterval
+    now = time.time()
+    pubmedQueryInterval = 11 * 24 * 3600 # 7 days in seconds     
+    queryStartTime = now - pubmedQueryInterval
+    queryEndTime = now
     
-    queryPubmedAndStoreResults(lastQueryTime)
+    queryPubmedAndStoreResults(queryStartTime, queryEndTime)
     
     '================================'
     'Query Pubmed and store results'

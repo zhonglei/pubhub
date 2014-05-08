@@ -7,14 +7,13 @@ Created on May 3, 2014
 @author: zhil2
 '''
 
+import sys
 import smtplib
-from phInfo import emailInfo, phDbInfo
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from phController import getListArticlePage
-from phDatabaseApi import PhDatabase, MysqlConnection
-from phTools import singleStrip
-import sys
+
+from phInfo import emailInfo
+from phController import getListArticlePage, getSubscriberEmail
 
 def sendTestMail():
     
@@ -46,13 +45,7 @@ def sendListArticleToSubscriber(subscriberId, sinceDaysAgo = 7):
     
     sender = emailInfo['mainEmail']
 
-    'look up subscriber email address'
-    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
-                                      phDbInfo['user'],phDbInfo['password']))
-    _, receiver = phdb.selectDistinct('subscriber', ['email'], 
-                                      'subscriberId = '+str(subscriberId))
-    receiver = singleStrip(receiver)[0]
-    phdb.close()
+    receiver = getSubscriberEmail(subscriberId)
     
     'Create message container - the correct MIME type is multipart/alternative'
     msg = MIMEMultipart('alternative')
@@ -87,7 +80,6 @@ def sendListArticleToSubscriber(subscriberId, sinceDaysAgo = 7):
     'close server'
     emailServer.quit()
     
-
 if __name__ == '__main__':
     
     import doctest
@@ -101,7 +93,7 @@ if __name__ == '__main__':
 
     #sendTestMail()
     
-    subscriberId = 8 # henrylee18@yahoo.com
+    subscriberId = 2
     sendListArticleToSubscriber(subscriberId) 
     
     print 'Done.'

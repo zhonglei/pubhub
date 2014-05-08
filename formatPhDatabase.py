@@ -1,5 +1,4 @@
 '''
-
 Formatting Pubhub database.
 
 Created on May 2, 2014
@@ -7,13 +6,11 @@ Created on May 2, 2014
 @author: zhil2
 '''
 
-import time
-from phController import queryPubmedAndStoreResults
-from phDatabaseApi import PhDatabase, MysqlConnection
-from phInfo import phDbInfo
-import logging
-from logging import info
 import sys
+
+from phInfo import phDbInfo
+from phDatabaseApi import PhDatabase, MysqlConnection
+from phController import signUpSubscriber
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
@@ -42,7 +39,7 @@ if __name__ == '__main__':
                     line = sys.stdin.readline()
                     if line == 'Yes\n':
                         formatFlag = True
-                        continue                
+                        continue   
                 sys.exit()
 
     '================================'
@@ -52,7 +49,17 @@ if __name__ == '__main__':
         print 'proceed to format database...'
         phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
                                     phDbInfo['user'],phDbInfo['password']))
+        
         phdb.formatDatabase()
+
+        'Preload two subscribers: Artandi and Change lab'
+        signUpSubscriber('zhonglei@stanford.edu', '', 'ArtandiLab', '5', 
+                         ['telomerase','telomere'])
+        signUpSubscriber('leeoz@stanford.edu', '', 'ChangLab', '5', 
+                         ['noncoding RNA','lncRNA','chromatin'])
+        
         phdb.close()
+    else:
+        print '\nDid not execute formatting database.'             
             
     print '\nDone.'
