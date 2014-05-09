@@ -11,35 +11,10 @@ import sys
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import time
 
 from phInfo import emailInfo
 from phController import getListArticlePage, getSubscriberEmail
-
-# def sendTestMail():
-#     
-#     'open server'
-#     emailServer = smtplib.SMTP(emailInfo['server'], emailInfo['port'])
-#     emailServer.starttls()
-#     emailServer.login(emailInfo['user'], emailInfo['password'])
-#     
-#     'create message'
-#     sender = emailInfo['mainEmail']
-# #     receivers = ['henrylee18@yahoo.com', 'franklin.zhong@gmail.com', 'wanghugigi@gmail.com']
-#     receivers = ['henrylee18@yahoo.com']
-#     subject = 'Test #11'
-#     header = 'To: '
-#     for receiver in receivers[:-1]:
-#         header += receiver + ', '
-#     header += receivers[-1]
-#     header += '\n' + 'From: ' + sender + '\n' + 'Subject: ' + subject + '\n'
-#     body = 'This is a test message from ' + sender + '.\n\n'
-#     message = header + '\n' + body
-#     
-#     'send email'
-#     emailServer.sendmail(sender, receivers, message)
-#     
-#     'close server'
-#     emailServer.quit()
     
 def sendListArticleToSubscriber(subscriberId, sinceDaysAgo = 7):
     
@@ -55,7 +30,11 @@ def sendListArticleToSubscriber(subscriberId, sinceDaysAgo = 7):
     
     'create message body'
     text = 'Plain text to be added.'
-    html = getListArticlePage(subscriberId, sinceDaysAgo, displayType = 'email')
+
+    now = time.time()
+    startTime = now - sinceDaysAgo * 24 * 3600
+    endTime = now    
+    html = getListArticlePage(subscriberId, startTime, endTime, displayType = 'email')
 
     'record the MIME types of both parts - text/plain and text/html'
     part1 = MIMEText(text.encode('utf8'), 'plain')
@@ -93,8 +72,9 @@ if __name__ == '__main__':
 
     #sendTestMail()
     
-    subscriberId = 2
-    sendListArticleToSubscriber(subscriberId) 
+    subscriberId = 3
+    sinceDaysAgo = 2
+    sendListArticleToSubscriber(subscriberId, sinceDaysAgo) 
     
     print 'Done.'
     

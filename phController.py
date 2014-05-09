@@ -16,7 +16,7 @@ import pprint
 import time
 
 from phTools import singleStrip, replaceKeyValuePair
-from phInfo import phDbInfo, webServerInfo, pubmedBacktrackSecondForNewSubscriber
+from phInfo import phDbInfo, webServerInfo
 from pubmedApi import PubmedApi
 from phDatabaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
 
@@ -184,6 +184,17 @@ def queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberIdIn = No
     '''
     If subscriberIdIn is not specified, query for all subscribers in database;
     otherwise, query for that specific subscriber only.
+    
+    Example:
+    >>> from phInfo import testDbInfo
+    >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
+    >>> phdb.formatDatabase()
+    >>> subscriberId = signUpSubscriber('lizhi1981@gmail.com', 'Zhi', 'Li', '1', ['DNA sequencing'])
+    >>> queryPubmedAndStoreResults(1399664864 - 2 * 24 * 3600, 1399664864, subscriberId)
+    >>> _, res = phdb.selectDistinct('article',['articleId'])
+    >>> print res
+    >>>
+    >>> phdb.close()
     '''    
 
     timeStr = constructPubmedTimeStr(queryStartTime, queryEndTime)
@@ -269,29 +280,37 @@ def queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberIdIn = No
     subscriber, also update the record in phDatabaseUpdateEvent'''
     if subscriberIdIn is None:
         d = {}
-        d['timestamp'] = constructMysqlDatetimeStr(time.time())
+        now = time.time()
+        d['timestamp'] = constructMysqlDatetimeStr(now)
         phdb.insertOne('phDatabaseUpdateEvent',d)    
         
     'close pubhub database'
     phdb.close()
     
-def getListArticlePage(subscriberId, sinceDaysAgo, displayType = 'web'):
+def getListArticlePage(subscriberId, startTime, endTime, displayType = 'web'):
+    '''
+    Note: startTime and endTime are both in epoch time.
+    '''
+    startTime = constructMysqlDatetimeStr(startTime)
+    endTime = constructMysqlDatetimeStr(endTime)
     
     phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
                                       phDbInfo['user'],phDbInfo['password']))
     
     'FIXME: 4 tables join!'
     queryStartTime=time.time()
-    _, res = phdb.fetchall('''SELECT DISTINCT article.articleId, ArticleTitle, 
-    JournalISOAbbreviation, DateCreated, firstAuthor.authorId, 
-    firstAuthor.initials, firstAuthor.lastName, firstAuthor.affiliation, 
-    lastAuthor.authorId, lastAuthor.lastName, lastAuthor.affiliation, DoiId, PMID 
+    _, res = phdb.fetchall(u'''SELECT DISTINCT article.articleId, ArticleTitle, 
+    JournalISOAbbreviation, DateCreated, firstAuthor.authorId, firstAuthor.initials, 
+    firstAuthor.lastName, firstAuthor.affiliation, lastAuthor.authorId, 
+    lastAuthor.lastName, lastAuthor.affiliation, DoiId, PMID 
     FROM article 
     LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
     LEFT JOIN firstAuthor ON article.articleId = firstAuthor.articleId 
     LEFT JOIN lastAuthor ON article.articleId = lastAuthor.articleId 
-    WHERE subscriber_article.subscriberId = %s AND DATE_SUB(NOW(), Interval %d day) 
-    < article.DateCreated;''' % (subscriberId,sinceDaysAgo))
+    WHERE subscriber_article.subscriberId = %s 
+    AND article.DateCreated > '%s' 
+    AND article.DateCreated < '%s'
+    ;''' % (subscriberId, startTime, endTime))
     timeElapsed = time.time()-queryStartTime
     if timeElapsed > 0.1:
         warning("showListArticle 4 tables join takes %.2f sec!" % timeElapsed)
@@ -423,13 +442,7 @@ def signUpSubscriber(email, firstName, lastName, areaId, keywords):
             si.append(k)
     
         phdb.insertMany('interest',si)
-        
-        '====query Pubmed for new subscriber===='
-        now = time.time()
-        queryStartTime = now - pubmedBacktrackSecondForNewSubscriber
-        queryEndTime = now
-        queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberId)
- 
+         
     phdb.close()
     
     return subscriberId
@@ -452,10 +465,9 @@ def getLastPhDatabaseUpdateTime():
     'Return last Pubhub database time.'
     phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
                                       phDbInfo['user'],phDbInfo['password']))
-    _, lastTime = phdb.fetchall('''SELECT UNIX_TIMESTAMP(timestamp) FROM phDatabaseUpdateEvent
-                                ORDER BY timestamp DESC 
-                                LIMIT 1
-                                ''')
+    _, lastTime = phdb.fetchall('''SELECT UNIX_TIMESTAMP(timestamp) 
+                                   FROM phDatabaseUpdateEvent
+                                   ORDER BY timestamp DESC LIMIT 1''')
     if not lastTime:
         lastTime = None # No records
     else:

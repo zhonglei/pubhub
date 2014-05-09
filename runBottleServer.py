@@ -11,9 +11,11 @@ from bottle import route, run, request, static_file, redirect, template
 #from bottle import response, get, post
 from logging import debug
 import sys
+import time
 
-from phController import getListArticlePage, \
-                         recordSubscriberArticle, signUpSubscriber
+from phInfo import pubmedBacktrackSecondForNewSubscriber
+from phController import getListArticlePage, recordSubscriberArticle, \
+                         signUpSubscriber, queryPubmedAndStoreResults
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
@@ -46,8 +48,12 @@ def serverStaticJasny(filepath):
 @route('/listArticle')      #/listArticle?subscriberId=1&sinceDaysAgo=10
 def showListArticle():
     subscriberId = request.query.subscriberId or ''
-    sinceDaysAgo = request.query.sinceDaysAgo or '7'    
-    output = getListArticlePage(subscriberId, int(sinceDaysAgo))
+    sinceDaysAgo = request.query.sinceDaysAgo or '7'
+    sinceDaysAgo = int(sinceDaysAgo)
+    now = time.time()
+    startTime = now - sinceDaysAgo * 24 * 3600
+    endTime = now
+    output = getListArticlePage(subscriberId, startTime, endTime)
     return output
 
 @route('/redirect') #/redirect?subscriberId=1&articleId=2&redirectUrl=http://www.google.com
@@ -83,7 +89,14 @@ def do_signup():
     keywords = request.forms.get('keywords')
     keywords = keywords.split('\r\n')
     
+    '====sign up===='
     subscriberId = signUpSubscriber(email, firstName, lastName, areaId, keywords)
+
+    '====query Pubmed for new subscriber===='
+    now = time.time()
+    queryStartTime = now - pubmedBacktrackSecondForNewSubscriber
+    queryEndTime = now
+    queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberId)
      
     '====return===='
     if subscriberId == -1:
@@ -106,7 +119,17 @@ def subscribe():
     areaId = request.query.areaId
     keywords = request.query.keywords
     keywords = keywords.split('\r\n')
+    
+    '====sign up===='
     subscriberId = signUpSubscriber(email, firstName, lastName, areaId, keywords)
+
+    '====query Pubmed for new subscriber===='
+    now = time.time()
+    queryStartTime = now - pubmedBacktrackSecondForNewSubscriber
+    queryEndTime = now
+    queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberId)
+
+    '====return===='
     if subscriberId == -1:
         retMsg = "<h1>Subscription fails for unknown reason.</h1>"
     elif subscriberId == -2:
@@ -129,9 +152,6 @@ def changlab():
 
 if __name__ == '__main__':
 
-    import doctest
-    print doctest.testmod()
-    
     'if with argument --doctest-only, skip the rest'
     if len(sys.argv) > 1:
         for a in sys.argv[1:]: 

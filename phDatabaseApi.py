@@ -11,11 +11,11 @@ import MySQLdb
 from logging import warning, debug
 import pprint
 import time
+import datetime
 
 from phInfo import BiologyResearchInfo
 # from phInfo import TestSubscriberInfo
 from phTools import replaceKeyValuePair
-
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
@@ -158,14 +158,14 @@ class Database(object):
                 
 class PhDatabase(Database):
 
-    def formatDatabase(self):
+    def _formatDatabase(self):
         '''
         Format database by cleaning data. Use with caution!!
         
         Example:
         >>> from phInfo import testDbInfo
         >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
-        >>> phdb.formatDatabase()
+        >>> phdb._formatDatabase()
         >>> phdb.close()
         '''
         if self.conn:
@@ -379,7 +379,7 @@ class PhDatabase(Database):
                 AuthorOrderReversed SMALLINT NOT NULL,
                 PRIMARY KEY (authorId),
                 FOREIGN KEY (articleId) REFERENCES article(articleId),
-                CONSTRAINT uc_author_article UNIQUE (articleId,ForeName,LastName)
+                CONSTRAINT uc_article_order UNIQUE (articleId, AuthorOrder)
                 );
         '''
         debug('query:\n'+query)
@@ -471,7 +471,7 @@ class PhDatabase(Database):
         Example:
         >>> from phInfo import testDbInfo
         >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
-        >>> phdb.formatDatabase()
+        >>> phdb._formatDatabase()
         >>> dSubscriber1 = {'subscriberId':None,'firstName':'Russ', 'lastName':'Li', 'email':'iamjingxian@gmail.com'}
         >>> phdb.insertOneReturnLastInsertId('subscriber',dSubscriber1)
         1L
@@ -618,9 +618,9 @@ class PhDatabase(Database):
         
         return (ret, res)
     
-    def fetchall(self,query):
+    def fetchall(self,query,fields=None):
         debug('query:\n'+query)
-        ret, res = self.conn._fetchall(query)
+        ret, res = self.conn._fetchall(query,fields=None)
         debug('fetched result:\n'+ pprint.pformat(res))        
         return (ret, res)
         
@@ -630,8 +630,9 @@ def constructMysqlDatetimeStr(t):
     >>> constructMysqlDatetimeStr(1398036175.4)
     '2014-04-20 23:22:55'
     '''
+    
     return time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(t))
-
+    #return datetime.datetime.utcfromtimestamp(t)
         
                         
 if __name__ == '__main__':

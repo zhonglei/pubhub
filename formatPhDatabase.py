@@ -7,10 +7,12 @@ Created on May 2, 2014
 '''
 
 import sys
+import time
 
 from phInfo import phDbInfo
 from phDatabaseApi import PhDatabase, MysqlConnection
-from phController import signUpSubscriber
+from phController import signUpSubscriber, queryPubmedAndStoreResults
+from phInfo import pubmedBacktrackSecondForNewSubscriber
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
@@ -25,7 +27,7 @@ if __name__ == '__main__':
     print doctest.testmod()
     
     'if with argument --doctest-only, skip the rest'
-    'if with argument --format-database, also call formatDatabase'
+    'if with argument --format-database, also call _formatDatabase'
     formatFlag = False
     if len(sys.argv) > 1:
         for a in sys.argv[1:]:
@@ -50,15 +52,25 @@ if __name__ == '__main__':
         phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
                                     phDbInfo['user'],phDbInfo['password']))
         
-        phdb.formatDatabase()
+        phdb._formatDatabase()
 
-        'Preload two subscribers: Artandi and Change lab'
-        signUpSubscriber('zhonglei@stanford.edu', '', 'ArtandiLab', '5', 
+        now = time.time()
+        queryStartTime = now - pubmedBacktrackSecondForNewSubscriber
+        queryEndTime = now
+
+        'Preload subscribers and query Pubmed'
+        subscriberId = signUpSubscriber('zhonglei@stanford.edu', '', 'ArtandiLab', '5', 
                          ['telomerase','telomere'])
-        signUpSubscriber('leeoz@stanford.edu', '', 'ChangLab', '5', 
+        queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberId)
+        
+        subscriberId = signUpSubscriber('leeoz@stanford.edu', '', 'ChangLab', '5', 
                          ['noncoding RNA','lncRNA','chromatin'])
-        signUpSubscriber('lizhi1981@gmail.com', 'Zhi', 'Li', '1', 
+        queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberId)
+        
+        subscriberId = signUpSubscriber('lizhi1981@gmail.com', 'Zhi', 'Li', '1', 
                          ['DNA sequencing'])
+        queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberId)
+
         
         phdb.close()
     else:
