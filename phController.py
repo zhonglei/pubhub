@@ -16,7 +16,7 @@ import pprint
 import time
 
 from phTools import singleStrip, replaceKeyValuePair
-from phInfo import phDbInfo, webServerInfo
+from phInfo import phDbInfo, webServerInfo, pubmedBacktrackSecondForNewSubscriber
 from pubmedApi import PubmedApi
 from phDatabaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
 
@@ -28,10 +28,14 @@ level DEBUG, INFO
 # logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
 #                     level=logging.DEBUG)
 
-def constructPubmedQueryList(phdb):
+def constructPubmedQueryList(phdb, subscriberIdIn = None):
     '''
     Return a list of Pubmed queries and their corresponding subscriberIds 
     based on information in the interest table of database phdb.
+    
+    If subscriberIdIn is not provided, construct a list for all subscribers;
+    otherwise, the list is only for the subscriber specified.
+    
     Rules to construct the list:
     1) All categorized as general_journal (category = 2) should be queried 
     with no specific keyword. e.g. Nature[Journal]
@@ -89,13 +93,21 @@ def constructPubmedQueryList(phdb):
     0
     >>> constructPubmedQueryList(phdb)
     [(u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Cell"[Journal])', [1L]), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Nature"[Journal])', [1L, 2L]), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Science"[Journal])', [1L, 2L]), (u'(telomerase and cancer biology) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L]), (u'(telomere and DNA replication) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L]), (u'(noncoding RNA) AND ("Nature"[Journal] OR "Science"[Journal] OR "Immunity"[Journal] OR "Journal of Immunology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [2L])]
+    >>> constructPubmedQueryList(phdb, 1L)
+    [(u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Cell"[Journal])', [1L]), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Nature"[Journal])', [1L]), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Science"[Journal])', [1L]), (u'(telomerase and cancer biology) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L]), (u'(telomere and DNA replication) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L])]
     >>> phdb.close()
     '''
     
     listQuery=[]
     
-    _, generalJournals = phdb.selectDistinct('interest', ['phrase',], 
+    if subscriberIdIn is None:
+        _, generalJournals = phdb.selectDistinct('interest', ['phrase',], 
                                              'category = 2') #generalJournal
+    else:
+        _, generalJournals = phdb.selectDistinct('interest', ['phrase',], 
+                                             'category = 2 and subscriberId = '
+                                             + str(subscriberIdIn))
+        
     generalJournals = singleStrip(generalJournals)    
         
     for j in generalJournals:
@@ -107,9 +119,12 @@ def constructPubmedQueryList(phdb):
         
         query += r'("%s"[Journal])' % j
         
-        _, subscribers = phdb.selectDistinct('interest',['subscriberId',], 
-                                             "phrase = '%s'" % j)
-        subscribers = singleStrip(subscribers)
+        if subscriberIdIn is None:
+            _, subscribers = phdb.selectDistinct('interest',['subscriberId',], 
+                                                 "phrase = '%s'" % j)
+            subscribers = singleStrip(subscribers)
+        else:
+            subscribers = [subscriberIdIn,]
         
         debug('query: '+query)
         debug('subscribers: '+str(subscribers))
@@ -117,9 +132,12 @@ def constructPubmedQueryList(phdb):
         listQuery.append((query, subscribers))
         
     'FIXME: can have less number of db queries'
-    
-    _, subscriberIds = phdb.selectDistinct('interest', ['subscriberId',])
-    subscriberIds = singleStrip(subscriberIds)    
+
+    if subscriberIdIn is None:    
+        _, subscriberIds = phdb.selectDistinct('interest', ['subscriberId',])
+        subscriberIds = singleStrip(subscriberIds)    
+    else:
+        subscriberIds = [subscriberIdIn,]
        
     for i in subscriberIds:
         
@@ -162,14 +180,19 @@ def constructPubmedTimeStr(startTime, endTime):
     endT = time.strftime('%Y/%m/%d[PDAT]', time.gmtime(endTime))
     return '(' + startT + ' : ' + endT + ')'
 
-def queryPubmedAndStoreResults(queryStartTime, queryEndTime):
+def queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberIdIn = None):
+    '''
+    If subscriberIdIn is not specified, query for all subscribers in database;
+    otherwise, query for that specific subscriber only.
+    '''    
 
     timeStr = constructPubmedTimeStr(queryStartTime, queryEndTime)
 
     'connect pubhub database'
     phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],phDbInfo['user'],phDbInfo['password']))    
     
-    res = constructPubmedQueryList(phdb)
+    res = constructPubmedQueryList(phdb, subscriberIdIn)
+    
     for queryStr, listSubscriber in res:
         
         'add time constraint'
@@ -230,7 +253,7 @@ def queryPubmedAndStoreResults(queryStartTime, queryEndTime):
                 try:
                     phdb.insertOne('subscriber_articleEvent', dSubscriber_articleEvent)
                 except MySQLdb.IntegrityError:
-                    pass
+                    continue
 
         'record author'
         #ldAuthorForArticle = [l for l in ldAuthor if l['PMID']==dArticle['PMID']]
@@ -241,6 +264,13 @@ def queryPubmedAndStoreResults(queryStartTime, queryEndTime):
             phdb.insertMany('author', ldAuthor)
         except MySQLdb.IntegrityError:
             pass
+        
+    '''lastly, if the operation for all subscribers instead of any individual
+    subscriber, also update the record in phDatabaseUpdateEvent'''
+    if subscriberIdIn is None:
+        d = {}
+        d['timestamp'] = constructMysqlDatetimeStr(time.time())
+        phdb.insertOne('phDatabaseUpdateEvent',d)    
         
     'close pubhub database'
     phdb.close()
@@ -393,6 +423,12 @@ def signUpSubscriber(email, firstName, lastName, areaId, keywords):
             si.append(k)
     
         phdb.insertMany('interest',si)
+        
+        '====query Pubmed for new subscriber===='
+        now = time.time()
+        queryStartTime = now - pubmedBacktrackSecondForNewSubscriber
+        queryEndTime = now
+        queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberId)
  
     phdb.close()
     
@@ -411,7 +447,23 @@ def getSubscriberEmail(subscriberId):
     phdb.close()
     
     return email
-    
+
+def getLastPhDatabaseUpdateTime():
+    'Return last Pubhub database time.'
+    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
+                                      phDbInfo['user'],phDbInfo['password']))
+    _, lastTime = phdb.fetchall('''SELECT UNIX_TIMESTAMP(timestamp) FROM phDatabaseUpdateEvent
+                                ORDER BY timestamp DESC 
+                                LIMIT 1
+                                ''')
+    if not lastTime:
+        lastTime = None # No records
+    else:
+        lastTime = singleStrip(lastTime)[0]
+
+    phdb.close()
+
+    return lastTime
     
 if __name__ == '__main__':
 

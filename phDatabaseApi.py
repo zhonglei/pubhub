@@ -160,7 +160,7 @@ class PhDatabase(Database):
 
     def formatDatabase(self):
         '''
-        Format database by cleaning data. Proceed with caution!!
+        Format database by cleaning data. Use with caution!!
         
         Example:
         >>> from phInfo import testDbInfo
@@ -182,7 +182,10 @@ class PhDatabase(Database):
             self.conn._execute('DROP TABLE journal_area')
             self.conn._execute('DROP TABLE journal')
             self.conn._execute('DROP TABLE area')
+            self.conn._execute('DROP TABLE phDatabaseUpdateEvent')
              
+            self.createTablePhDatabaseUpdateEvent()
+
             self.createTableArea()
             self.preloadTableArea()
  
@@ -209,6 +212,18 @@ class PhDatabase(Database):
     '==============create table begins==================='
     '===================================================='
             
+    def createTablePhDatabaseUpdateEvent(self):
+        query='''CREATE TABLE phDatabaseUpdateEvent(
+                updateEventId INT NOT NULL AUTO_INCREMENT,
+                timestamp DATETIME NOT NULL,
+                PRIMARY KEY (updateEventId)
+                );
+        '''
+        debug('query:\n'+query)
+        if self.conn:
+            return self.conn._execute(query)
+        return -1
+
     def createTableArea(self):
         query='''CREATE TABLE area(
             areaId TINYINT NOT NULL,
@@ -221,8 +236,7 @@ class PhDatabase(Database):
         if self.conn:
             return self.conn._execute(query)
         return -1
-    
-    
+        
     def preloadTableArea(self):
         preload=[]
         listArea = BiologyResearchInfo.getListArea()
@@ -464,7 +478,7 @@ class PhDatabase(Database):
         2L
         >>> phdb.close()
         '''
-        ret = self.insertMany(tableName,[d,])
+        ret = self.insertOne(tableName,d)
         if ret != 0:
             return -1
         ret, res = self.conn._fetchall("SELECT LAST_INSERT_ID()")
@@ -473,7 +487,42 @@ class PhDatabase(Database):
         return res[0][0]
     
     def insertOne(self,tableName,d):
-        return self.insertMany(tableName,[d,])
+        nSuccessful = 0
+        
+        query = 'INSERT INTO ' + tableName + ' ('
+        for k in d.keys()[:-1]:
+            query += k + ', '
+        query += d.keys()[-1]
+        query += ') VALUES ('
+        for k in d.keys()[:-1]:
+            query += '%s' + ', '
+        query += '%s'
+        query += ')'
+        
+        fields = tuple(d.values())
+
+        debug('query:\n'+query)
+        debug('fields:\n'+str(fields))
+        
+        if self.conn:
+            ret = self.conn._execute(query,fields)
+            if ret == 0:
+                nSuccessful += 1
+
+        r = self.conn._commit()
+        if r == 0:
+            if nSuccessful == 1:
+                debug('%d of %d records inserted into %s successfully.' \
+                              % (nSuccessful, 1, tableName))
+                return 0
+            else: 
+                warning('%d of %d inserted into %s successfully.' \
+                              % (nSuccessful, 1, tableName))
+                return 1
+        else:
+            warning('insertOne commit failed.')
+            return 2
+    
     
     def insertMany(self,tableName,listDict):
         '''
@@ -521,9 +570,15 @@ class PhDatabase(Database):
             debug('fields:\n'+str(fields))
             
             if self.conn:
-                ret = self.conn._execute(query,fields)
-                if ret == 0:
-                    nSuccessful += 1
+                try:
+                    ret = self.conn._execute(query,fields)
+                except MySQLdb.IntegrityError:
+                    '''For insertMany, raised IntegrityError should not stop 
+                    program from continue running the rest of insertions'''
+                    pass 
+                else:
+                    if ret == 0:
+                        nSuccessful += 1
 
         r = self.conn._commit()
         if r == 0:
@@ -566,7 +621,6 @@ class PhDatabase(Database):
         ret, res = self.conn._fetchall(query)
         debug('fetched result:\n'+ pprint.pformat(res))        
         return (ret, res)
-        
         
 def constructMysqlDatetimeStr(t):
     '''

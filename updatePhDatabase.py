@@ -10,7 +10,8 @@ Created on May 2, 2014
 import time
 import sys
 
-from phController import queryPubmedAndStoreResults
+from phInfo import pubmedBacktrackSecondForNewSubscriber
+from phController import queryPubmedAndStoreResults, getLastPhDatabaseUpdateTime
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
@@ -36,46 +37,17 @@ if __name__ == '__main__':
     '================================'
 
     print 'query Pubmed and store results...'
+
     now = time.time()
-    pubmedQueryInterval = 11 * 24 * 3600 # 7 days in seconds     
-    queryStartTime = now - pubmedQueryInterval
+    
+    queryStartTime = getLastPhDatabaseUpdateTime()
+    
+    'In the rarest case there is no records for last PhDatabase update'
+    if queryStartTime is None: # No records, first time
+        queryStartTime = now - pubmedBacktrackSecondForNewSubscriber
+
     queryEndTime = now
     
     queryPubmedAndStoreResults(queryStartTime, queryEndTime)
-    
-    '================================'
-    'Query Pubmed and store results'
-    '================================'
-        
-# #     queryStr = '"Nature"[Journal]+AND+(2014/04/20[PDAT]+:+2014/04/26[PDAT])+AND+Journal+Article[ptyp]'
-# #     queryStr = '("Nature"[Journal])+AND+(2014/04/20[PDAT]+:+2014/04/26[PDAT])'
-#     queryStr = '("Nature"[Journal])+AND+(2014/04/21[PDAT]+:+3000/01/01[PDAT])+AND+(Journal+Article[ptyp])'
-# #     queryStr = 'Nature[Journal]+AND+(2008/11/01[PDAT]+:+2012/11/12[PDAT])'
-# #     queryStr = 'Science[Journal]+AND+(2008/11/01[PDAT]+:+2012/11/12[PDAT])'
-# #     queryStr = 'Science[Journal]+AND+(2005/07/01[PDAT]+:+2010/07/12[PDAT])'
-# #     queryStr = 'Cell[Journal]+AND+(2008/07/01[PDAT]+:+2010/07/12[PDAT])'
-# #     queryStr = 'Nature[Journal]+AND+(2012/07/01[PDAT]+:+2012/07/12[PDAT])'
-# #     queryStr = 'Molecular+Cell[Journal]+AND+(2010/05/01[PDAT]+:+2010/07/12[PDAT])'
-# #     queryStr = 'Molecular+and+cellular+biology[Journal]+AND+(2010/05/01[PDAT]+:+2011/07/12[PDAT])'
-# #     queryStr = '(telomere+and+DNA+replication)+AND+(2010/05/01[PDAT]+:+2011/07/12[PDAT])'
-#            
-#     'query pubmed'
-#     pa = PubmedApi()
-#     ldArticle, ldAuthor = pa.query(queryStr, 5)
-#    
-#     'connect pubhub database'
-#     phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
-#                                      phDbInfo['user'],phDbInfo['password']))    
-#     
-#     'record article'
-#     phdb.insertMany('article', ldArticle)
-#    
-#     'record author'
-#     #Need to look up articleId in article, replace key PMID with articleID
-#     replaceKeyValuePair(phdb, ldAuthor, 'article', 'PMID', 'articleId')
-#     phdb.insertMany('author', ldAuthor)
-#    
-#     'close pubhub database'
-#     phdb.close()
 
     print '\nDone.'

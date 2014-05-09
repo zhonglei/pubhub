@@ -18,6 +18,10 @@ emailInfo = {'server':'smtp.gmail.com', 'port':587, 'user':'pubhub2@gmail.com',
            'password':'lymanDelmedio123', 'mainEmail':'scooply@scooply.info',
            }
 
+'''when a new subscriber joins, how many seconds in Pubmed history we backtrack
+to get his article records'''
+pubmedBacktrackSecondForNewSubscriber = 7 * 24 * 3600
+
 # class TestSubscriberInfo(object):
 #     
 #     @staticmethod
