@@ -15,31 +15,31 @@ from email.mime.text import MIMEText
 from phInfo import emailInfo
 from phController import getListArticlePage, getSubscriberEmail
 
-def sendTestMail():
-    
-    'open server'
-    emailServer = smtplib.SMTP(emailInfo['server'], emailInfo['port'])
-    emailServer.starttls()
-    emailServer.login(emailInfo['user'], emailInfo['password'])
-    
-    'create message'
-    sender = emailInfo['mainEmail']
-#     receivers = ['henrylee18@yahoo.com', 'franklin.zhong@gmail.com', 'wanghugigi@gmail.com']
-    receivers = ['henrylee18@yahoo.com']
-    subject = 'Test #11'
-    header = 'To: '
-    for receiver in receivers[:-1]:
-        header += receiver + ', '
-    header += receivers[-1]
-    header += '\n' + 'From: ' + sender + '\n' + 'Subject: ' + subject + '\n'
-    body = 'This is a test message from ' + sender + '.\n\n'
-    message = header + '\n' + body
-    
-    'send email'
-    emailServer.sendmail(sender, receivers, message)
-    
-    'close server'
-    emailServer.quit()
+# def sendTestMail():
+#     
+#     'open server'
+#     emailServer = smtplib.SMTP(emailInfo['server'], emailInfo['port'])
+#     emailServer.starttls()
+#     emailServer.login(emailInfo['user'], emailInfo['password'])
+#     
+#     'create message'
+#     sender = emailInfo['mainEmail']
+# #     receivers = ['henrylee18@yahoo.com', 'franklin.zhong@gmail.com', 'wanghugigi@gmail.com']
+#     receivers = ['henrylee18@yahoo.com']
+#     subject = 'Test #11'
+#     header = 'To: '
+#     for receiver in receivers[:-1]:
+#         header += receiver + ', '
+#     header += receivers[-1]
+#     header += '\n' + 'From: ' + sender + '\n' + 'Subject: ' + subject + '\n'
+#     body = 'This is a test message from ' + sender + '.\n\n'
+#     message = header + '\n' + body
+#     
+#     'send email'
+#     emailServer.sendmail(sender, receivers, message)
+#     
+#     'close server'
+#     emailServer.quit()
     
 def sendListArticleToSubscriber(subscriberId, sinceDaysAgo = 7):
     

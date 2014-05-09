@@ -45,9 +45,9 @@ def serverStaticJasny(filepath):
 
 @route('/listArticle')      #/listArticle?subscriberId=1&sinceDaysAgo=10
 def showListArticle():
-    subscriberId = request.query.subscriberId
-    sinceDaysAgo = int(request.query.sinceDaysAgo) or 7    
-    output = getListArticlePage(subscriberId, sinceDaysAgo)
+    subscriberId = request.query.subscriberId or ''
+    sinceDaysAgo = request.query.sinceDaysAgo or '7'    
+    output = getListArticlePage(subscriberId, int(sinceDaysAgo))
     return output
 
 @route('/redirect') #/redirect?subscriberId=1&articleId=2&redirectUrl=http://www.google.com
@@ -95,14 +95,25 @@ def do_signup():
         retMsg = "<h1>Congrats! You've signed up to Scoooply.</h1>"
     
     return retMsg
-#     return ("<h3>Email: " + email + "</h3>"
-#             #+ "<h3>Password: " + password + "</h3>"
-#             #+ "<h3>Confirm password: "+ passwordAgain + "</h3>"
-#             + "<h3>First Name: "+ firstName + "</h3>"
-#             + "<h3>Last Name: "+ lastName + "</h3>"
-#             + "<h3>AreaId: "+ areaId + "</h3>"
-#             + "<h3>Keywords: "+ str(keywords) + "</h3>"
-#             )
+
+'secret convenience function'
+''
+@route('/subscribe')
+def subscribe():
+    email = request.query.email
+    firstName = request.query.firstName or ''
+    lastName = request.query.lastName or ''
+    areaId = request.query.areaId
+    keywords = request.query.keywords
+    keywords = keywords.split('\r\n')
+    subscriberId = signUpSubscriber(email, firstName, lastName, areaId, keywords)
+    if subscriberId == -1:
+        retMsg = "<h1>Subscription fails for unknown reason.</h1>"
+    elif subscriberId == -2:
+        retMsg = "<h1>Subscription fails. Use a different email address.</h1>"
+    else:
+        retMsg = "<h1>Subscription succeeds.</h1>"
+    return retMsg
     
 @route('/signin')
 def signin():
