@@ -57,6 +57,8 @@ if __name__ == '__main__':
                          ['telomerase','telomere'])
         signUpSubscriber('leeoz@stanford.edu', '', 'ChangLab', '5', 
                          ['noncoding RNA','lncRNA','chromatin'])
+        signUpSubscriber('lizhi1981@gmail.com', 'Zhi', 'Li', '1', 
+                         ['DNA sequencing'])
         
         phdb.close()
     else:

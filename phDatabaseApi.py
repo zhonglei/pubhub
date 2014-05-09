@@ -369,12 +369,14 @@ class PhDatabase(Database):
 
     def createTableAuthor(self):
         query='''CREATE TABLE author(
-                authorId INT NOT NULL AUTO_INCREMENT COMMENT 'lowest authorId for an article is the first author; vice versa.',
+                authorId INT NOT NULL AUTO_INCREMENT,
                 articleId INT NOT NULL,
                 ForeName VARCHAR(255),
                 Initials VARCHAR(255),
                 LastName VARCHAR(255),
                 Affiliation TEXT,
+                AuthorOrder SMALLINT NOT NULL,
+                AuthorOrderReversed SMALLINT NOT NULL,
                 PRIMARY KEY (authorId),
                 FOREIGN KEY (articleId) REFERENCES article(articleId),
                 CONSTRAINT uc_author_article UNIQUE (articleId,ForeName,LastName)
