@@ -13,14 +13,14 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import time
 
-from phInfo import emailInfo
+from phInfo import emailInfo, phDbInfo
 from phController import getListArticlePage, getSubscriberEmail
     
 def sendListArticleToSubscriber(subscriberId, sinceDaysAgo = 7):
     
     sender = emailInfo['mainEmail']
 
-    receiver = getSubscriberEmail(subscriberId)
+    receiver = getSubscriberEmail(phDbInfo, subscriberId)
     
     'Create message container - the correct MIME type is multipart/alternative'
     msg = MIMEMultipart('alternative')
@@ -34,7 +34,7 @@ def sendListArticleToSubscriber(subscriberId, sinceDaysAgo = 7):
     now = time.time()
     startTime = now - sinceDaysAgo * 24 * 3600
     endTime = now    
-    html = getListArticlePage(subscriberId, startTime, endTime, displayType = 'email')
+    html = getListArticlePage(phDbInfo, startTime, endTime, subscriberId, displayType = 'email')
 
     'record the MIME types of both parts - text/plain and text/html'
     part1 = MIMEText(text.encode('utf8'), 'plain')

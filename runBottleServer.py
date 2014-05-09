@@ -13,7 +13,7 @@ from logging import debug
 import sys
 import time
 
-from phInfo import pubmedBacktrackSecondForNewSubscriber
+from phInfo import phDbInfo, pubmedBacktrackSecondForNewSubscriber
 from phController import getListArticlePage, recordSubscriberArticle, \
                          signUpSubscriber, queryPubmedAndStoreResults
 
@@ -53,7 +53,7 @@ def showListArticle():
     now = time.time()
     startTime = now - sinceDaysAgo * 24 * 3600
     endTime = now
-    output = getListArticlePage(subscriberId, startTime, endTime)
+    output = getListArticlePage(phDbInfo, startTime, endTime, subscriberId)
     return output
 
 @route('/redirect') #/redirect?subscriberId=1&articleId=2&redirectUrl=http://www.google.com
@@ -68,7 +68,7 @@ def recordSubscriberArticleAndRedirect():
         header += str(field) + " | " + str(request.get_header(field)) + " || "
     debug(header)
     
-    recordSubscriberArticle(subscriberId, articleId, header)
+    recordSubscriberArticle(phDbInfo, subscriberId, articleId, header)
         
     redirect(redirectUrl)
     
@@ -90,13 +90,13 @@ def do_signup():
     keywords = keywords.split('\r\n')
     
     '====sign up===='
-    subscriberId = signUpSubscriber(email, firstName, lastName, areaId, keywords)
+    subscriberId = signUpSubscriber(phDbInfo, email, firstName, lastName, areaId, keywords)
 
     '====query Pubmed for new subscriber===='
     now = time.time()
     queryStartTime = now - pubmedBacktrackSecondForNewSubscriber
     queryEndTime = now
-    queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberId)
+    queryPubmedAndStoreResults(phDbInfo, queryStartTime, queryEndTime, subscriberId)
      
     '====return===='
     if subscriberId == -1:
@@ -121,13 +121,13 @@ def subscribe():
     keywords = keywords.split('\r\n')
     
     '====sign up===='
-    subscriberId = signUpSubscriber(email, firstName, lastName, areaId, keywords)
+    subscriberId = signUpSubscriber(phDbInfo, email, firstName, lastName, areaId, keywords)
 
     '====query Pubmed for new subscriber===='
     now = time.time()
     queryStartTime = now - pubmedBacktrackSecondForNewSubscriber
     queryEndTime = now
-    queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberId)
+    queryPubmedAndStoreResults(phDbInfo, queryStartTime, queryEndTime, subscriberId)
 
     '====return===='
     if subscriberId == -1:
@@ -151,6 +151,9 @@ def changlab():
     redirect('/listArticle?subscriberId=2&sinceDaysAgo=7')
 
 if __name__ == '__main__':
+
+    import doctest
+    print doctest.testmod()
 
     'if with argument --doctest-only, skip the rest'
     if len(sys.argv) > 1:

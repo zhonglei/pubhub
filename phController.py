@@ -11,12 +11,12 @@ Created on Apr 26, 2014
 import MySQLdb
 import urllib2
 from bottle import template
-from logging import warning, debug
+from logging import warning, debug, info
 import pprint
 import time
 
 from phTools import singleStrip, replaceKeyValuePair
-from phInfo import phDbInfo, webServerInfo
+from phInfo import phDbInfo, testDbInfo, webServerInfo
 from pubmedApi import PubmedApi
 from phDatabaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
 
@@ -180,27 +180,27 @@ def constructPubmedTimeStr(startTime, endTime):
     endT = time.strftime('%Y/%m/%d[PDAT]', time.gmtime(endTime))
     return '(' + startT + ' : ' + endT + ')'
 
-def queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberIdIn = None):
+def queryPubmedAndStoreResults(dbInfo, queryStartTime, queryEndTime, subscriberIdIn = None):
     '''
     If subscriberIdIn is not specified, query for all subscribers in database;
     otherwise, query for that specific subscriber only.
-    
+
     Example:
     >>> from phInfo import testDbInfo
     >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
-    >>> phdb.formatDatabase()
-    >>> subscriberId = signUpSubscriber('lizhi1981@gmail.com', 'Zhi', 'Li', '1', ['DNA sequencing'])
-    >>> queryPubmedAndStoreResults(1399664864 - 2 * 24 * 3600, 1399664864, subscriberId)
+    >>> phdb._formatDatabase()
+    >>> subscriberId = signUpSubscriber(testDbInfo, 'lizhi1981@gmail.com', 'Zhi', 'Li', '1', ['DNA sequencing'])
+    >>> queryPubmedAndStoreResults(testDbInfo, 1399664864 - 2 * 24 * 3600, 1399664864, subscriberId)
     >>> _, res = phdb.selectDistinct('article',['articleId'])
     >>> print res
-    >>>
+    ((14L,), (13L,), (12L,), (11L,), (10L,), (9L,), (8L,), (7L,), (6L,), (5L,), (23L,), (22L,), (21L,), (4L,), (3L,), (2L,), (1L,), (27L,), (26L,), (25L,), (24L,), (20L,), (19L,), (18L,), (17L,), (16L,), (15L,))
     >>> phdb.close()
-    '''    
+    '''
 
     timeStr = constructPubmedTimeStr(queryStartTime, queryEndTime)
 
     'connect pubhub database'
-    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],phDbInfo['user'],phDbInfo['password']))    
+    phdb = PhDatabase(MysqlConnection(dbInfo['dbName'],dbInfo['ip'],dbInfo['user'],dbInfo['password']))    
     
     res = constructPubmedQueryList(phdb, subscriberIdIn)
     
@@ -212,8 +212,8 @@ def queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberIdIn = No
         'add type: journal article'
         #queryStr += ' AND (Journal Article[ptyp])'
 
-        print 'query: '+queryStr
-        print 'subscribers: '+str(listSubscriber)        
+        info('query: '+queryStr)
+        info('subscribers: '+str(listSubscriber))   
             
         'URL encoding'
         queryStr = urllib2.quote(queryStr.encode("ascii"))
@@ -287,18 +287,19 @@ def queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberIdIn = No
     'close pubhub database'
     phdb.close()
     
-def getListArticlePage(subscriberId, startTime, endTime, displayType = 'web'):
+def getListArticlePage(dbInfo, startTime, endTime, subscriberId, displayType = 'web'):
     '''
     Note: startTime and endTime are both in epoch time.
     '''
     startTime = constructMysqlDatetimeStr(startTime)
     endTime = constructMysqlDatetimeStr(endTime)
     
-    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
-                                      phDbInfo['user'],phDbInfo['password']))
+    phdb = PhDatabase(MysqlConnection(dbInfo['dbName'],dbInfo['ip'],
+                                      dbInfo['user'],dbInfo['password']))
     
     'FIXME: 4 tables join!'
     queryStartTime=time.time()
+    
     _, res = phdb.fetchall(u'''SELECT DISTINCT article.articleId, ArticleTitle, 
     JournalISOAbbreviation, DateCreated, firstAuthor.authorId, firstAuthor.initials, 
     firstAuthor.lastName, firstAuthor.affiliation, lastAuthor.authorId, 
@@ -311,6 +312,7 @@ def getListArticlePage(subscriberId, startTime, endTime, displayType = 'web'):
     AND article.DateCreated > '%s' 
     AND article.DateCreated < '%s'
     ;''' % (subscriberId, startTime, endTime))
+    
     timeElapsed = time.time()-queryStartTime
     if timeElapsed > 0.1:
         warning("showListArticle 4 tables join takes %.2f sec!" % timeElapsed)
@@ -357,10 +359,10 @@ def getListArticlePage(subscriberId, startTime, endTime, displayType = 'web'):
     
     return output
 
-def recordSubscriberArticle(subscriberId, articleId, header):
+def recordSubscriberArticle(dbInfo, subscriberId, articleId, header):
     
-    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
-                                      phDbInfo['user'],phDbInfo['password']))
+    phdb = PhDatabase(MysqlConnection(dbInfo['dbName'],dbInfo['ip'],
+                                      dbInfo['user'],dbInfo['password']))
     'record'
     _, s_aId = phdb.selectDistinct('subscriber_article',['subscriber_articleId'],
                                  'subscriberId = %s AND articleId = %s' %
@@ -378,11 +380,11 @@ def recordSubscriberArticle(subscriberId, articleId, header):
 
     phdb.close()
     
-def signUpSubscriber(email, firstName, lastName, areaId, keywords):
+def signUpSubscriber(dbInfo, email, firstName, lastName, areaId, keywords):
     'Return: subscriberId'
 
-    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
-                                      phDbInfo['user'],phDbInfo['password']))
+    phdb = PhDatabase(MysqlConnection(dbInfo['dbName'],dbInfo['ip'],
+                                      dbInfo['user'],dbInfo['password']))
     
     '====insert subscriber===='
     s={}
@@ -447,12 +449,12 @@ def signUpSubscriber(email, firstName, lastName, areaId, keywords):
     
     return subscriberId
 
-def getSubscriberEmail(subscriberId):
+def getSubscriberEmail(dbInfo, subscriberId):
     'Return email address'
 
     'look up subscriber email address'
-    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
-                                      phDbInfo['user'],phDbInfo['password']))
+    phdb = PhDatabase(MysqlConnection(dbInfo['dbName'],dbInfo['ip'],
+                                      dbInfo['user'],dbInfo['password']))
     _, email = phdb.selectDistinct('subscriber', ['email'], 
                                       'subscriberId = '+str(subscriberId))
     email = singleStrip(email)[0]
@@ -461,10 +463,10 @@ def getSubscriberEmail(subscriberId):
     
     return email
 
-def getLastPhDatabaseUpdateTime():
+def getLastPhDatabaseUpdateTime(dbInfo):
     'Return last Pubhub database time.'
-    phdb = PhDatabase(MysqlConnection(phDbInfo['dbName'],phDbInfo['ip'],
-                                      phDbInfo['user'],phDbInfo['password']))
+    phdb = PhDatabase(MysqlConnection(dbInfo['dbName'],dbInfo['ip'],
+                                      dbInfo['user'],dbInfo['password']))
     _, lastTime = phdb.fetchall('''SELECT UNIX_TIMESTAMP(timestamp) 
                                    FROM phDatabaseUpdateEvent
                                    ORDER BY timestamp DESC LIMIT 1''')

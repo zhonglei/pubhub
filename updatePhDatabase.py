@@ -10,7 +10,7 @@ Created on May 2, 2014
 import time
 import sys
 
-from phInfo import pubmedBacktrackSecondForNewSubscriber
+from phInfo import phDbInfo, pubmedBacktrackSecondForNewSubscriber
 from phController import queryPubmedAndStoreResults, getLastPhDatabaseUpdateTime
 
 '''
@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
     now = time.time()
     
-    queryStartTime = getLastPhDatabaseUpdateTime()
+    queryStartTime = getLastPhDatabaseUpdateTime(phDbInfo)
     
     'In the rarest case there is no records for last PhDatabase update'
     if queryStartTime is None: # No records, first time
@@ -48,6 +48,6 @@ if __name__ == '__main__':
 
     queryEndTime = now
     
-    queryPubmedAndStoreResults(queryStartTime, queryEndTime)
+    queryPubmedAndStoreResults(phDbInfo, queryStartTime, queryEndTime)
 
     print '\nDone.'

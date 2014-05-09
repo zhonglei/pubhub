@@ -393,10 +393,8 @@ class PhDatabase(Database):
 
     def createViewFirstAuthor(self):
         query='''CREATE VIEW firstAuthor AS 
-                    SELECT * FROM author WHERE 
-                    (authorId,articleId) IN 
-                    (SELECT MIN(authorId),articleId 
-                    FROM author GROUP BY articleId);
+                    SELECT * FROM author 
+                    WHERE AuthorOrder = 1;
         '''
         debug('query:\n'+query)
         if self.conn:
@@ -405,16 +403,14 @@ class PhDatabase(Database):
 
     def createViewLastAuthor(self):
         query='''CREATE VIEW lastAuthor AS 
-                    SELECT * FROM author WHERE 
-                    (authorId,articleId) IN 
-                    (SELECT MAX(authorId),articleId 
-                    FROM author GROUP BY articleId);
+                    SELECT * FROM author 
+                    WHERE AuthorOrderReversed = 1;
         '''
         debug('query:\n'+query)
         if self.conn:
             return self.conn._execute(query)
         return -1    
-
+        
     def createTableSubscriber_Article(self):
         query='''CREATE TABLE subscriber_article(
                 subscriber_articleId INT NOT NULL AUTO_INCREMENT,

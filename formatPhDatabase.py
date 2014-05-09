@@ -58,21 +58,22 @@ if __name__ == '__main__':
         queryStartTime = now - pubmedBacktrackSecondForNewSubscriber
         queryEndTime = now
 
+        phdb.close()
+
         'Preload subscribers and query Pubmed'
-        subscriberId = signUpSubscriber('zhonglei@stanford.edu', '', 'ArtandiLab', '5', 
+        subscriberId = signUpSubscriber(phDbInfo, 'zhonglei@stanford.edu', '', 'ArtandiLab', '5', 
                          ['telomerase','telomere'])
-        queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberId)
+        queryPubmedAndStoreResults(phDbInfo, queryStartTime, queryEndTime, subscriberId)
         
-        subscriberId = signUpSubscriber('leeoz@stanford.edu', '', 'ChangLab', '5', 
+        subscriberId = signUpSubscriber(phDbInfo, 'leeoz@stanford.edu', '', 'ChangLab', '5', 
                          ['noncoding RNA','lncRNA','chromatin'])
-        queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberId)
+        queryPubmedAndStoreResults(phDbInfo, queryStartTime, queryEndTime, subscriberId)
         
-        subscriberId = signUpSubscriber('lizhi1981@gmail.com', 'Zhi', 'Li', '1', 
+        subscriberId = signUpSubscriber(phDbInfo, 'lizhi1981@gmail.com', 'Zhi', 'Li', '1', 
                          ['DNA sequencing'])
-        queryPubmedAndStoreResults(queryStartTime, queryEndTime, subscriberId)
+        queryPubmedAndStoreResults(phDbInfo, queryStartTime, queryEndTime, subscriberId)
 
         
-        phdb.close()
     else:
         print '\nDid not execute formatting database.'             
             
