@@ -320,7 +320,21 @@ def getListArticlePage(dbInfo, startTime, endTime, subscriberId, displayType = '
     if timeElapsed > 0.1:
         warning("getListArticlePage 4 tables join takes %.2f sec!" % timeElapsed)
     
+    _, res2 = phdb.selectDistinct('subscriber', ['firstName', 'lastName', 'email'], 
+                                 'subscriberId = ' + str(subscriberId))
+    firstName, lastName, email = res2[0]
+
     phdb.close()
+    
+    name = ''
+    if firstName:
+        name = firstName
+    elif lastName:
+        name = lastName
+    elif email:
+        name = email
+    else:
+        name = 'stranger'
     
     rows=[]
     for (articleId, ArticleTitle, JournalTitle, DateCreated, firstAuthorId, 
@@ -359,8 +373,12 @@ def getListArticlePage(dbInfo, startTime, endTime, subscriberId, displayType = '
             
         rows.append((queryPhrase, ArticleTitle, JournalTitle, dayStr, authorField, 
                      affiliation, recordAndRedirectStr))
-    
-    output = template('views/listArticle', rows = rows, displayType = displayType)
+                
+    if displayType == 'email':    
+        output = template('views/emailListArticle', rows = rows, name = name)
+    else:
+        output = template('views/listArticle', rows = rows, name = name, 
+                                                    displayType = displayType)
     
     return output
 

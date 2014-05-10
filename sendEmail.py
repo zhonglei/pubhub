@@ -33,7 +33,7 @@ def sendListArticleToSubscriber(subscriberId, sinceDaysAgo = 7):
 
     now = time.time()
     startTime = now - sinceDaysAgo * 24 * 3600
-    endTime = now    
+    endTime = now
     html = getListArticlePage(phDbInfo, startTime, endTime, subscriberId, displayType = 'email')
 
     'record the MIME types of both parts - text/plain and text/html'
@@ -61,8 +61,8 @@ def sendListArticleToSubscriber(subscriberId, sinceDaysAgo = 7):
     
 if __name__ == '__main__':
     
-    import doctest
-    print doctest.testmod()
+#     import doctest
+#     print doctest.testmod()
     
     'if with argument --doctest-only, skip the rest'
     if len(sys.argv) > 1:
@@ -72,7 +72,7 @@ if __name__ == '__main__':
 
     #sendTestMail()
     
-    subscriberId = 1
+    subscriberId = 3
     sinceDaysAgo = 7
     sendListArticleToSubscriber(subscriberId, sinceDaysAgo) 
     

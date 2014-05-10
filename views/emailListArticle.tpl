@@ -19,9 +19,13 @@
     
 	<body>
 	
-	<h1>
+	<h2>
 		Scooply /skoop-li/
-	</h1>
+	</h2>
+	<p> Hello {{name}}, </p>
+	<p> This week's top-notch bioscience papers are ready to view! Check them out below.
+	</p>
+	<p>Your Scooply team</p>
 
 %listQueryPhrase = [row[0] for row in rows] #first element is queryPhrase
 %listQueryPhrase = list(set(listQueryPhrase)) # distinct
@@ -61,7 +65,6 @@
 		%queryPhrase, ArticleTitle, JournalTitle, dayStr, authorField, affiliation, recordAndRedirectStr = row
 	
 				<div class="article_info">
-		%if displayType == 'email':
 					<h4> 
 						<a href="{{recordAndRedirectStr}}">{{ArticleTitle}}</a> <br>
 						{{authorField}} <br>
@@ -70,24 +73,10 @@
 						Alert on <span class="label label-default">{{queryPhrase}}</span>
 			%end
 					</h4>
-		%else:
-					<h3> <a href="{{recordAndRedirectStr}}">{{ArticleTitle}}</a> </h3>
-					<h4> {{authorField}} </h4>
-					<h4> 
-						{{dayStr}} in <span class="label label-default">{{JournalTitle}}</span>
-					</h4>
-			%if queryPhrase != JournalTitle:
-					<h4> 
-						Alert on <span class="label label-default">{{queryPhrase}}</span> 
-					</h4>
-			%end
-		%end
 				</div>
 	%end	
 
 %end
-
-
 			
 		</div><!-- content_main-->
 
