@@ -18,40 +18,77 @@
     </head>
     
 	<body>
-	<!-- Update in this div -->
 	
-%if displayType != 'email':
-				
-			<nav id="myNavmenu" class="navmenu navmenu-default navmenu-fixed-left offcanvas" role="navigation">
+	<h1>
+		Scooply /skoop-li/
+	</h1>
 
-				<a class="navmenu-brand" href="#">Scooply</a>				  
-				<ul class="nav navmenu-nav">
-					<li class="active"><a href="#">Home</a></li>
-					<li><a href="#">Nature</a></li>
-					<li><a href="#">Science</a></li>
-					<li><a href="#">Cell</a></li>
-				</ul>
-		
-			</nav>
+%listQueryPhrase = [row[0] for row in rows] #first element is queryPhrase
+%listQueryPhrase = list(set(listQueryPhrase)) # distinct
+%#bring to print Nature, Science and Cell
+%if 'Cell' in listQueryPhrase:
+%	listQueryPhrase.insert(0, listQueryPhrase.pop(listQueryPhrase.index('Cell')))
 %end
+%if 'Science' in listQueryPhrase:
+	%listQueryPhrase.insert(0, listQueryPhrase.pop(listQueryPhrase.index('Science')))
+%end
+%if 'Nature' in listQueryPhrase:
+	%listQueryPhrase.insert(0, listQueryPhrase.pop(listQueryPhrase.index('Nature')))
+%end
+
+		<div class="outline">				
+			<h4>
+				<ul>
+%for q in listQueryPhrase: 
+	%lenq = len([row for row in rows if row[0] == q])
+					<li><a href="#{{q}}">{{q}} ({{lenq}})</a></li>
+%end
+				</ul>
+			</h4>		
+		</div>
 						
 		<div class="content_main">
-			
-%for row in rows:
-	%ArticleTitle, JournalTitle, dayStr, authorField, affiliation, recordAndRedirectStr = row
+		
+%for q in listQueryPhrase:
 
-			<div class="article_info">
-	%if displayType == 'email':
-				<h4> <a href="{{recordAndRedirectStr}}">{{ArticleTitle}}</a> <br>
-				{{authorField}} <br>
-				{{dayStr}} in <span class="label label-default">{{JournalTitle}}</span> </h4>
-	%else:
-				<h3><a href="{{recordAndRedirectStr}}">{{ArticleTitle}}</a> </h3>
-				<h4> {{authorField}} </h4>
-				<h4> {{dayStr}} in <span class="label label-default">{{JournalTitle}}</span></h4>
-	%end
-			</div>
-%end	
+	%rows2 = [row for row in rows if row[0] == q]
+	
+			<h3>
+				<a name="{{q}}">{{q}}</a>
+			</h3>
+					
+	%for row in rows2:
+		%queryPhrase, ArticleTitle, JournalTitle, dayStr, authorField, affiliation, recordAndRedirectStr = row
+	
+				<div class="article_info">
+		%if displayType == 'email':
+					<h4> 
+						<a href="{{recordAndRedirectStr}}">{{ArticleTitle}}</a> <br>
+						{{authorField}} <br>
+						{{dayStr}} in <span class="label label-default">{{JournalTitle}}</span> <br>
+			%if queryPhrase != JournalTitle:
+						Alert on <span class="label label-default">{{queryPhrase}}</span>
+			%end
+					</h4>
+		%else:
+					<h3> <a href="{{recordAndRedirectStr}}">{{ArticleTitle}}</a> </h3>
+					<h4> {{authorField}} </h4>
+					<h4> 
+						{{dayStr}} in <span class="label label-default">{{JournalTitle}}</span>
+					</h4>
+			%if queryPhrase != JournalTitle:
+					<h4> 
+						Alert on <span class="label label-default">{{queryPhrase}}</span> 
+					</h4>
+			%end
+		%end
+				</div>
+	%end	
+
+%end
+
+
+			
 		</div><!-- content_main-->
 
     

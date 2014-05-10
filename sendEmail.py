@@ -24,7 +24,7 @@ def sendListArticleToSubscriber(subscriberId, sinceDaysAgo = 7):
     
     'Create message container - the correct MIME type is multipart/alternative'
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = '''The latest bioscience hot papers, brought to you by Scooply'''
+    msg['Subject'] = '''This week's bioscience hot papers, brought to you by Scooply'''
     msg['From'] = sender
     msg['To'] = receiver
     
@@ -72,8 +72,8 @@ if __name__ == '__main__':
 
     #sendTestMail()
     
-    subscriberId = 3
-    sinceDaysAgo = 2
+    subscriberId = 1
+    sinceDaysAgo = 7
     sendListArticleToSubscriber(subscriberId, sinceDaysAgo) 
     
     print 'Done.'

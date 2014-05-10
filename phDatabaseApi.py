@@ -416,10 +416,11 @@ class PhDatabase(Database):
                 subscriber_articleId INT NOT NULL AUTO_INCREMENT,
                 subscriberId INT NOT NULL,
                 articleId INT NOT NULL,
+                queryPhrase VARCHAR(255),
                 PRIMARY KEY (subscriber_articleId),
                 FOREIGN KEY (subscriberId) REFERENCES subscriber(subscriberId),
                 FOREIGN KEY (articleId) REFERENCES article(articleId),
-                CONSTRAINT uc_subscriber_article UNIQUE (subscriberId,articleId)
+                CONSTRAINT uc_subscriber_article_queryphrase UNIQUE (subscriberId,articleId,queryPhrase)
                 );
         '''
         debug('query:\n'+query)
@@ -441,7 +442,7 @@ class PhDatabase(Database):
                 timestamp DATETIME NOT NULL,
                 category TINYINT NOT NULL COMMENT 'category: 1 - created, 2 - pinned, 3 - moreClicked, 4 - extlinkClicked, ...',
                 status BOOLEAN NOT NULL,
-                requestHeader TEXT,
+                extraInfo TEXT,
                 PRIMARY KEY (subscriber_articleEventId),
                 FOREIGN KEY (subscriber_articleId) REFERENCES subscriber_article(subscriber_articleId)
                 );

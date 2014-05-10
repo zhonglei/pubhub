@@ -16,7 +16,7 @@ import pprint
 import time
 
 from phTools import singleStrip, replaceKeyValuePair
-from phInfo import phDbInfo, testDbInfo, webServerInfo
+from phInfo import webServerInfo
 from pubmedApi import PubmedApi
 from phDatabaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
 
@@ -92,9 +92,9 @@ def constructPubmedQueryList(phdb, subscriberIdIn = None):
     >>> phdb.insertMany('interest', ldInterest)
     0
     >>> constructPubmedQueryList(phdb)
-    [(u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Cell"[Journal])', [1L]), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Nature"[Journal])', [1L, 2L]), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Science"[Journal])', [1L, 2L]), (u'(telomerase and cancer biology) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L]), (u'(telomere and DNA replication) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L]), (u'(noncoding RNA) AND ("Nature"[Journal] OR "Science"[Journal] OR "Immunity"[Journal] OR "Journal of Immunology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [2L])]
+    [(u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Cell"[Journal])', [1L], u'Cell'), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Nature"[Journal])', [1L, 2L], u'Nature'), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Science"[Journal])', [1L, 2L], u'Science'), (u'(telomerase and cancer biology) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L], u'telomerase and cancer biology'), (u'(telomere and DNA replication) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L], u'telomere and DNA replication'), (u'(noncoding RNA) AND ("Nature"[Journal] OR "Science"[Journal] OR "Immunity"[Journal] OR "Journal of Immunology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [2L], u'noncoding RNA')]
     >>> constructPubmedQueryList(phdb, 1L)
-    [(u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Cell"[Journal])', [1L]), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Nature"[Journal])', [1L]), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Science"[Journal])', [1L]), (u'(telomerase and cancer biology) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L]), (u'(telomere and DNA replication) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L])]
+    [(u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Cell"[Journal])', [1L], u'Cell'), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Nature"[Journal])', [1L], u'Nature'), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Science"[Journal])', [1L], u'Science'), (u'(telomerase and cancer biology) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L], u'telomerase and cancer biology'), (u'(telomere and DNA replication) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L], u'telomere and DNA replication')]
     >>> phdb.close()
     '''
     
@@ -129,7 +129,7 @@ def constructPubmedQueryList(phdb, subscriberIdIn = None):
         debug('query: '+query)
         debug('subscribers: '+str(subscribers))
         
-        listQuery.append((query, subscribers))
+        listQuery.append((query, subscribers, j))
         
     'FIXME: can have less number of db queries'
 
@@ -164,7 +164,8 @@ def constructPubmedQueryList(phdb, subscriberIdIn = None):
             debug('query: '+query)
 
             subscribers = [i]
-            listQuery.append((query, subscribers))
+            
+            listQuery.append((query, subscribers, k))
             
     debug('constructed Pubmed query list:\n'+ pprint.pformat(listQuery))
             
@@ -204,7 +205,7 @@ def queryPubmedAndStoreResults(dbInfo, queryStartTime, queryEndTime, subscriberI
     
     res = constructPubmedQueryList(phdb, subscriberIdIn)
     
-    for queryStr, listSubscriber in res:
+    for queryStr, listSubscriber, queryPhrase in res:
         
         'add time constraint'
         queryStr += ' AND '+ timeStr
@@ -247,6 +248,8 @@ def queryPubmedAndStoreResults(dbInfo, queryStartTime, queryEndTime, subscriberI
                 dSubscriber_article['subscriber_articleId'] = None
                 dSubscriber_article['subscriberId'] = s
                 dSubscriber_article['articleId'] = articleId
+                dSubscriber_article['queryPhrase'] = queryPhrase 
+                                            # journal name or keyword or author
                 
                 try:
                     subscriber_articleId = phdb.insertOneReturnLastInsertId(
@@ -289,7 +292,7 @@ def queryPubmedAndStoreResults(dbInfo, queryStartTime, queryEndTime, subscriberI
     
 def getListArticlePage(dbInfo, startTime, endTime, subscriberId, displayType = 'web'):
     '''
-    Note: startTime and endTime are both in epoch time.
+    Note: startTime and endTime are both in epoch (unix) time.
     '''
     startTime = constructMysqlDatetimeStr(startTime)
     endTime = constructMysqlDatetimeStr(endTime)
@@ -299,11 +302,11 @@ def getListArticlePage(dbInfo, startTime, endTime, subscriberId, displayType = '
     
     'FIXME: 4 tables join!'
     queryStartTime=time.time()
-    
+     
     _, res = phdb.fetchall(u'''SELECT DISTINCT article.articleId, ArticleTitle, 
     JournalISOAbbreviation, DateCreated, firstAuthor.authorId, firstAuthor.initials, 
     firstAuthor.lastName, firstAuthor.affiliation, lastAuthor.authorId, 
-    lastAuthor.lastName, lastAuthor.affiliation, DoiId, PMID 
+    lastAuthor.lastName, lastAuthor.affiliation, DoiId, PMID, subscriber_article.queryPhrase
     FROM article 
     LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
     LEFT JOIN firstAuthor ON article.articleId = firstAuthor.articleId 
@@ -312,17 +315,18 @@ def getListArticlePage(dbInfo, startTime, endTime, subscriberId, displayType = '
     AND article.DateCreated > '%s' 
     AND article.DateCreated < '%s'
     ;''' % (subscriberId, startTime, endTime))
-    
+     
     timeElapsed = time.time()-queryStartTime
     if timeElapsed > 0.1:
-        warning("showListArticle 4 tables join takes %.2f sec!" % timeElapsed)
+        warning("getListArticlePage 4 tables join takes %.2f sec!" % timeElapsed)
     
     phdb.close()
     
     rows=[]
     for (articleId, ArticleTitle, JournalTitle, DateCreated, firstAuthorId, 
     firstAuthorInitials, firstAuthorLastName, firstAuthorAffiliation, 
-    lastAuthorId, lastAuthorLastName, lastAuthorAffiliation, DoiId, PMID) in res:
+    lastAuthorId, lastAuthorLastName, lastAuthorAffiliation, DoiId, PMID, 
+    queryPhrase) in res:
         daysElapsed = int((time.time()-int(DateCreated.strftime('%s')))/24/3600)
         if daysElapsed == 0:
             dayStr = 'Today'
@@ -352,8 +356,9 @@ def getListArticlePage(dbInfo, startTime, endTime, subscriberId, displayType = '
                 authorField += firstAuthorLastName
         else:
             authorField = ''
-        rows.append((ArticleTitle, JournalTitle, dayStr, authorField, 
-                                        affiliation, recordAndRedirectStr))
+            
+        rows.append((queryPhrase, ArticleTitle, JournalTitle, dayStr, authorField, 
+                     affiliation, recordAndRedirectStr))
     
     output = template('views/listArticle', rows = rows, displayType = displayType)
     
@@ -375,7 +380,7 @@ def recordSubscriberArticle(dbInfo, subscriberId, articleId, header):
     s_aEventDict['timestamp'] = constructMysqlDatetimeStr(time.time())
     s_aEventDict['category'] = 4 #extlinkClicked
     s_aEventDict['status'] = 1 #yes
-    s_aEventDict['requestHeader'] = header
+    s_aEventDict['extraInfo'] = header
     phdb.insertOne('subscriber_articleEvent',s_aEventDict)
 
     phdb.close()
