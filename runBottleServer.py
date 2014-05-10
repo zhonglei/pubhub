@@ -47,7 +47,7 @@ def serverStaticJasny(filepath):
 
 @route('/listArticle')      #/listArticle?subscriberId=1&sinceDaysAgo=10
 def showListArticle():
-    subscriberId = request.query.subscriberId or ''
+    subscriberId = request.query.subscriberId
     sinceDaysAgo = request.query.sinceDaysAgo or '7'
     sinceDaysAgo = int(sinceDaysAgo)
     now = time.time()
@@ -55,6 +55,20 @@ def showListArticle():
     endTime = now
     output = getListArticlePage(phDbInfo, startTime, endTime, subscriberId)
     return output
+
+@route('/articleAbstract') #/articleAbstract?subscriberId=1&articleId=2
+def showArticleAbstract():
+    subscriberId = request.query.subscriberId
+    articleId = request.query.articleId
+
+    header = ""
+    headerFields = request.headers.keys()
+    for field in headerFields:
+        header += str(field) + " | " + str(request.get_header(field)) + " || "
+    debug(header)
+    
+    recordSubscriberArticle(phDbInfo, subscriberId, articleId, header)
+        
 
 @route('/redirect') #/redirect?subscriberId=1&articleId=2&redirectUrl=http://www.google.com
 def recordSubscriberArticleAndRedirect():

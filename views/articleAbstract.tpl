@@ -4,21 +4,24 @@
         <meta http-equiv="content-type" content="text/html; charset=UTF-8"> 
         <title>Scooply</title>
         <meta name="generator" content="Bootply" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">		
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <!--Bootstrap-->
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<!--Jasny-->
+		  <link href="jasny-bootstrap/css/jasny-bootstrap.min.css" rel="stylesheet">
+		<!--- Style sheet for this template-->
+		<link href="css/scooply-v3.css" rel="stylesheet">
+		
+        <!--[if lt IE 9]>
+          <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
     </head>
     
 	<body>
 	
-	<h2>
+	<h1>
 		Scooply /skoop-li/
-	</h2>
-	<p> Hello {{name}}, </p>
-	<p> This week's top-notch bioscience papers are ready to view. Enjoy!!</p>
-	<p> We are persistently working towards improving our search quality. 
-	If the displayed results do not match your expectation, or if you have any
-	suggestions, we would really appreciate your feedback by replying to this 
-	email.
-	<p>Your Scooply team</p>
+	</h1>
 
 %listQueryPhrase = [row[0] for row in rows] #first element is queryPhrase
 %listQueryPhrase = list(set(listQueryPhrase)) # distinct
@@ -33,11 +36,7 @@
 	%listQueryPhrase.insert(0, listQueryPhrase.pop(listQueryPhrase.index('Nature')))
 %end
 
-		<div class="outline">	
-			<h3>
-				<a name="">Summary</a>
-			</h3>
-					
+		<div class="outline">				
 			<h4>
 				<ul>
 %for q in listQueryPhrase: 
@@ -62,6 +61,7 @@
 		%queryPhrase, ArticleTitle, JournalTitle, dayStr, authorField, affiliation, recordAndRedirectStr = row
 	
 				<div class="article_info">
+		%if displayType == 'email':
 					<h4> 
 						<a href="{{recordAndRedirectStr}}">{{ArticleTitle}}</a> <br>
 						{{authorField}} <br>
@@ -70,12 +70,41 @@
 						Alert on <span class="label label-default">{{queryPhrase}}</span>
 			%end
 					</h4>
+		%else:
+					<h3> <a href="{{recordAndRedirectStr}}">{{ArticleTitle}}</a> </h3>
+					<h4> {{authorField}} </h4>
+					<h4> 
+						{{dayStr}} in <span class="label label-default">{{JournalTitle}}</span>
+					</h4>
+			%if queryPhrase != JournalTitle:
+					<h4> 
+						Alert on <span class="label label-default">{{queryPhrase}}</span> 
+					</h4>
+			%end
+		%end
 				</div>
 	%end	
 
 %end
+
+
 			
 		</div><!-- content_main-->
+
+    
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+
+     <!-- JavaScript jQuery code from Bootply.com editor -->
+	<script type='text/javascript'>
+	$(document).ready(function() {
+	});
+	</script>
+	
+	<!-- Jasney-->
+	<script src="jasny-bootstrap/js/jasny-bootstrap.min.js"></script>
 
     </body>
 

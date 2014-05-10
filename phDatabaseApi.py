@@ -11,10 +11,8 @@ import MySQLdb
 from logging import warning, debug
 import pprint
 import time
-import datetime
 
 from phInfo import BiologyResearchInfo
-# from phInfo import TestSubscriberInfo
 from phTools import replaceKeyValuePair
 
 '''
@@ -197,7 +195,6 @@ class PhDatabase(Database):
  
             self.createTableSubscriber()
             self.createTableInterest()
-            #self.preloadTableSubscriberAndInterestWithSample()
                  
             self.createTableArticle()
              
@@ -332,14 +329,6 @@ class PhDatabase(Database):
         if self.conn:
             return self.conn._execute(query)
         return -1 
-
-#     def preloadTableSubscriberAndInterestWithSample(self):
-#         
-#         ldSubscriber = TestSubscriberInfo.getLdSubscriber()
-#         ldInterest = TestSubscriberInfo.getLdInterest()
-#         self.insertMany('subscriber', ldSubscriber)        
-#         replaceKeyValuePair(self,ldInterest,'subscriber','email','subscriberId')
-#         self.insertMany('interest', ldInterest)
 
     def createTableArticle(self):
         query='''CREATE TABLE article(
@@ -630,8 +619,27 @@ def constructMysqlDatetimeStr(t):
     
     return time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(t))
     #return datetime.datetime.utcfromtimestamp(t)
-        
-                        
+
+class Subscriber_ArticleEventCategory:
+    created = 1
+    pinned = 2
+    moreClicked = 3
+    extlinkClicked = 4
+    emailMoreClicked = 5
+    emailExtlinkClicked = 6
+
+class InterestCategory:
+    area = 1
+    generalJournal = 2
+    expertJournal = 3
+    keyword = 4
+    author = 5
+
+class dbBoolean:
+    yes = 1
+    no = 0
+                            
 if __name__ == '__main__':
     import doctest
     print doctest.testmod()
+

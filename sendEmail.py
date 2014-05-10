@@ -69,30 +69,10 @@ if __name__ == '__main__':
         for a in sys.argv[1:]: 
             if a =='--doctest-only':
                 sys.exit()
-
-    #sendTestMail()
     
-    subscriberId = 3
+    subscriberId = 2
     sinceDaysAgo = 7
     sendListArticleToSubscriber(subscriberId, sinceDaysAgo) 
     
     print 'Done.'
     
-'''
-
-to = 'mkyong2002@yahoo.com'
-gmail_user = 'mkyong2002@gmail.com'
-gmail_pwd = 'yourpassword'
-smtpserver = smtplib.SMTP("smtp.gmail.com",587)
-smtpserver.ehlo()
-smtpserver.starttls()
-smtpserver.ehlo
-smtpserver.login(gmail_user, gmail_pwd)
-header = 'To:' + to + '\n' + 'From: ' + gmail_user + '\n' + 'Subject:testing \n'
-print header
-msg = header + '\n this is test msg from mkyong.com \n\n'
-smtpserver.sendmail(gmail_user, to, msg)
-print 'done!'
-smtpserver.close()
-
-'''
