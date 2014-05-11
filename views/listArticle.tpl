@@ -11,7 +11,6 @@
 		  <link href="jasny-bootstrap/css/jasny-bootstrap.min.css" rel="stylesheet">
 		<!--- Style sheet for this template-->
 		<link href="css/scooply-v3.css" rel="stylesheet">
-		
         <!--[if lt IE 9]>
           <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
@@ -58,29 +57,18 @@
 			</h3>
 					
 	%for row in rows2:
-		%queryPhrase, ArticleTitle, JournalTitle, dayStr, authorField, affiliation, recordAndRedirectStr = row
+		%queryPhrase, ArticleTitle, JournalTitle, dayStr, authorField, affiliation, articleLinkStr = row
 	
 				<div class="article_info">
-		%if displayType == 'email':
-					<h4> 
-						<a href="{{recordAndRedirectStr}}">{{ArticleTitle}}</a> <br>
-						{{authorField}} <br>
-						{{dayStr}} in <span class="label label-default">{{JournalTitle}}</span> <br>
-			%if queryPhrase != JournalTitle:
-						Alert on <span class="label label-default">{{queryPhrase}}</span>
-			%end
-					</h4>
-		%else:
-					<h3> <a href="{{recordAndRedirectStr}}">{{ArticleTitle}}</a> </h3>
+					<h3> <a href="{{articleLinkStr}}">{{ArticleTitle}}</a> </h3>
 					<h4> {{authorField}} </h4>
 					<h4> 
 						{{dayStr}} in <span class="label label-default">{{JournalTitle}}</span>
 					</h4>
-			%if queryPhrase != JournalTitle:
+		%if queryPhrase != JournalTitle:
 					<h4> 
 						Alert on <span class="label label-default">{{queryPhrase}}</span> 
 					</h4>
-			%end
 		%end
 				</div>
 	%end	

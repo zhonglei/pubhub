@@ -18,7 +18,8 @@ import time
 from phTools import singleStrip, replaceKeyValuePair
 from phInfo import webServerInfo
 from pubmedApi import PubmedApi
-from phDatabaseApi import PhDatabase, MysqlConnection, constructMysqlDatetimeStr
+from phDatabaseApi import PhDatabase, MysqlConnection, \
+                          constructMysqlDatetimeStr, dbBoolean
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
@@ -28,7 +29,7 @@ level DEBUG, INFO
 # logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
 #                     level=logging.DEBUG)
 
-def constructPubmedQueryList(phdb, subscriberIdIn = None):
+def createPubmedQueryList(phdb, subscriberIdIn = None):
     '''
     Return a list of Pubmed queries and their corresponding subscriberIds 
     based on information in the interest table of database phdb.
@@ -91,9 +92,9 @@ def constructPubmedQueryList(phdb, subscriberIdIn = None):
     0
     >>> phdb.insertMany('interest', ldInterest)
     0
-    >>> constructPubmedQueryList(phdb)
+    >>> createPubmedQueryList(phdb)
     [(u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Cell"[Journal])', [1L], u'Cell'), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Nature"[Journal])', [1L, 2L], u'Nature'), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Science"[Journal])', [1L, 2L], u'Science'), (u'(telomerase and cancer biology) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L], u'telomerase and cancer biology'), (u'(telomere and DNA replication) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L], u'telomere and DNA replication'), (u'(noncoding RNA) AND ("Nature"[Journal] OR "Science"[Journal] OR "Immunity"[Journal] OR "Journal of Immunology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [2L], u'noncoding RNA')]
-    >>> constructPubmedQueryList(phdb, 1L)
+    >>> createPubmedQueryList(phdb, 1L)
     [(u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Cell"[Journal])', [1L], u'Cell'), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Nature"[Journal])', [1L], u'Nature'), (u'(biology OR medical OR neuroscience OR gene OR brain) AND ("Science"[Journal])', [1L], u'Science'), (u'(telomerase and cancer biology) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L], u'telomerase and cancer biology'), (u'(telomere and DNA replication) AND ("Cell"[Journal] OR "Nature"[Journal] OR "Science"[Journal] OR "Molecular and Cellular Biology"[Journal] OR "Molecular Cell"[Journal] OR "Nature structural and Molecular Biology"[Journal] )', [1L], u'telomere and DNA replication')]
     >>> phdb.close()
     '''
@@ -171,15 +172,50 @@ def constructPubmedQueryList(phdb, subscriberIdIn = None):
             
     return listQuery
 
-def constructPubmedTimeStr(startTime, endTime):
+def createPubmedTimeStr(startTime, endTime):
     '''
     Example:
-    >>> constructPubmedTimeStr(1398036175.4, 1399531966.5)
+    >>> createPubmedTimeStr(1398036175.4, 1399531966.5)
     '(2014/04/20[PDAT] : 2014/05/08[PDAT])'
     '''
     startT = time.strftime('%Y/%m/%d[PDAT]', time.gmtime(startTime))
     endT = time.strftime('%Y/%m/%d[PDAT]', time.gmtime(endTime))
     return '(' + startT + ' : ' + endT + ')'
+
+def createDayStr(DateCreated):
+        
+    daysElapsed = int((time.time()-int(DateCreated.strftime('%s')))/24/3600)
+    if daysElapsed == 0:
+        dayStr = 'Today'
+    elif daysElapsed == 1:
+        dayStr = '1 day ago'
+    else:
+        dayStr = '%d days ago' % daysElapsed
+
+    return dayStr
+
+def createAuthorStr(listFirstLastAuthorName):
+
+    authorStr = ''
+    for a in listFirstLastAuthorName[:-2]:
+        if a[0] != '':
+            authorStr += a[0]+' '
+        if a[1] != '':
+            authorStr += a[1]
+        authorStr += ', '
+    a = listFirstLastAuthorName[-2]
+    if a[0] != '':
+        authorStr += a[0]+' '
+    if a[1] != '':
+        authorStr += a[1]
+    authorStr += ' and '
+    a = listFirstLastAuthorName[-1]
+    if a[0] != '':
+        authorStr += a[0]+' '
+    if a[1] != '':
+        authorStr += a[1]
+        
+    return authorStr
 
 def queryPubmedAndStoreResults(dbInfo, queryStartTime, queryEndTime, subscriberIdIn = None):
     '''
@@ -198,12 +234,12 @@ def queryPubmedAndStoreResults(dbInfo, queryStartTime, queryEndTime, subscriberI
     >>> phdb.close()
     '''
 
-    timeStr = constructPubmedTimeStr(queryStartTime, queryEndTime)
+    timeStr = createPubmedTimeStr(queryStartTime, queryEndTime)
 
     'connect pubhub database'
     phdb = PhDatabase(MysqlConnection(dbInfo['dbName'],dbInfo['ip'],dbInfo['user'],dbInfo['password']))    
     
-    res = constructPubmedQueryList(phdb, subscriberIdIn)
+    res = createPubmedQueryList(phdb, subscriberIdIn)
     
     for queryStr, listSubscriber, queryPhrase in res:
         
@@ -290,6 +326,79 @@ def queryPubmedAndStoreResults(dbInfo, queryStartTime, queryEndTime, subscriberI
     'close pubhub database'
     phdb.close()
     
+def getArticleMorePage(dbInfo, subscriberId, articleId):    
+    'need to get title, author list, abstract, Date'
+    
+    phdb = PhDatabase(MysqlConnection(dbInfo['dbName'],dbInfo['ip'],
+                                      dbInfo['user'],dbInfo['password']))
+
+    _, resArticle = phdb.fetchall(u'''SELECT DISTINCT article.articleId, ArticleTitle, 
+    Abstract, JournalISOAbbreviation, DateCreated, DoiId, PMID, 
+    subscriber_article.queryPhrase
+    FROM article 
+    LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
+    WHERE subscriber_article.subscriberId = %s 
+    AND article.articleId = %s
+    ;''' % (str(subscriberId), str(articleId)))
+    resArticle = resArticle[0]
+         
+    (articleId, ArticleTitle, Abstract, JournalTitle, DateCreated, DoiId, PMID, 
+    queryPhrase) = resArticle
+    
+    _, resAuthor = phdb.selectDistinct('author', ['Initials', 'LastName', 
+            'Affiliation', 'AuthorOrder',], u'articleId = %s' % articleId)
+    
+    'get if article has been pinned'
+    #pinned = dbBoolean.no
+    
+    phdb.close()
+    
+    dayStr = createDayStr(DateCreated)
+
+    '''resAuthor one row: col 0 - Initials, col 1 - LastName, 
+                          col 2 - Affiliation, col 3 - AuthorOrder'''
+
+    listAuthorOrder = map(lambda x: x[3], resAuthor)
+    orderFirstAuthor = min(listAuthorOrder)
+    orderLastAuthor = max(listAuthorOrder)
+    firstAuthor = [a for a in resAuthor if a[3] == orderFirstAuthor][0]
+    lastAuthor = [a for a in resAuthor if a[3] == orderLastAuthor][0]
+    firstAuthorAffiliation = firstAuthor[2]
+    lastAuthorAffiliation = lastAuthor[2]
+    affiliation = ''
+    if firstAuthorAffiliation != '':
+        affiliation = firstAuthorAffiliation
+    elif lastAuthorAffiliation != '':
+        affiliation = lastAuthorAffiliation
+    
+    listFirstLastAuthorName = map(lambda x: (x[0], x[1]), resAuthor)
+    authorStr = createAuthorStr(listFirstLastAuthorName)
+    
+    if DoiId != '':
+        wwwDoiId = 'http://dx.doi.org/' + DoiId
+        DoiIdLinkStr = 'redirect?subscriberId=%s&articleId=%ld&redirectUrl=%s' \
+                            % (subscriberId,articleId,wwwDoiId)
+    else:
+        DoiIdLinkStr = ''
+
+    if PMID != '':
+        wwwPMID = 'http://www.ncbi.nlm.nih.gov/pubmed/' + str(PMID)    
+        PMIDLinkStr = 'redirect?subscriberId=%s&articleId=%ld&redirectUrl=%s' \
+                            % (subscriberId,articleId,wwwPMID)
+    else:
+        PMIDLinkStr = ''
+        
+    #pingLinkStr = 'pin?articleId=%s&subscriberId=%ld'
+        
+    args = (ArticleTitle, Abstract, JournalTitle, queryPhrase, dayStr, 
+            authorStr, affiliation, DoiIdLinkStr, PMIDLinkStr)
+    
+#     output = "<h1>Article more: subscriberId = %s, articleId = %s, PMID = %s, DoiID = %s</h1>" \
+#             % (subscriberId, articleId, PMID, DoiId)
+    output = template('views/articleMore', args = args)
+    
+    return output
+
 def getListArticlePage(dbInfo, startTime, endTime, subscriberId, displayType = 'web'):
     '''
     Note: startTime and endTime are both in epoch (unix) time.
@@ -341,25 +450,28 @@ def getListArticlePage(dbInfo, startTime, endTime, subscriberId, displayType = '
     firstAuthorInitials, firstAuthorLastName, firstAuthorAffiliation, 
     lastAuthorId, lastAuthorLastName, lastAuthorAffiliation, DoiId, PMID, 
     queryPhrase) in res:
-        daysElapsed = int((time.time()-int(DateCreated.strftime('%s')))/24/3600)
-        if daysElapsed == 0:
-            dayStr = 'Today'
-        elif daysElapsed == 1:
-            dayStr = '1 day ago'
-        else:
-            dayStr = '%d days ago' % daysElapsed
+    
+        dayStr = createDayStr(DateCreated)
+        
         affiliation=''
         if firstAuthorAffiliation != '':
             affiliation = firstAuthorAffiliation
         elif lastAuthorAffiliation != '':
             affiliation = lastAuthorAffiliation
+
         if DoiId != '':
             www = 'http://dx.doi.org/' + DoiId
         else: 
             www = 'http://www.ncbi.nlm.nih.gov/pubmed/' + str(PMID)
-        recordAndRedirectStr = 'http://'+webServerInfo['addr']+ '/' \
-                    'redirect?subscriberId=%s&articleId=%ld&redirectUrl=%s' \
-                    % (subscriberId,articleId,www)
+            
+        if displayType == 'email':
+            articleLinkStr = 'http://'+webServerInfo['addr']+ '/' \
+                        'redirect?subscriberId=%s&articleId=%ld&redirectUrl=%s' \
+                        % (subscriberId,articleId,www)
+        else:
+            articleLinkStr = 'articleMore?subscriberId=%s&articleId=%ld' \
+                        % (subscriberId,articleId)
+                    
         if firstAuthorLastName and firstAuthorLastName != '':
             if firstAuthorId != lastAuthorId:
                 authorField = firstAuthorLastName+' et al., '+lastAuthorLastName+' Lab'
@@ -372,33 +484,32 @@ def getListArticlePage(dbInfo, startTime, endTime, subscriberId, displayType = '
             authorField = ''
             
         rows.append((queryPhrase, ArticleTitle, JournalTitle, dayStr, authorField, 
-                     affiliation, recordAndRedirectStr))
+                     affiliation, articleLinkStr))
                 
     if displayType == 'email':    
         output = template('views/emailListArticle', rows = rows, name = name)
     else:
-        output = template('views/listArticle', rows = rows, name = name, 
-                                                    displayType = displayType)
+        output = template('views/listArticle', rows = rows)
     
     return output
 
-def recordSubscriberArticle(dbInfo, subscriberId, articleId, header):
+def recordSubscriberArticle(dbInfo, subscriberId, articleId, extraInfo, category):
     
     phdb = PhDatabase(MysqlConnection(dbInfo['dbName'],dbInfo['ip'],
                                       dbInfo['user'],dbInfo['password']))
     'record'
     _, s_aId = phdb.selectDistinct('subscriber_article',['subscriber_articleId'],
                                  'subscriberId = %s AND articleId = %s' %
-                                 (subscriberId, articleId))
+                                 (str(subscriberId), str(articleId)))
     
     s_aId = singleStrip(s_aId)[0] # need double strip
     
     s_aEventDict={}
     s_aEventDict['subscriber_articleId'] = s_aId
     s_aEventDict['timestamp'] = constructMysqlDatetimeStr(time.time())
-    s_aEventDict['category'] = 4 #extlinkClicked
+    s_aEventDict['category'] = category
     s_aEventDict['status'] = 1 #yes
-    s_aEventDict['extraInfo'] = header
+    s_aEventDict['extraInfo'] = extraInfo
     phdb.insertOne('subscriber_articleEvent',s_aEventDict)
 
     phdb.close()

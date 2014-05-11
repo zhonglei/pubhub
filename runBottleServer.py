@@ -15,7 +15,8 @@ import time
 
 from phInfo import phDbInfo, pubmedBacktrackSecondForNewSubscriber
 from phController import getListArticlePage, recordSubscriberArticle, \
-                         signUpSubscriber, queryPubmedAndStoreResults
+                         signUpSubscriber, queryPubmedAndStoreResults, \
+                         getArticleMorePage
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
@@ -56,18 +57,28 @@ def showListArticle():
     output = getListArticlePage(phDbInfo, startTime, endTime, subscriberId)
     return output
 
-@route('/articleAbstract') #/articleAbstract?subscriberId=1&articleId=2
-def showArticleAbstract():
+@route('/articleMore') #/articleMore?subscriberId=1&articleId=2
+def showArticleMore():
     subscriberId = request.query.subscriberId
     articleId = request.query.articleId
 
+    'parse request header info'
     header = ""
     headerFields = request.headers.keys()
     for field in headerFields:
         header += str(field) + " | " + str(request.get_header(field)) + " || "
     debug(header)
     
-    recordSubscriberArticle(phDbInfo, subscriberId, articleId, header)
+    extraInfo = header
+    
+    'record event'
+    category = 3 #moreClicked
+    recordSubscriberArticle(phDbInfo, subscriberId, articleId, extraInfo, category)
+    
+    'display articleMore page'
+    
+    output = getArticleMorePage(phDbInfo, subscriberId, articleId)
+    return output
         
 
 @route('/redirect') #/redirect?subscriberId=1&articleId=2&redirectUrl=http://www.google.com
@@ -76,14 +87,21 @@ def recordSubscriberArticleAndRedirect():
     articleId = request.query.articleId
     redirectUrl = request.query.redirectUrl
 
+    'parse request header info'
     header = ""
     headerFields = request.headers.keys()
     for field in headerFields:
         header += str(field) + " | " + str(request.get_header(field)) + " || "
     debug(header)
+
+    extraInfo = header
+    extraInfo += 'redirectUrl' + " | " + redirectUrl + " || "
     
-    recordSubscriberArticle(phDbInfo, subscriberId, articleId, header)
+    'record event'
+    category = 4 #extlinkClicked
+    recordSubscriberArticle(phDbInfo, subscriberId, articleId, extraInfo, category)
         
+    'redirect'
     redirect(redirectUrl)
     
 @route('/signup')

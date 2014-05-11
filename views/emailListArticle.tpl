@@ -16,7 +16,7 @@
 	<p> This week's top-notch bioscience papers are ready to view. Enjoy!!</p>
 	<p> We are persistently working towards improving our search quality. 
 	If the displayed results do not match your expectation, or if you have any
-	suggestions, we would really appreciate your feedback by replying to this 
+	suggestions, we would greatly appreciate your feedback by replying to this 
 	email.
 	<p>Your Scooply team</p>
 
@@ -59,11 +59,11 @@
 			</h3>
 					
 	%for row in rows2:
-		%queryPhrase, ArticleTitle, JournalTitle, dayStr, authorField, affiliation, recordAndRedirectStr = row
+		%queryPhrase, ArticleTitle, JournalTitle, dayStr, authorField, affiliation, articleLinkStr = row
 	
 				<div class="article_info">
 					<h4> 
-						<a href="{{recordAndRedirectStr}}">{{ArticleTitle}}</a> <br>
+						<a href="{{articleLinkStr}}">{{ArticleTitle}}</a> <br>
 						{{authorField}} <br>
 						{{dayStr}} in <span class="label label-default">{{JournalTitle}}</span> <br>
 			%if queryPhrase != JournalTitle:
