@@ -22,7 +22,8 @@ from phTools import singleStrip, replaceKeyValuePair
 from phInfo import webServerInfo
 from pubmedApi import PubmedApi
 from phDatabaseApi import PhDatabase, MysqlConnection, createMysqlDatetimeStr
-from phDatabaseApi import dbBoolean, Subscriber_ArticleEventCategory
+from phDatabaseApi import dbBoolean, Subscriber_ArticleEventCategory, \
+                            InterestCategory
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
@@ -41,10 +42,10 @@ def createPubmedQueryList(phdb, subscriberIdIn = None):
     otherwise, the list is only for the subscriber specified.
     
     Rules to construct the list:
-    1) All categorized as general_journal (category = 2) should be queried 
+    1) All categorized as generalJournal should be queried 
     with no specific keyword. e.g. Nature[Journal]
-    2) All categorized as expert_journal (category = 3) should be queried 
-    with keywords (category = 4) for a specific subscriber.
+    2) All categorized as expertJournal should be queried 
+    with keywords for a specific subscriber.
     e.g.: (telomerase) AND ("Nature"[Journal] OR "Nature medicine"[Journal] )    
                 
     Example:
@@ -106,11 +107,11 @@ def createPubmedQueryList(phdb, subscriberIdIn = None):
     
     if subscriberIdIn is None:
         _, generalJournals = phdb.selectDistinct('interest', ['phrase',], 
-                                             'category = 2') #generalJournal
+                        'category = %s' % str(InterestCategory.generalJournal)) #generalJournal
     else:
         _, generalJournals = phdb.selectDistinct('interest', ['phrase',], 
-                                             'category = 2 and subscriberId = '
-                                             + str(subscriberIdIn))
+                        'category = %s and subscriberId = %s'
+                        % (InterestCategory.generalJournal, str(subscriberIdIn)))
         
     generalJournals = singleStrip(generalJournals)    
         
@@ -146,15 +147,15 @@ def createPubmedQueryList(phdb, subscriberIdIn = None):
     for i in subscriberIds:
         
         _, keywords = phdb.selectDistinct('interest', ['phrase'], 
-                                'subscriberId = %d AND category = 4' % i) #keyword
+                                'subscriberId = %d AND category = %s' % (i, str(InterestCategory.keyword))) #keyword
         keywords = singleStrip(keywords)
         
         _, subscriberGeneralJournals = phdb.selectDistinct('interest', 
-                    ['phrase',], 'subscriberId = %d AND category = 2' % i) #generalJournal
+                    ['phrase',], 'subscriberId = %d AND category = %s' % (i, str(InterestCategory.generalJournal))) #generalJournal
         subscriberGeneralJournals = singleStrip(subscriberGeneralJournals)
         
         _, subscriberExpertJournals = phdb.selectDistinct('interest', 
-                    ['phrase',], 'subscriberId = %d AND category = 3' % i) #expertJournal
+                    ['phrase',], 'subscriberId = %d AND category = %s' % (i, str(InterestCategory.expertJournal))) #expertJournal
         subscriberExpertJournals = singleStrip(subscriberExpertJournals)
         
         subscriberJournals = subscriberGeneralJournals + subscriberExpertJournals
@@ -348,8 +349,8 @@ def queryPubmedAndStoreResults(dbInfo, queryStartTime, queryEndTime, subscriberI
                 dSubscriber_articleEvent = {}
                 dSubscriber_articleEvent['subscriber_articleId'] = subscriber_articleId
                 dSubscriber_articleEvent['timestamp'] = createMysqlDatetimeStr(time.time())
-                dSubscriber_articleEvent['category'] = 1 #created
-                dSubscriber_articleEvent['status'] = 1 #yes
+                dSubscriber_articleEvent['category'] = str(Subscriber_ArticleEventCategory.created)
+                dSubscriber_articleEvent['status'] = str(dbBoolean.yes)
 
                 try:
                     phdb.insertOne('subscriber_articleEvent', dSubscriber_articleEvent)
@@ -556,7 +557,7 @@ def recordSubscriberArticle(dbInfo, subscriberId, articleId, extraInfo, category
     s_aEventDict['subscriber_articleId'] = s_aId
     s_aEventDict['timestamp'] = createMysqlDatetimeStr(time.time())
     s_aEventDict['category'] = category
-    s_aEventDict['status'] = 1 #yes
+    s_aEventDict['status'] = str(dbBoolean.yes)
     s_aEventDict['extraInfo'] = extraInfo
     phdb.insertOne('subscriber_articleEvent',s_aEventDict)
 
@@ -588,7 +589,7 @@ def signUpSubscriber(dbInfo, email, firstName, lastName, areaId, keywords):
         '==area=='
         a={}
         a['subscriberId'] = subscriberId
-        a['category'] = '1' # area. FIXME: can do better
+        a['category'] = str(InterestCategory.area)
         a['phrase'] = areaName
         si.append(a)
         '==generalJournl=='
@@ -601,7 +602,7 @@ def signUpSubscriber(dbInfo, email, firstName, lastName, areaId, keywords):
         for journalTitle in listGeneralJournalTitle:
             j={}
             j['subscriberId'] = subscriberId
-            j['category'] = '2' #general journal. FIXME: can do better
+            j['category'] = str(InterestCategory.generalJournal) 
             j['phrase'] = journalTitle
             si.append(j)
         '==expertJournal=='
@@ -614,14 +615,14 @@ def signUpSubscriber(dbInfo, email, firstName, lastName, areaId, keywords):
         for journalTitle in listExpertJournalTitle:
             j={}
             j['subscriberId'] = subscriberId
-            j['category'] = '3' #expert journal. FIXME: can do better
+            j['category'] = str(InterestCategory.expertJournal)
             j['phrase'] = journalTitle
             si.append(j)
         '==keyword=='
         for keyword in keywords:
             k={}
             k['subscriberId'] = subscriberId
-            k['category'] = '4' #keyword. FIXME: can do better
+            k['category'] = str(InterestCategory.keyword)
             k['phrase'] = keyword
             si.append(k)
     

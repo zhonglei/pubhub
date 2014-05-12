@@ -322,7 +322,7 @@ class PhDatabase(Database):
         query='''CREATE TABLE interest(
                 InterestId INT NOT NULL AUTO_INCREMENT,
                 subscriberId INT NOT NULL,
-                category TINYINT NOT NULL COMMENT 'category: 1 - area, 2- generalJournal, 3 - expertJournal, 4 - keyword, 5 - author, ...',
+                category TINYINT NOT NULL,
                 phrase VARCHAR(255) NOT NULL,
                 PRIMARY KEY (interestId),
                 FOREIGN KEY (subscriberId) REFERENCES subscriber(subscriberId),
@@ -433,7 +433,7 @@ class PhDatabase(Database):
                 subscriber_articleEventId INT NOT NULL AUTO_INCREMENT,
                 subscriber_articleId INT NOT NULL,
                 timestamp DATETIME NOT NULL,
-                category TINYINT NOT NULL COMMENT 'category: 1 - created, 2 - pinned, 3 - moreClicked, 4 - extlinkClicked, ...',
+                category TINYINT NOT NULL,
                 status BOOLEAN NOT NULL,
                 extraInfo TEXT,
                 PRIMARY KEY (subscriber_articleEventId),
@@ -638,8 +638,6 @@ class Subscriber_ArticleEventCategory:
     pinned = 2
     moreClicked = 3
     extlinkClicked = 4
-    emailMoreClicked = 5
-    emailExtlinkClicked = 6
 
 class InterestCategory:
     area = 1

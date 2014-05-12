@@ -14,6 +14,7 @@ import sys
 import time
 
 from phInfo import phDbInfo, pubmedBacktrackSecondForNewSubscriber
+from phDatabaseApi import Subscriber_ArticleEventCategory
 from phController import getListArticlePage, recordSubscriberArticle, \
                          signUpSubscriber, queryPubmedAndStoreResults, \
                          getArticleMorePage
@@ -72,8 +73,8 @@ def showArticleMore():
     extraInfo = header
     
     'record event'
-    category = 3 #moreClicked
-    recordSubscriberArticle(phDbInfo, subscriberId, articleId, extraInfo, category)
+    recordSubscriberArticle(phDbInfo, subscriberId, articleId, extraInfo, 
+                            Subscriber_ArticleEventCategory.moreClicked)
     
     'display articleMore page'
     
@@ -98,8 +99,7 @@ def recordSubscriberArticleAndRedirect():
     extraInfo += 'redirectUrl' + " | " + redirectUrl + " || "
     
     'record event'
-    category = 4 #extlinkClicked
-    recordSubscriberArticle(phDbInfo, subscriberId, articleId, extraInfo, category)
+    recordSubscriberArticle(phDbInfo, subscriberId, articleId, extraInfo, Subscriber_ArticleEventCategory.extlinkClicked)
         
     'redirect'
     redirect(redirectUrl)
