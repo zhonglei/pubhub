@@ -11,11 +11,15 @@ webServerInfo = {'addr':'www.scooply.info',}
 phDbInfo = {'dbName':'pubhub', 'ip':'54.187.112.65', 'user':'root', 
           'password':'lymanDelmedio123'}
 
-testDbInfo = {'dbName':'doctest', 'ip':'54.187.112.65', 'user':'root', 
+doctestDbInfo = {'dbName':'doctest', 'ip':'54.187.112.65', 'user':'root', 
             'password':'lymanDelmedio123'}
 
 emailInfo = {'server':'smtp.gmail.com', 'port':587, 'user':'pubhub2@gmail.com', 
            'password':'lymanDelmedio123', 'mainEmail':'scooply@scooply.info',
+           }
+
+testEmailInfo = {'server':'smtp.gmail.com', 'port':587, 'user':'pubhub2@gmail.com', 
+           'password':'lymanDelmedio123', 'mainEmail':'test@scooply.info',
            }
 
 '''when a new subscriber joins, how many seconds in Pubmed history we backtrack

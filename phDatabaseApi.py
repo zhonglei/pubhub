@@ -45,12 +45,14 @@ class MysqlConnection(DbConnection):
 
     '''
     Example:
-    >>> from phInfo import testDbInfo
-    >>> conn = MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password'])
+    >>> from phInfo import doctestDbInfo
+    >>> conn = MysqlConnection(doctestDbInfo['dbName'],doctestDbInfo['ip'],doctestDbInfo['user'],doctestDbInfo['password'])
     >>> conn._execute('Drop table Dict')
     0
     >>> conn._execute('CREATE TABLE Dict (k VARCHAR(255), v VARCHAR(255));')
     0
+    >>> conn._fetchall('SELECT DISTINCT * FROM Dict')
+    (0, ())
     >>> conn._execute('INSERT INTO Dict (k, v) VALUES (%s,%s)', ("Zhi","32"))
     0
     >>> conn._execute('INSERT INTO Dict (k, v) VALUES (%s,%s)', ("Hu","28"))
@@ -59,9 +61,9 @@ class MysqlConnection(DbConnection):
     0
     >>> conn._commit()
     0
-    >>> _,ret = conn._fetchall('SELECT DISTINCT k FROM Dict')
+    >>> _, ret = conn._fetchall('SELECT DISTINCT * FROM Dict')
     >>> print ret
-    ((u'Zhi',), (u'Hu',), (u'Russ',))
+    ((u'Zhi', u'32'), (u'Hu', u'28'), (u'Russ', u'31'))
     >>> conn._close()
     0
     '''
@@ -161,9 +163,11 @@ class PhDatabase(Database):
         Format database by cleaning data. Use with caution!!
         
         Example:
-        >>> from phInfo import testDbInfo
-        >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
+        >>> from phInfo import doctestDbInfo
+        >>> phdb = PhDatabase(MysqlConnection(doctestDbInfo['dbName'],doctestDbInfo['ip'],doctestDbInfo['user'],doctestDbInfo['password']))
         >>> phdb._formatDatabase()
+        >>> phdb.fetchall("SELECT DISTINCT * FROM article")
+        (0, ())
         >>> phdb.close()
         '''
         if self.conn:
@@ -455,15 +459,24 @@ class PhDatabase(Database):
         Returned value: 
         
         Example:
-        >>> from phInfo import testDbInfo
-        >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
+        >>> from phInfo import doctestDbInfo
+        >>> phdb = PhDatabase(MysqlConnection(doctestDbInfo['dbName'],doctestDbInfo['ip'],doctestDbInfo['user'],doctestDbInfo['password']))
         >>> phdb._formatDatabase()
+        >>> phdb.fetchall("SELECT DISTINCT * FROM subscriber")
+        (0, ())
         >>> dSubscriber1 = {'subscriberId':None,'firstName':'Russ', 'lastName':'Li', 'email':'iamjingxian@gmail.com'}
         >>> phdb.insertOneReturnLastInsertId('subscriber',dSubscriber1)
         1L
         >>> dSubscriber2 = {'subscriberId':None,'firstName':'Hu', 'lastName':'Wang', 'email':'wanghugigi@gmail.com'}
         >>> phdb.insertOneReturnLastInsertId('subscriber',dSubscriber2)
         2L
+        >>> phdb.fetchall("SELECT DISTINCT * FROM subscriber")
+        (0, ((1L, u'Russ', u'Li', u'iamjingxian@gmail.com', None), (2L, u'Hu', u'Wang', u'wanghugigi@gmail.com', None)))
+        >>> dSubscriber3 = {'firstName':'Franklin', 'lastName':'Zhong', 'email':'zhonglei@stanford.edu'}
+        >>> phdb.insertOne('subscriber',dSubscriber3)
+        0
+        >>> phdb.fetchall("SELECT DISTINCT * FROM subscriber")
+        (0, ((1L, u'Russ', u'Li', u'iamjingxian@gmail.com', None), (2L, u'Hu', u'Wang', u'wanghugigi@gmail.com', None), (3L, u'Franklin', u'Zhong', u'zhonglei@stanford.edu', None)))
         >>> phdb.close()
         '''
         ret = self.insertOne(tableName,d)
@@ -518,8 +531,8 @@ class PhDatabase(Database):
         all insertion succeeds; 2 if commit fails.
         
         Examples:
-        >>> from phInfo import testDbInfo
-        >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
+        >>> from phInfo import doctestDbInfo
+        >>> phdb = PhDatabase(MysqlConnection(doctestDbInfo['dbName'],doctestDbInfo['ip'],doctestDbInfo['user'],doctestDbInfo['password']))
         >>> phdb.conn._execute('Drop table Dict')
         0
         >>> phdb.conn._execute('CREATE TABLE Dict (k VARCHAR(255), v VARCHAR(255));')
@@ -534,7 +547,7 @@ class PhDatabase(Database):
         0
         >>> phdb.insertMany('Dict',[{'k':'Lala','v':'31'},{'k':'Franklin','v':'31'},{'k':'Yang','v':'31'}])
         0
-        >>> _, res = phdb.selectDistinct('Dict',['k','v'])
+        >>> _, res = phdb.selectDistinct('Dict',['*',])
         >>> print res
         ((u'Zhi', u'32'), (u'Hu', u'28'), (u'Russ', u'31'), (u'Lala', u'31'), (u'Franklin', u'31'), (u'Yang', u'31'))
         >>> phdb.close()
@@ -610,10 +623,10 @@ class PhDatabase(Database):
         debug('fetched result:\n'+ pprint.pformat(res))        
         return (ret, res)
         
-def constructMysqlDatetimeStr(t):
+def createMysqlDatetimeStr(t):
     '''
     Example:
-    >>> constructMysqlDatetimeStr(1398036175.4)
+    >>> createMysqlDatetimeStr(1398036175.4)
     '2014-04-20 23:22:55'
     '''
     

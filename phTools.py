@@ -107,9 +107,9 @@ def replaceKeyValuePair(db, listDict, tableName, keyOld, keyNew):
     articleId in table article).
 
     Example:
-    >>> from phInfo import testDbInfo
+    >>> from phInfo import doctestDbInfo
     >>> from phDatabaseApi import PhDatabase, MysqlConnection
-    >>> phdb = PhDatabase(MysqlConnection(testDbInfo['dbName'],testDbInfo['ip'],testDbInfo['user'],testDbInfo['password']))
+    >>> phdb = PhDatabase(MysqlConnection(doctestDbInfo['dbName'],doctestDbInfo['ip'],doctestDbInfo['user'],doctestDbInfo['password']))
     >>> phdb.conn._execute('DELETE FROM Dict')
     0
     >>> phdb.insertMany('Dict',[{'k':'Zhi','v':'32'},{'k':'Hu','v':'28'},{'k':'Russ','v':'31'},{'k':'Lala','v':'31'},{'k':'Franklin','v':'31'},{'k':'Yang','v':'31'}])
