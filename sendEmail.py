@@ -10,7 +10,7 @@ Created on May 3, 2014
 import sys
 
 from phInfo import phDbInfo, emailInfo
-from phController import sendListArticleToSubscriber
+from phController import emailListArticleToSubscriber
     
 if __name__ == '__main__':
     
@@ -23,9 +23,9 @@ if __name__ == '__main__':
             if a =='--doctest-only':
                 sys.exit()
     
-    subscriberId = 2
+    subscriberId = 3
     sinceDaysAgo = 7
-    sendListArticleToSubscriber(phDbInfo, emailInfo, subscriberId, sinceDaysAgo) 
+    emailListArticleToSubscriber(phDbInfo, emailInfo, subscriberId, sinceDaysAgo) 
     
     print 'Done.'
     

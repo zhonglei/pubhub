@@ -1,4 +1,4 @@
-%ArticleTitle, Abstract, JournalTitle, queryPhrase, dayStr, authorStr, affiliation, DoiIdLinkStr, PMIDLinkStr, pinLinkStr, pinStr = args
+%ArticleTitle, Abstract, JournalTitle, queryPhrase, dayStr, authorStr, affiliation, DoiIdLinkStr, PMIDLinkStr, pinLinkStr, pinStr, listLinkStr = args
 
 <!DOCTYPE html>
 <html lang="en">
@@ -44,7 +44,7 @@
 					 <a href="{{PMIDLinkStr}}"> PubMed </a> |
 		%end
 					 <a href="{{pinLinkStr}}"> {{pinStr}} </a> |
-					%# <a href="javascript:history.back()"> Back |</a> 					
+					 %#<a href="{{listLinkStr}}"> List </a> |					
 				</p>
 			</div>
 			<div style="clear: both;"></div>

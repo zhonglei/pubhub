@@ -60,7 +60,6 @@ def showListArticle():
     startTime = now - sinceDaysAgo * 24 * 3600
     endTime = now
 
-    #output = getListArticlePage(phDbInfo, startTime, endTime, subscriberId)
     listArticleId = getListArticleInTimeInterval(phDbInfo, startTime, endTime, subscriberId)
     output = getListArticlePage(phDbInfo, listArticleId, subscriberId)
 
@@ -156,7 +155,7 @@ def showListPinnedArticle():
     subscriberId = request.query.subscriberId
 
     listArticleId = getListPinnedArticle(phDbInfo, subscriberId)
-    output = getListArticlePage(phDbInfo, listArticleId, subscriberId)
+    output = getListArticlePage(phDbInfo, listArticleId, subscriberId, displayType = 'pinned')
 
     return output
 
@@ -234,11 +233,11 @@ def signin():
 
 @route('/artandilab')
 def artandilab():
-    redirect('/listArticle?subscriberId=1&sinceDaysAgo=7')
+    redirect('/listArticle?subscriberId=1')
     
 @route('/changlab')
 def changlab():
-    redirect('/listArticle?subscriberId=2&sinceDaysAgo=7')
+    redirect('/listArticle?subscriberId=2')
 
 if __name__ == '__main__':
 

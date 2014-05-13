@@ -276,15 +276,15 @@ def queryPubmedAndStoreResults(dbInfo, queryStartTime, queryEndTime, subscriberI
     >>> queryPubmedAndStoreResults(doctestDbInfo, 1399664864 - 2 * 24 * 3600, 1399664864, subscriberId)
     >>> phdb = PhDatabase(MysqlConnection(doctestDbInfo['dbName'],doctestDbInfo['ip'],doctestDbInfo['user'],doctestDbInfo['password']))
     >>> phdb.selectDistinct('article',['articleId'])
-    (0, ((14L,), (13L,), (12L,), (11L,), (10L,), (9L,), (8L,), (7L,), (6L,), (5L,), (23L,), (22L,), (21L,), (4L,), (3L,), (2L,), (1L,), (27L,), (26L,), (25L,), (24L,), (20L,), (19L,), (18L,), (17L,), (16L,), (15L,)))
+    (0, ((37L,), (36L,), (35L,), (34L,), (33L,), (32L,), (31L,), (47L,), (23L,), (22L,), (30L,), (29L,), (28L,), (46L,), (21L,), (20L,), (45L,), (44L,), (27L,), (26L,), (25L,), (24L,), (51L,), (50L,), (49L,), (48L,), (43L,), (42L,), (41L,), (40L,), (39L,), (38L,), (19L,), (18L,), (17L,), (16L,), (15L,), (14L,), (13L,), (12L,), (11L,), (10L,), (9L,), (8L,), (7L,), (6L,), (5L,), (4L,), (3L,), (2L,), (1L,)))
     >>> phdb.close()
     >>> getArticleMorePage(doctestDbInfo, 1, 7)
-    u'\n<!DOCTYPE html>\n<html lang="en">\n    <head>\n        <meta http-equiv="content-type" content="text/html; charset=UTF-8"> \n        <title>Scooply -- Signal amplification and transduction in phytochrome photosensors.</title>\n        <meta name="generator" content="Bootply" />\n        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">\n        <!--Bootstrap-->\n\t\t<link href="css/bootstrap.min.css" rel="stylesheet">\n\t\t<!--Jasny-->\n\t\t  <link href="jasny-bootstrap/css/jasny-bootstrap.min.css" rel="stylesheet">\n\t\t<!--- Style sheet for this template-->\n\t\t<link href="css/scooply-v3.css" rel="stylesheet">\t\t\n        <!--[if lt IE 9]>\n          <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>\n        <![endif]-->\n    </head>\n    \n\t<body>\t\t\t\t\t\t\n\t\t<div class="content_main">\t\n\t\t\n\t\t\t<div class="article_info">\n\t\t\t\n\t\t\t\t<h3> <b> Signal amplification and transduction in phytochrome photosensors. </b> </h3>\n\n\t\t\t\t<h4> \n\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span>\n\t\t\t\t</h4>\n\n\n\t\t\t\t<p class="alignleft"> \n\t\t\t\t\t|\n\t\t\t\t\t <a href="redirect?subscriberId=1&amp;articleId=7&amp;redirectUrl=http%3A//dx.doi.org/10.1038/nature13310"> Nature </a> |\n\t\t\t\t\t <a href="redirect?subscriberId=1&amp;articleId=7&amp;redirectUrl=http%3A//www.ncbi.nlm.nih.gov/pubmed/24776794"> PubMed </a> |\n\t\t\t\t\t <a href="pin?subscriberId=1&amp;articleId=7&amp;status=1"> Save </a> |\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div style="clear: both;"></div>\n\t\t\t\n\t\t\t<div class="article_info">\n\t\t\t\t\t\t\n\t\t\t\t<p> <b>Abstract:</b> Sensory proteins must relay structural signals from the sensory site over large distances to regulatory output domains. Phytochromes are a major family of red-light-sensing kinases that control diverse cellular functions in plants, bacteria and fungi. Bacterial phytochromes consist of a photosensory core and a carboxy-terminal regulatory domain. Structures of photosensory cores are reported in the resting state and conformational responses to light activation have been proposed in the vicinity of the chromophore. However, the structure of the signalling state and the mechanism of downstream signal relay through the photosensory core remain elusive. Here we report crystal and solution structures of the resting and activated states of the photosensory core of the bacteriophytochrome from Deinococcus radiodurans. The structures show an open and closed form of the dimeric protein for the activated and resting states, respectively. This nanometre-scale rearrangement is controlled by refolding of an evolutionarily conserved &#039;tongue&#039;, which is in contact with the chromophore. The findings reveal an unusual mechanism in which atomic-scale conformational changes around the chromophore are first amplified into an \xe5ngstrom-scale distance change in the tongue, and further grow into a nanometre-scale conformational signal. The structural mechanism is a blueprint for understanding how phytochromes connect to the cellular signalling network. </p>\n\n\t\t\t\t<p> <b>Authors:</b> H Takala, A Bj\xf6rling, O Berntsson, H Lehtivuori, S Niebling, M Hoernke, I Kosheleva, R Henning, A Menzel, JA Ihalainen and S Westenhoff </p>\n\n\t\t\t\t<p> <b>Affiliation:</b> 1] Nanoscience Center, Department of Biological and Environmental Science, University of Jyv\xe4skyl\xe4, 40014 Jyv\xe4skyl\xe4, Finland [2] Department of Chemistry and Molecular Biology, University of Gothenburg, 40530 Gothenburg, Sweden [3]. </p>\n\t\t\t\t\n\t\t\t</div>\t\t\t\n\t\t\t<div style="clear: both;"></div>\n\n\t\t</div><!-- content_main-->\n\n    \n\t<!-- jQuery (necessary for Bootstrap\'s JavaScript plugins) -->\n    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>\n    <!-- Include all compiled plugins (below), or include individual files as needed -->\n    <script src="js/bootstrap.min.js"></script>\n\n     <!-- JavaScript jQuery code from Bootply.com editor -->\n\t<script type=\'text/javascript\'>\n\t$(document).ready(function() {\n\t});\n\t</script>\n\t\n\t<!-- Jasney-->\n\t<script src="jasny-bootstrap/js/jasny-bootstrap.min.js"></script>\n\n    </body>\n\n</html>'
+    u'\n<!DOCTYPE html>\n<html lang="en">\n    <head>\n        <meta http-equiv="content-type" content="text/html; charset=UTF-8"> \n        <title>Scooply -- GroEL/ES Chaperonin Modulates the Mechanism and Accelerates the Rate of TIM-Barrel Domain Folding.</title>\n        <meta name="generator" content="Bootply" />\n        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">\n        <!--Bootstrap-->\n\t\t<link href="css/bootstrap.min.css" rel="stylesheet">\n\t\t<!--Jasny-->\n\t\t  <link href="jasny-bootstrap/css/jasny-bootstrap.min.css" rel="stylesheet">\n\t\t<!--- Style sheet for this template-->\n\t\t<link href="css/scooply-v3.css" rel="stylesheet">\t\t\n        <!--[if lt IE 9]>\n          <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>\n        <![endif]-->\n    </head>\n    \n\t<body>\t\t\t\t\t\t\n\t\t<div class="content_main">\t\n\t\t\n\t\t\t<div class="article_info">\n\t\t\t\n\t\t\t\t<h3> <b> GroEL/ES Chaperonin Modulates the Mechanism and Accelerates the Rate of TIM-Barrel Domain Folding. </b> </h3>\n\n\t\t\t\t<h4> \n\t\t\t\t\t1 day ago in <span class="label label-default">Cell</span>\n\t\t\t\t</h4>\n\n\n\t\t\t\t<p class="alignleft"> \n\t\t\t\t\t|\n\t\t\t\t\t <a href="redirect?subscriberId=1&amp;articleId=7&amp;redirectUrl=http%3A//www.ncbi.nlm.nih.gov/pubmed/24813614"> PubMed </a> |\n\t\t\t\t\t <a href="pin?subscriberId=1&amp;articleId=7&amp;status=1"> Save </a> |\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div style="clear: both;"></div>\n\t\t\t\n\t\t\t<div class="article_info">\n\t\t\t\t\t\t\n\t\t\t\t<p> <b>Abstract:</b> The GroEL/ES chaperonin system functions as a protein folding cage. Many obligate substrates of GroEL share the (??)8 TIM-barrel fold, but how the chaperonin promotes folding of these proteins is not known. Here, we analyzed the folding of DapA at peptide resolution using hydrogen/deuterium exchange and mass spectrometry. During spontaneous folding, all elements of the DapA TIM barrel acquire structure simultaneously in a process associated with a long search time. In contrast, GroEL/ES accelerates folding more than 30-fold by catalyzing segmental structure formation in the TIM barrel. Segmental structure formation is also observed during the fast spontaneous folding of a structural homolog of DapA from a bacterium that lacks GroEL/ES. Thus, chaperonin independence correlates with folding properties otherwise enforced by protein confinement in the GroEL/ES cage. We suggest that folding catalysis by GroEL/ES is required by a set of proteins to reach native state at a biologically relevant timescale, avoiding aggregation or degradation. </p>\n\n\t\t\t\t<p> <b>Authors:</b> F Georgescauld, K Popova, AJ Gupta, A Bracher, JR Engen, M Hayer-Hartl and FU Hartl </p>\n\n\t\t\t\t<p> <b>Affiliation:</b> Department of Cellular Biochemistry, Max Planck Institute of Biochemistry, Am Klopferspitz 18, 82152 Martinsried, Germany. </p>\n\t\t\t\t\n\t\t\t</div>\t\t\t\n\t\t\t<div style="clear: both;"></div>\n\n\t\t</div><!-- content_main-->\n\n    \n\t<!-- jQuery (necessary for Bootstrap\'s JavaScript plugins) -->\n    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>\n    <!-- Include all compiled plugins (below), or include individual files as needed -->\n    <script src="js/bootstrap.min.js"></script>\n\n     <!-- JavaScript jQuery code from Bootply.com editor -->\n\t<script type=\'text/javascript\'>\n\t$(document).ready(function() {\n\t});\n\t</script>\n\t\n\t<!-- Jasney-->\n\t<script src="jasny-bootstrap/js/jasny-bootstrap.min.js"></script>\n\n    </body>\n\n</html>'
     >>> listArticleId = getListArticleInTimeInterval(doctestDbInfo, 1399664864 - 1 * 24 * 3600, 1399664864, 1)
     >>> print listArticleId
-    [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+    [38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49]
     >>> getListArticlePage(doctestDbInfo, listArticleId, 1, displayType = 'email')
-    u'<!DOCTYPE html>\n<html lang="en">\n    <head>\n        <meta http-equiv="content-type" content="text/html; charset=UTF-8"> \n        <title>Scooply</title>\n        <meta name="generator" content="Bootply" />\n        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">\t\t\n    </head>\n    \n\t<body>\n\t\n\t<h2>\n\t\tScooply /skoop-li/\n\t</h2>\n\t<p> Hello Zhi, </p>\n\t<p> This week\'s top-notch bioscience papers are ready to view. Enjoy!!</p>\n\t<p> We are persistently working towards improving our search quality. \n\tIf the displayed results do not match your expectation, or if you have any\n\tsuggestions, we would greatly appreciate your feedback by replying to this \n\temail.\n\t<p>Your Scooply team</p>\n\n\n\t\t<div class="outline">\t\n\t\t\t<h3>\n\t\t\t\t<a name="">Summary</a>\n\t\t\t</h3>\n\t\t\t\t\t\n\t\t\t<h4>\n\t\t\t\t<ul>\n\t\t\t\t\t<li><a href="#Science">Science (9 new)</a></li>\n\t\t\t\t\t<li><a href="#DNA sequencing">DNA sequencing (2 new)</a></li>\n\t\t\t\t</ul>\n\t\t\t</h4>\t\t\n\t\t</div>\n\t\t\t\t\t\t\n\t\t<div class="content_main">\n\t\t\n\n\t\n\t\t\t<h3>\n\t\t\t\t<a name="Science">Science</a>\n\t\t\t</h3>\n\t\t\t\t\t\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=15&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1250494">Structural basis for protein antiaggregation activity of the trigger factor chaperone.</a> <br>\n\t\t\t\t\t\tSaio et al., Kalodimos Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=16&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1241062">Sound strategies for hearing restoration.</a> <br>\n\t\t\t\t\t\tG\xe9l\xe9oc et al., Holt Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=17&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1250498">Gibberellin acts positively then negatively to control onset of flower formation in Arabidopsis.</a> <br>\n\t\t\t\t\t\tYamaguchi et al., Wagner Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=18&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1250444">Spatially distributed local fields in the hippocampus encode rat position.</a> <br>\n\t\t\t\t\t\tAgarwal et al., Sommer Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=19&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1251135">Restoration of large damage volumes in polymers.</a> <br>\n\t\t\t\t\t\tWhite et al., Gergely Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=20&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1248903">Hippocampal neurogenesis regulates forgetting during adulthood and infancy.</a> <br>\n\t\t\t\t\t\tAkers et al., Frankland Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=21&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1251141">Vascular and neurogenic rejuvenation of the aging mouse brain by young systemic factors.</a> <br>\n\t\t\t\t\t\tKatsimpardi et al., Rubin Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=22&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1251152">Restoring systemic GDF11 levels reverses age-related dysfunction in mouse skeletal muscle.</a> <br>\n\t\t\t\t\t\tSinha et al., Wagers Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=23&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1252826">Identification of LRRC8 heteromers as an essential component of the volume-regulated anion channel VRAC.</a> <br>\n\t\t\t\t\t\tVoss et al., Jentsch Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\n\n\t\n\t\t\t<h3>\n\t\t\t\t<a name="DNA sequencing">DNA sequencing</a>\n\t\t\t</h3>\n\t\t\t\t\t\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=24&amp;redirectUrl=http%3A//dx.doi.org/10.1371/journal.pgen.1004317">Paternal poly (adp-ribose) metabolism modulates retention of inheritable sperm histones and early embryonic gene expression.</a> <br>\n\t\t\t\t\t\tIhara et al., Meyer Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">PLoS Genet.</span> <br>\n\t\t\t\t\t\tAlert on <span class="label label-default">DNA sequencing</span>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=25&amp;redirectUrl=http%3A//dx.doi.org/10.1371/journal.pgen.1004281">Genome Sequencing and Comparative Genomics of the Broad Host-Range Pathogen Rhizoctonia solani AG8.</a> <br>\n\t\t\t\t\t\tHane et al., Singh Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">PLoS Genet.</span> <br>\n\t\t\t\t\t\tAlert on <span class="label label-default">DNA sequencing</span>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\n\t\t\t\n\t\t</div><!-- content_main-->\n\n    </body>\n\n</html>'
+    u'<!DOCTYPE html>\n<html lang="en">\n    <head>\n        <meta http-equiv="content-type" content="text/html; charset=UTF-8"> \n        <title>Scooply</title>\n        <meta name="generator" content="Bootply" />\n        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">\t\t\n    </head>\n    \n\t<body>\n\t\n\t<h2>\n\t\tScooply /skoop-li/\n\t</h2>\n\t<p> Hello Zhi, </p>\n\t<p> This week\'s top-notch bioscience papers are ready to view. Enjoy!!</p>\n\t<p> We are persistently working towards improving our search quality. \n\tIf the displayed results do not match your expectation, or if you have any\n\tsuggestions, we would greatly appreciate your feedback by replying to this \n\temail.\n\t<p>Your Scooply team</p>\n\n\n\t\t<div class="outline">\t\n\t\t\t<h3>\n\t\t\t\t<a name="">Summary</a>\n\t\t\t</h3>\n\t\t\t\t\t\n\t\t\t<h4>\n\t\t\t\t<ul>\n\t\t\t\t\t<li><a href="#Science">Science (10 new)</a></li>\n\t\t\t\t\t<li><a href="#DNA sequencing">DNA sequencing (2 new)</a></li>\n\t\t\t\t</ul>\n\t\t\t</h4>\t\t\n\t\t</div>\n\t\t\t\t\t\t\n\t\t<div class="content_main">\n\t\t\n\n\t\n\t\t\t<h3>\n\t\t\t\t<a name="Science">Science</a>\n\t\t\t</h3>\n\t\t\t\t\t\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=38">Structural basis for protein antiaggregation activity of the trigger factor chaperone.</a> <br>\n\t\t\t\t\t\tSaio et al., Kalodimos Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=39">Sound strategies for hearing restoration.</a> <br>\n\t\t\t\t\t\tG\xe9l\xe9oc et al., Holt Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=40">Gibberellin acts positively then negatively to control onset of flower formation in Arabidopsis.</a> <br>\n\t\t\t\t\t\tYamaguchi et al., Wagner Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=41">Spatially distributed local fields in the hippocampus encode rat position.</a> <br>\n\t\t\t\t\t\tAgarwal et al., Sommer Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=42">Restoration of large damage volumes in polymers.</a> <br>\n\t\t\t\t\t\tWhite et al., Gergely Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=43">Hippocampal neurogenesis regulates forgetting during adulthood and infancy.</a> <br>\n\t\t\t\t\t\tAkers et al., Frankland Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=44">Vascular and neurogenic rejuvenation of the aging mouse brain by young systemic factors.</a> <br>\n\t\t\t\t\t\tKatsimpardi et al., Rubin Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=45">Restoring systemic GDF11 levels reverses age-related dysfunction in mouse skeletal muscle.</a> <br>\n\t\t\t\t\t\tSinha et al., Wagers Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=46">Identification of LRRC8 heteromers as an essential component of the volume-regulated anion channel VRAC.</a> <br>\n\t\t\t\t\t\tVoss et al., Jentsch Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=47">The transcription factor Gata6 links tissue macrophage phenotype and proliferative renewal.</a> <br>\n\t\t\t\t\t\tRosas et al., Taylor Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\n\n\t\n\t\t\t<h3>\n\t\t\t\t<a name="DNA sequencing">DNA sequencing</a>\n\t\t\t</h3>\n\t\t\t\t\t\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=48">Paternal poly (adp-ribose) metabolism modulates retention of inheritable sperm histones and early embryonic gene expression.</a> <br>\n\t\t\t\t\t\tIhara et al., Meyer Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">PLoS Genet.</span> <br>\n\t\t\t\t\t\tAlert on <span class="label label-default">DNA sequencing</span>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=49">Genome Sequencing and Comparative Genomics of the Broad Host-Range Pathogen Rhizoctonia solani AG8.</a> <br>\n\t\t\t\t\t\tHane et al., Singh Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">PLoS Genet.</span> <br>\n\t\t\t\t\t\tAlert on <span class="label label-default">DNA sequencing</span>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\n\t\t\t\n\t\t</div><!-- content_main-->\n\n    </body>\n\n</html>'
     >>> recordSubscriberArticle(doctestDbInfo, 1, 7, '', Subscriber_ArticleEventCategory.pinned, dbBoolean.yes)
     >>> phdb = PhDatabase(MysqlConnection(doctestDbInfo['dbName'],doctestDbInfo['ip'],doctestDbInfo['user'],doctestDbInfo['password']))
     >>> phdb.fetchall('SELECT category, status FROM subscriber_articleEvent JOIN subscriber_article ON subscriber_articleEvent.subscriber_articleId = subscriber_article.subscriber_articleId WHERE articleId = 7 ORDER BY timestamp DESC')
@@ -305,8 +305,9 @@ def queryPubmedAndStoreResults(dbInfo, queryStartTime, queryEndTime, subscriberI
     >>> phdb.getSubscriber_ArticleStatus(1, 7, Subscriber_ArticleEventCategory.extlinkClicked)
     0
     >>> phdb.close()
-    >>> sendListArticleToSubscriber(doctestDbInfo, testEmailInfo, 1, sinceDaysAgo = 2, now = 1399664864)
-    'Content-Type: multipart/alternative;\n boundary="===============3659198616141168611=="\nMIME-Version: 1.0\nSubject: This week\'s bioscience hot papers, brought to you by Scooply\nFrom: test@scooply.info\nTo: lizhi1981@gmail.com\n\n--===============3659198616141168611==\nContent-Type: text/plain; charset="us-ascii"\nMIME-Version: 1.0\nContent-Transfer-Encoding: 7bit\n\nPlain text to be added.\n--===============3659198616141168611==\nContent-Type: text/html; charset="us-ascii"\nMIME-Version: 1.0\nContent-Transfer-Encoding: 8bit\n\n<!DOCTYPE html>\n<html lang="en">\n    <head>\n        <meta http-equiv="content-type" content="text/html; charset=UTF-8"> \n        <title>Scooply</title>\n        <meta name="generator" content="Bootply" />\n        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">\t\t\n    </head>\n    \n\t<body>\n\t\n\t<h2>\n\t\tScooply /skoop-li/\n\t</h2>\n\t<p> Hello Zhi, </p>\n\t<p> This week\'s top-notch bioscience papers are ready to view. Enjoy!!</p>\n\t<p> We are persistently working towards improving our search quality. \n\tIf the displayed results do not match your expectation, or if you have any\n\tsuggestions, we would greatly appreciate your feedback by replying to this \n\temail.\n\t<p>Your Scooply team</p>\n\n\n\t\t<div class="outline">\t\n\t\t\t<h3>\n\t\t\t\t<a name="">Summary</a>\n\t\t\t</h3>\n\t\t\t\t\t\n\t\t\t<h4>\n\t\t\t\t<ul>\n\t\t\t\t\t<li><a href="#Nature">Nature (11 new)</a></li>\n\t\t\t\t\t<li><a href="#Science">Science (9 new)</a></li>\n\t\t\t\t\t<li><a href="#DNA sequencing">DNA sequencing (3 new)</a></li>\n\t\t\t\t</ul>\n\t\t\t</h4>\t\t\n\t\t</div>\n\t\t\t\t\t\t\n\t\t<div class="content_main">\n\t\t\n\n\t\n\t\t\t<h3>\n\t\t\t\t<a name="Nature">Nature</a>\n\t\t\t</h3>\n\t\t\t\t\t\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=1&amp;redirectUrl=http%3A//dx.doi.org/10.1038/nature13247">Consequences of biodiversity loss for litter decomposition across biomes.</a> <br>\n\t\t\t\t\t\tHanda et al., H\xc3\xa4ttenschwiler Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=5&amp;redirectUrl=http%3A//dx.doi.org/10.1038/nature13272">Niche filling slows the diversification of Himalayan songbirds.</a> <br>\n\t\t\t\t\t\tPrice et al., Mohan Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=6&amp;redirectUrl=http%3A//dx.doi.org/10.1038/nature13161">Astrocyte-encoded positional cues maintain sensorimotor circuit integrity.</a> <br>\n\t\t\t\t\t\tMolofsky et al., Rowitch Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=7&amp;redirectUrl=http%3A//dx.doi.org/10.1038/nature13310">Signal amplification and transduction in phytochrome photosensors.</a> <br>\n\t\t\t\t\t\tTakala et al., Westenhoff Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=8&amp;redirectUrl=http%3A//dx.doi.org/10.1038/nature13139">Predicting biodiversity change and averting collapse in agricultural landscapes.</a> <br>\n\t\t\t\t\t\tMendenhall et al., Daily Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=9&amp;redirectUrl=http%3A//dx.doi.org/10.1038/nature13168">Listeria monocytogenes exploits efferocytosis to promote cell-to-cell spread.</a> <br>\n\t\t\t\t\t\tCzuczman et al., Brumell Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=10&amp;redirectUrl=http%3A//dx.doi.org/10.1038/nature13152">NRROS negatively regulates reactive oxygen species during host defence and autoimmunity.</a> <br>\n\t\t\t\t\t\tNoubade et al., Ouyang Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=11&amp;redirectUrl=http%3A//dx.doi.org/10.1038/nature13154">Synapse elimination and learning rules co-regulated by MHC class I H2-Db.</a> <br>\n\t\t\t\t\t\tLee et al., Shatz Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=12&amp;redirectUrl=http%3A//dx.doi.org/10.1038/nature13133">Endosomes are specialized platforms for bacterial sensing and NOD2 signalling.</a> <br>\n\t\t\t\t\t\tNakamura et al., Mellman Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=13&amp;redirectUrl=http%3A//dx.doi.org/10.1038/nature13159">Sensory stimulation shifts visual cortex from synchronous to asynchronous states.</a> <br>\n\t\t\t\t\t\tTan et al., Priebe Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=14&amp;redirectUrl=http%3A//dx.doi.org/10.1038/nature13135">FXR is a molecular target for the effects of vertical sleeve gastrectomy.</a> <br>\n\t\t\t\t\t\tRyan et al., Seeley Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\n\n\t\n\t\t\t<h3>\n\t\t\t\t<a name="Science">Science</a>\n\t\t\t</h3>\n\t\t\t\t\t\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=15&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1250494">Structural basis for protein antiaggregation activity of the trigger factor chaperone.</a> <br>\n\t\t\t\t\t\tSaio et al., Kalodimos Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=16&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1241062">Sound strategies for hearing restoration.</a> <br>\n\t\t\t\t\t\tG\xc3\xa9l\xc3\xa9oc et al., Holt Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=17&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1250498">Gibberellin acts positively then negatively to control onset of flower formation in Arabidopsis.</a> <br>\n\t\t\t\t\t\tYamaguchi et al., Wagner Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=18&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1250444">Spatially distributed local fields in the hippocampus encode rat position.</a> <br>\n\t\t\t\t\t\tAgarwal et al., Sommer Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=19&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1251135">Restoration of large damage volumes in polymers.</a> <br>\n\t\t\t\t\t\tWhite et al., Gergely Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=20&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1248903">Hippocampal neurogenesis regulates forgetting during adulthood and infancy.</a> <br>\n\t\t\t\t\t\tAkers et al., Frankland Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=21&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1251141">Vascular and neurogenic rejuvenation of the aging mouse brain by young systemic factors.</a> <br>\n\t\t\t\t\t\tKatsimpardi et al., Rubin Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=22&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1251152">Restoring systemic GDF11 levels reverses age-related dysfunction in mouse skeletal muscle.</a> <br>\n\t\t\t\t\t\tSinha et al., Wagers Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=23&amp;redirectUrl=http%3A//dx.doi.org/10.1126/science.1252826">Identification of LRRC8 heteromers as an essential component of the volume-regulated anion channel VRAC.</a> <br>\n\t\t\t\t\t\tVoss et al., Jentsch Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\n\n\t\n\t\t\t<h3>\n\t\t\t\t<a name="DNA sequencing">DNA sequencing</a>\n\t\t\t</h3>\n\t\t\t\t\t\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=24&amp;redirectUrl=http%3A//dx.doi.org/10.1371/journal.pgen.1004317">Paternal poly (adp-ribose) metabolism modulates retention of inheritable sperm histones and early embryonic gene expression.</a> <br>\n\t\t\t\t\t\tIhara et al., Meyer Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">PLoS Genet.</span> <br>\n\t\t\t\t\t\tAlert on <span class="label label-default">DNA sequencing</span>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=25&amp;redirectUrl=http%3A//dx.doi.org/10.1371/journal.pgen.1004281">Genome Sequencing and Comparative Genomics of the Broad Host-Range Pathogen Rhizoctonia solani AG8.</a> <br>\n\t\t\t\t\t\tHane et al., Singh Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">PLoS Genet.</span> <br>\n\t\t\t\t\t\tAlert on <span class="label label-default">DNA sequencing</span>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/redirect?subscriberId=1&amp;articleId=27&amp;redirectUrl=http%3A//www.ncbi.nlm.nih.gov/pubmed/24808136">Simultaneous assessment of the macrobiome and microbiome in a bulk sample of tropical arthropods through DNA metasystematics.</a> <br>\n\t\t\t\t\t\tGibson et al., Hajibabaei Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Proc. Natl. Acad. Sci. U.S.A.</span> <br>\n\t\t\t\t\t\tAlert on <span class="label label-default">DNA sequencing</span>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\n\t\t\t\n\t\t</div><!-- content_main-->\n\n    </body>\n\n</html>\n--===============3659198616141168611==--'
+    >>> emailListArticleToSubscriber(doctestDbInfo, testEmailInfo, 1, sinceDaysAgo = 2, now = 1399664864)
+    'Content-Type: multipart/alternative;\n boundary="===============8787601106855072319=="\nMIME-Version: 1.0\nSubject: This week\'s bioscience hot papers, brought to you by Scooply\nFrom: test@scooply.info\nTo: lizhi1981@gmail.com\n\n--===============8787601106855072319==\nContent-Type: text/plain; charset="us-ascii"\nMIME-Version: 1.0\nContent-Transfer-Encoding: 7bit\n\nPlain text to be added.\n--===============8787601106855072319==\nContent-Type: text/html; charset="us-ascii"\nMIME-Version: 1.0\nContent-Transfer-Encoding: 8bit\n\n<!DOCTYPE html>\n<html lang="en">\n    <head>\n        <meta http-equiv="content-type" content="text/html; charset=UTF-8"> \n        <title>Scooply</title>\n        <meta name="generator" content="Bootply" />\n        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">\t\t\n    </head>\n    \n\t<body>\n\t\n\t<h2>\n\t\tScooply /skoop-li/\n\t</h2>\n\t<p> Hello Zhi, </p>\n\t<p> This week\'s top-notch bioscience papers are ready to view. Enjoy!!</p>\n\t<p> We are persistently working towards improving our search quality. \n\tIf the displayed results do not match your expectation, or if you have any\n\tsuggestions, we would greatly appreciate your feedback by replying to this \n\temail.\n\t<p>Your Scooply team</p>\n\n\n\t\t<div class="outline">\t\n\t\t\t<h3>\n\t\t\t\t<a name="">Summary</a>\n\t\t\t</h3>\n\t\t\t\t\t\n\t\t\t<h4>\n\t\t\t\t<ul>\n\t\t\t\t\t<li><a href="#Nature">Nature (11 new)</a></li>\n\t\t\t\t\t<li><a href="#Science">Science (10 new)</a></li>\n\t\t\t\t\t<li><a href="#DNA sequencing">DNA sequencing (3 new)</a></li>\n\t\t\t\t</ul>\n\t\t\t</h4>\t\t\n\t\t</div>\n\t\t\t\t\t\t\n\t\t<div class="content_main">\n\t\t\n\n\t\n\t\t\t<h3>\n\t\t\t\t<a name="Nature">Nature</a>\n\t\t\t</h3>\n\t\t\t\t\t\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=24">Consequences of biodiversity loss for litter decomposition across biomes.</a> <br>\n\t\t\t\t\t\tHanda et al., H\xc3\xa4ttenschwiler Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=28">Niche filling slows the diversification of Himalayan songbirds.</a> <br>\n\t\t\t\t\t\tPrice et al., Mohan Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=29">Astrocyte-encoded positional cues maintain sensorimotor circuit integrity.</a> <br>\n\t\t\t\t\t\tMolofsky et al., Rowitch Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=30">Signal amplification and transduction in phytochrome photosensors.</a> <br>\n\t\t\t\t\t\tTakala et al., Westenhoff Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=31">Predicting biodiversity change and averting collapse in agricultural landscapes.</a> <br>\n\t\t\t\t\t\tMendenhall et al., Daily Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=32">Listeria monocytogenes exploits efferocytosis to promote cell-to-cell spread.</a> <br>\n\t\t\t\t\t\tCzuczman et al., Brumell Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=33">NRROS negatively regulates reactive oxygen species during host defence and autoimmunity.</a> <br>\n\t\t\t\t\t\tNoubade et al., Ouyang Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=34">Synapse elimination and learning rules co-regulated by MHC class I H2-Db.</a> <br>\n\t\t\t\t\t\tLee et al., Shatz Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=35">Endosomes are specialized platforms for bacterial sensing and NOD2 signalling.</a> <br>\n\t\t\t\t\t\tNakamura et al., Mellman Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=36">Sensory stimulation shifts visual cortex from synchronous to asynchronous states.</a> <br>\n\t\t\t\t\t\tTan et al., Priebe Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=37">FXR is a molecular target for the effects of vertical sleeve gastrectomy.</a> <br>\n\t\t\t\t\t\tRyan et al., Seeley Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Nature</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\n\n\t\n\t\t\t<h3>\n\t\t\t\t<a name="Science">Science</a>\n\t\t\t</h3>\n\t\t\t\t\t\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=38">Structural basis for protein antiaggregation activity of the trigger factor chaperone.</a> <br>\n\t\t\t\t\t\tSaio et al., Kalodimos Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=39">Sound strategies for hearing restoration.</a> <br>\n\t\t\t\t\t\tG\xc3\xa9l\xc3\xa9oc et al., Holt Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=40">Gibberellin acts positively then negatively to control onset of flower formation in Arabidopsis.</a> <br>\n\t\t\t\t\t\tYamaguchi et al., Wagner Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=41">Spatially distributed local fields in the hippocampus encode rat position.</a> <br>\n\t\t\t\t\t\tAgarwal et al., Sommer Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=42">Restoration of large damage volumes in polymers.</a> <br>\n\t\t\t\t\t\tWhite et al., Gergely Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=43">Hippocampal neurogenesis regulates forgetting during adulthood and infancy.</a> <br>\n\t\t\t\t\t\tAkers et al., Frankland Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=44">Vascular and neurogenic rejuvenation of the aging mouse brain by young systemic factors.</a> <br>\n\t\t\t\t\t\tKatsimpardi et al., Rubin Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=45">Restoring systemic GDF11 levels reverses age-related dysfunction in mouse skeletal muscle.</a> <br>\n\t\t\t\t\t\tSinha et al., Wagers Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=46">Identification of LRRC8 heteromers as an essential component of the volume-regulated anion channel VRAC.</a> <br>\n\t\t\t\t\t\tVoss et al., Jentsch Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=47">The transcription factor Gata6 links tissue macrophage phenotype and proliferative renewal.</a> <br>\n\t\t\t\t\t\tRosas et al., Taylor Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">Science</span> <br>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\n\n\t\n\t\t\t<h3>\n\t\t\t\t<a name="DNA sequencing">DNA sequencing</a>\n\t\t\t</h3>\n\t\t\t\t\t\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=48">Paternal poly (adp-ribose) metabolism modulates retention of inheritable sperm histones and early embryonic gene expression.</a> <br>\n\t\t\t\t\t\tIhara et al., Meyer Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">PLoS Genet.</span> <br>\n\t\t\t\t\t\tAlert on <span class="label label-default">DNA sequencing</span>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=49">Genome Sequencing and Comparative Genomics of the Broad Host-Range Pathogen Rhizoctonia solani AG8.</a> <br>\n\t\t\t\t\t\tHane et al., Singh Lab <br>\n\t\t\t\t\t\t4 days ago in <span class="label label-default">PLoS Genet.</span> <br>\n\t\t\t\t\t\tAlert on <span class="label label-default">DNA sequencing</span>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\t\n\t\t\t\t<div class="article_info">\n\t\t\t\t\t<h4> \n\t\t\t\t\t\t<a href="http://www.scooply.info/articleMore?subscriberId=1&amp;articleId=51">Simultaneous assessment of the macrobiome and microbiome in a bulk sample of tropical arthropods through DNA metasystematics.</a> <br>\n\t\t\t\t\t\tGibson et al., Hajibabaei Lab <br>\n\t\t\t\t\t\t5 days ago in <span class="label label-default">Proc. Natl. Acad. Sci. U.S.A.</span> <br>\n\t\t\t\t\t\tAlert on <span class="label label-default">DNA sequencing</span>\n\t\t\t\t\t</h4>\n\t\t\t\t</div>\n\n\t\t\t\n\t\t</div><!-- content_main-->\n\n    </body>\n\n</html>\n--===============8787601106855072319==--'
+
     '''
  
     timeStr = createPubmedTimeStr(queryStartTime, queryEndTime)
@@ -401,6 +402,166 @@ def queryPubmedAndStoreResults(dbInfo, queryStartTime, queryEndTime, subscriberI
     'close pubhub database'
     phdb.close()
     
+def getListArticleInTimeInterval(dbInfo, startTime, endTime, subscriberId):
+    '''
+    Note: startTime and endTime are both in epoch (unix) time.
+    '''
+    startTime = createMysqlDatetimeStr(startTime)
+    endTime = createMysqlDatetimeStr(endTime)
+    phdb = PhDatabase(MysqlConnection(dbInfo['dbName'],dbInfo['ip'],
+                                      dbInfo['user'],dbInfo['password']))
+    queryStartTime=time.time()
+
+    _, listArticleId = phdb.fetchall(u'''SELECT DISTINCT article.articleId
+    FROM article 
+    LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
+    WHERE subscriber_article.subscriberId = %s 
+    AND article.DateCreated > '%s' 
+    AND article.DateCreated < '%s'
+    ;''' % (subscriberId, startTime, endTime))
+    listArticleId = singleStrip(listArticleId)
+    #ORDER BY article.DateCreated DESC
+    
+    #FIXME ad hoc, revise
+    listArticleId = map(lambda x: int(x), listArticleId)
+    
+    timeElapsed = time.time()-queryStartTime
+    if timeElapsed > 0.1:
+        warning("getListArticleInTimeInterval 2 tables join takes %.2f sec!" % timeElapsed)
+    
+    phdb.close()
+    
+    return listArticleId
+
+def getListArticlePage(dbInfo, listArticleId, subscriberId, displayType = 'regular'):
+    
+    phdb = PhDatabase(MysqlConnection(dbInfo['dbName'],dbInfo['ip'],
+                                      dbInfo['user'],dbInfo['password']))
+    
+    'FIXME: 4 tables join!'
+    queryStartTime=time.time()
+
+    'old method:'
+#     _, res = phdb.fetchall(u'''SELECT DISTINCT article.articleId, ArticleTitle, 
+#     JournalISOAbbreviation, DateCreated, firstAuthor.authorId, firstAuthor.initials, 
+#     firstAuthor.lastName, firstAuthor.affiliation, lastAuthor.authorId, 
+#     lastAuthor.lastName, lastAuthor.affiliation, DoiId, PMID, subscriber_article.queryPhrase
+#     FROM article 
+#     LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
+#     LEFT JOIN firstAuthor ON article.articleId = firstAuthor.articleId 
+#     LEFT JOIN lastAuthor ON article.articleId = lastAuthor.articleId 
+#     WHERE subscriber_article.subscriberId = %s 
+#     AND article.DateCreated > '%s' 
+#     AND article.DateCreated < '%s'
+#     ;''' % (subscriberId, startTime, endTime))
+    
+    'new method:'
+    
+    if len(listArticleId) == 0:
+        res = []
+    else:
+        if len(listArticleId) == 1:
+            ls = '(' + str(listArticleId[0]) + ')'
+        else:
+            ls = str(tuple(listArticleId))
+        s = u'''SELECT DISTINCT article.articleId, ArticleTitle, 
+        JournalISOAbbreviation, DateCreated, firstAuthor.authorId, firstAuthor.initials, 
+        firstAuthor.lastName, firstAuthor.affiliation, lastAuthor.authorId, 
+        lastAuthor.lastName, lastAuthor.affiliation, DoiId, PMID, subscriber_article.queryPhrase
+        FROM article 
+        LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
+        LEFT JOIN firstAuthor ON article.articleId = firstAuthor.articleId 
+        LEFT JOIN lastAuthor ON article.articleId = lastAuthor.articleId 
+        WHERE article.articleId IN %s
+        ORDER BY FIELD(article.articleId, %s
+        ;''' % (ls, ls[1:])
+        
+        '''
+        Note above is similar to:
+        SELECT * FROM table WHERE id IN (118,17,113,23,72) 
+        ORDER BY FIELD(id,118,17,113,23,72)
+        '''
+        
+        _, res = phdb.fetchall(s)
+     
+    timeElapsed = time.time()-queryStartTime
+    if timeElapsed > 0.1:
+        warning("getListArticlePage 4 tables join takes %.2f sec!" % timeElapsed)
+    
+    _, res2 = phdb.selectDistinct('subscriber', ['firstName', 'lastName', 'email'], 
+                                 'subscriberId = ' + str(subscriberId))
+    firstName, lastName, email = res2[0]
+
+    phdb.close()
+    
+    name = ''
+    if firstName:
+        name = firstName
+    elif lastName:
+        name = lastName
+    elif email:
+        name = email
+    else:
+        name = 'stranger'
+    
+    rows=[]
+    for (articleId, ArticleTitle, JournalTitle, DateCreated, firstAuthorId, 
+    firstAuthorInitials, firstAuthorLastName, firstAuthorAffiliation, 
+    lastAuthorId, lastAuthorLastName, lastAuthorAffiliation, DoiId, PMID, 
+    queryPhrase) in res:
+    
+        dayStr = createDayStr(DateCreated)
+        
+        affiliation=''
+        if firstAuthorAffiliation != '':
+            affiliation = firstAuthorAffiliation
+        elif lastAuthorAffiliation != '':
+            affiliation = lastAuthorAffiliation
+
+#         if DoiId != '':
+#             www = 'http://dx.doi.org/' + DoiId
+#         else: 
+#             www = 'http://www.ncbi.nlm.nih.gov/pubmed/' + str(PMID)
+#         www = urllib2.quote(www.encode("ascii"))
+            
+        if displayType == 'email':
+            
+#             articleLinkStr = 'http://'+webServerInfo['addr']+ '/' \
+#                         'redirect?subscriberId=%s&articleId=%s&redirectUrl=%s' \
+#                         % (subscriberId,str(articleId),www)
+
+            'now all link to our website:'
+            articleLinkStr = 'http://'+webServerInfo['addr']+ '/' \
+                        'articleMore?subscriberId=%s&articleId=%s' \
+                        % (subscriberId,str(articleId))
+                        
+        else:
+            articleLinkStr = 'articleMore?subscriberId=%s&articleId=%s' \
+                        % (subscriberId,str(articleId))
+                    
+        if firstAuthorLastName and firstAuthorLastName != '':
+            if firstAuthorId != lastAuthorId:
+                authorField = firstAuthorLastName+' et al., '+lastAuthorLastName+' Lab'
+            else:
+                authorField = ''
+                if firstAuthorInitials and firstAuthorInitials != '':
+                    authorField += firstAuthorInitials+' '
+                authorField += firstAuthorLastName
+        else:
+            authorField = ''
+            
+        rows.append((queryPhrase, ArticleTitle, JournalTitle, dayStr, authorField, 
+                     affiliation, articleLinkStr))
+                
+    if displayType == 'email':
+        output = template('views/emailListArticle', rows = rows, name = name)
+    elif displayType == 'pinned':
+        output = template('views/listPinnedArticle', rows = rows)
+    else: # 'regular'
+        output = template('views/listArticle', rows = rows)
+    
+    return output
+
 def getArticleMorePage(dbInfo, subscriberId, articleId):
     
     phdb = PhDatabase(MysqlConnection(dbInfo['dbName'],dbInfo['ip'],
@@ -474,150 +635,18 @@ def getArticleMorePage(dbInfo, subscriberId, articleId):
         
     pinLinkStr = 'pin?subscriberId=%s&articleId=%s&status=%s' \
                 % (subscriberId, str(articleId), toPin)
+                
+    listLinkStr = 'listArticle?subscriberId=%s' % subscriberId
     
     args = (ArticleTitle, Abstract, JournalTitle, queryPhrase, dayStr, 
-            authorStr, affiliation, DoiIdLinkStr, PMIDLinkStr, pinLinkStr, pinStr)
+            authorStr, affiliation, DoiIdLinkStr, PMIDLinkStr, pinLinkStr, 
+            pinStr, listLinkStr)
     
     output = template('views/articleMore', args = args)
     
     return output
 
-def getListArticleInTimeInterval(dbInfo, startTime, endTime, subscriberId):
-    '''
-    Note: startTime and endTime are both in epoch (unix) time.
-    '''
-    startTime = createMysqlDatetimeStr(startTime)
-    endTime = createMysqlDatetimeStr(endTime)
-    phdb = PhDatabase(MysqlConnection(dbInfo['dbName'],dbInfo['ip'],
-                                      dbInfo['user'],dbInfo['password']))
-    queryStartTime=time.time()
 
-    _, listArticleId = phdb.fetchall(u'''SELECT DISTINCT article.articleId
-    FROM article 
-    LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
-    WHERE subscriber_article.subscriberId = %s 
-    AND article.DateCreated > '%s' 
-    AND article.DateCreated < '%s'
-    ;''' % (subscriberId, startTime, endTime))
-    listArticleId = singleStrip(listArticleId)
-    
-    #FIXME ad hoc, revise
-    listArticleId = map(lambda x: int(x), listArticleId)
-    
-    timeElapsed = time.time()-queryStartTime
-    if timeElapsed > 0.1:
-        warning("getListArticleInTimeInterval 2 tables join takes %.2f sec!" % timeElapsed)
-    
-    phdb.close()
-    
-    return listArticleId
-
-def getListArticlePage(dbInfo, listArticleId, subscriberId, displayType = 'web'):
-    
-    phdb = PhDatabase(MysqlConnection(dbInfo['dbName'],dbInfo['ip'],
-                                      dbInfo['user'],dbInfo['password']))
-    
-    'FIXME: 4 tables join!'
-    queryStartTime=time.time()
-
-    'old method:'
-#     _, res = phdb.fetchall(u'''SELECT DISTINCT article.articleId, ArticleTitle, 
-#     JournalISOAbbreviation, DateCreated, firstAuthor.authorId, firstAuthor.initials, 
-#     firstAuthor.lastName, firstAuthor.affiliation, lastAuthor.authorId, 
-#     lastAuthor.lastName, lastAuthor.affiliation, DoiId, PMID, subscriber_article.queryPhrase
-#     FROM article 
-#     LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
-#     LEFT JOIN firstAuthor ON article.articleId = firstAuthor.articleId 
-#     LEFT JOIN lastAuthor ON article.articleId = lastAuthor.articleId 
-#     WHERE subscriber_article.subscriberId = %s 
-#     AND article.DateCreated > '%s' 
-#     AND article.DateCreated < '%s'
-#     ;''' % (subscriberId, startTime, endTime))
-    
-    'new method:'
-    
-    s = u'''SELECT DISTINCT article.articleId, ArticleTitle, 
-    JournalISOAbbreviation, DateCreated, firstAuthor.authorId, firstAuthor.initials, 
-    firstAuthor.lastName, firstAuthor.affiliation, lastAuthor.authorId, 
-    lastAuthor.lastName, lastAuthor.affiliation, DoiId, PMID, subscriber_article.queryPhrase
-    FROM article 
-    LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
-    LEFT JOIN firstAuthor ON article.articleId = firstAuthor.articleId 
-    LEFT JOIN lastAuthor ON article.articleId = lastAuthor.articleId 
-    WHERE article.articleId IN %s
-    ;''' % str(tuple(listArticleId))
-    
-    _, res = phdb.fetchall(s)
-     
-    timeElapsed = time.time()-queryStartTime
-    if timeElapsed > 0.1:
-        warning("getListArticlePage 4 tables join takes %.2f sec!" % timeElapsed)
-    
-    _, res2 = phdb.selectDistinct('subscriber', ['firstName', 'lastName', 'email'], 
-                                 'subscriberId = ' + str(subscriberId))
-    firstName, lastName, email = res2[0]
-
-    phdb.close()
-    
-    name = ''
-    if firstName:
-        name = firstName
-    elif lastName:
-        name = lastName
-    elif email:
-        name = email
-    else:
-        name = 'stranger'
-    
-    rows=[]
-    for (articleId, ArticleTitle, JournalTitle, DateCreated, firstAuthorId, 
-    firstAuthorInitials, firstAuthorLastName, firstAuthorAffiliation, 
-    lastAuthorId, lastAuthorLastName, lastAuthorAffiliation, DoiId, PMID, 
-    queryPhrase) in res:
-    
-        dayStr = createDayStr(DateCreated)
-        
-        affiliation=''
-        if firstAuthorAffiliation != '':
-            affiliation = firstAuthorAffiliation
-        elif lastAuthorAffiliation != '':
-            affiliation = lastAuthorAffiliation
-
-        if DoiId != '':
-            www = 'http://dx.doi.org/' + DoiId
-        else: 
-            www = 'http://www.ncbi.nlm.nih.gov/pubmed/' + str(PMID)
-
-        www = urllib2.quote(www.encode("ascii"))
-            
-        if displayType == 'email':
-            articleLinkStr = 'http://'+webServerInfo['addr']+ '/' \
-                        'redirect?subscriberId=%s&articleId=%s&redirectUrl=%s' \
-                        % (subscriberId,str(articleId),www)
-        else:
-            articleLinkStr = 'articleMore?subscriberId=%s&articleId=%s' \
-                        % (subscriberId,str(articleId))
-                    
-        if firstAuthorLastName and firstAuthorLastName != '':
-            if firstAuthorId != lastAuthorId:
-                authorField = firstAuthorLastName+' et al., '+lastAuthorLastName+' Lab'
-            else:
-                authorField = ''
-                if firstAuthorInitials and firstAuthorInitials != '':
-                    authorField += firstAuthorInitials+' '
-                authorField += firstAuthorLastName
-        else:
-            authorField = ''
-            
-        rows.append((queryPhrase, ArticleTitle, JournalTitle, dayStr, authorField, 
-                     affiliation, articleLinkStr))
-                
-    if displayType == 'email':    
-        output = template('views/emailListArticle', rows = rows, name = name)
-    else:
-        output = template('views/listArticle', rows = rows)
-    
-    return output
 
 def recordSubscriberArticle(dbInfo, subscriberId, articleId, extraInfo, category, status):
     
@@ -627,7 +656,7 @@ def recordSubscriberArticle(dbInfo, subscriberId, articleId, extraInfo, category
     _, s_aId = phdb.selectDistinct('subscriber_article',['subscriber_articleId'],
                                  'subscriberId = %s AND articleId = %s' %
                                  (str(subscriberId), str(articleId)))
-    
+    #FIXME: what if s_aId is None
     s_aId = singleStrip(s_aId)[0] # need double strip
     
     s_aEventDict={}
@@ -739,7 +768,7 @@ def getLastPhDatabaseUpdateTime(dbInfo):
 
     return lastTime
 
-def sendListArticleToSubscriber(dbInfo, emailInfo, subscriberId, sinceDaysAgo = 7, now = None):
+def emailListArticleToSubscriber(dbInfo, emailInfo, subscriberId, sinceDaysAgo = 7, now = None):
     
     sender = emailInfo['mainEmail']
 
@@ -759,7 +788,6 @@ def sendListArticleToSubscriber(dbInfo, emailInfo, subscriberId, sinceDaysAgo = 
     startTime = now - sinceDaysAgo * 24 * 3600
     endTime = now
     
-    #html = getListArticlePage(dbInfo, startTime, endTime, subscriberId, displayType = 'email')
     listArticleId = getListArticleInTimeInterval(dbInfo, startTime, endTime, subscriberId)
     html = getListArticlePage(dbInfo, listArticleId, subscriberId, displayType = 'email')
 
@@ -801,7 +829,8 @@ def getListPinnedArticle(dbInfo, subscriberId):
     JOIN pinnedSubscriber_ArticleStatus 
     ON pinnedSubscriber_ArticleStatus.subscriber_articleId 
     = subscriber_article.subscriber_articleId 
-    WHERE subscriberId = %s and status = %s    
+    WHERE subscriberId = %s and status = %s
+    ORDER BY pinnedSubscriber_ArticleStatus.timestamp DESC
     ''' % (subscriberId, str(dbBoolean.yes)))
     
     listArticleId = singleStrip(listArticleId)
@@ -816,7 +845,6 @@ def getListPinnedArticle(dbInfo, subscriberId):
     phdb.close()
     
     return listArticleId
-
     
 if __name__ == '__main__':
 

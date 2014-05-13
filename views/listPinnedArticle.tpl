@@ -21,42 +21,10 @@
 		<h1>
 			Scooply /skoop-li/
 		</h1>
-
-%listQueryPhrase = [row[0] for row in rows] #first element is queryPhrase
-%listQueryPhrase = list(set(listQueryPhrase)) # distinct
-%#bring to print Nature, Science and Cell
-%if 'Cell' in listQueryPhrase:
-%	listQueryPhrase.insert(0, listQueryPhrase.pop(listQueryPhrase.index('Cell')))
-%end
-%if 'Science' in listQueryPhrase:
-	%listQueryPhrase.insert(0, listQueryPhrase.pop(listQueryPhrase.index('Science')))
-%end
-%if 'Nature' in listQueryPhrase:
-	%listQueryPhrase.insert(0, listQueryPhrase.pop(listQueryPhrase.index('Nature')))
-%end
-
-		<div class="outline">				
-			<h4>
-				<ul>
-%for q in listQueryPhrase: 
-	%lenq = len([row for row in rows if row[0] == q])
-					<li><a href="#{{q}}">{{q}} ({{lenq}} new)</a></li>
-%end
-				</ul>
-			</h4>		
-		</div>
 						
 		<div class="content_main">
-		
-%for q in listQueryPhrase:
-
-	%rows2 = [row for row in rows if row[0] == q]
-	
-			<h3>
-				<a name="{{q}}">{{q}}</a>
-			</h3>
-					
-	%for row in rows2:
+							
+	%for row in rows:
 		%queryPhrase, ArticleTitle, JournalTitle, dayStr, authorField, affiliation, articleLinkStr = row
 	
 				<div class="article_info">

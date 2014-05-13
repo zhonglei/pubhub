@@ -95,7 +95,8 @@ def singleStrip(t):
     >>> singleStrip(((1L,), (2L,)))
     [1L, 2L]
     '''
-    return[(lambda y: y[0])(x) for x in t]           
+    #FIXME: add robustness
+    return [(lambda y: y[0])(x) for x in t]           
 
 def replaceKeyValuePair(db, listDict, tableName, keyOld, keyNew):
     '''
