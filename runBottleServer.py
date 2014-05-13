@@ -17,7 +17,8 @@ from phInfo import phDbInfo, pubmedBacktrackSecondForNewSubscriber
 from phDatabaseApi import Subscriber_ArticleEventCategory, dbBoolean
 from phController import getListArticlePage, recordSubscriberArticle, \
                          signUpSubscriber, queryPubmedAndStoreResults, \
-                         getArticleMorePage
+                         getArticleMorePage, getListArticleInTimeInterval, \
+                         getListPinnedArticle
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
@@ -47,16 +48,51 @@ def serverStaticJs(filepath):
 def serverStaticJasny(filepath):
     return static_file(filepath, root='static/jasny-bootstrap')
 
-@route('/listArticle')      #/listArticle?subscriberId=1&sinceDaysAgo=10
+@route('/listArticle')
 def showListArticle():
+    '''
+    /listArticle?subscriberId=1&sinceDaysAgo=10
+    '''
     subscriberId = request.query.subscriberId
     sinceDaysAgo = request.query.sinceDaysAgo or '7'
     sinceDaysAgo = int(sinceDaysAgo)
     now = time.time()
     startTime = now - sinceDaysAgo * 24 * 3600
     endTime = now
-    output = getListArticlePage(phDbInfo, startTime, endTime, subscriberId)
+
+    #output = getListArticlePage(phDbInfo, startTime, endTime, subscriberId)
+    listArticleId = getListArticleInTimeInterval(phDbInfo, startTime, endTime, subscriberId)
+    output = getListArticlePage(phDbInfo, listArticleId, subscriberId)
+
     return output
+
+@route('/redirect') 
+def recordSubscriberArticleAndRedirect():
+    '''
+    /redirect?subscriberId=1&articleId=2&redirectUrl=http://www.google.com
+    '''
+    subscriberId = request.query.subscriberId
+    articleId = request.query.articleId
+    redirectUrl = request.query.redirectUrl
+    
+    'parse request header info'
+    header = ""
+    headerFields = request.headers.keys()
+    for field in headerFields:
+        header += str(field) + " | " + str(request.get_header(field)) + " || "
+    debug(header)
+
+    extraInfo = header
+    extraInfo += 'redirectUrl' + " | " + redirectUrl + " || "
+    
+    'record event'
+    category = Subscriber_ArticleEventCategory.extlinkClicked
+    status = dbBoolean.yes
+    recordSubscriberArticle(phDbInfo, subscriberId, articleId, 
+                                    extraInfo, category, status)
+        
+    'redirect'
+    redirect(redirectUrl)
 
 @route('/articleMore')
 def showArticleMore():
@@ -109,38 +145,23 @@ def pinArticle():
 
     '2) display articleMore page'
     output = getArticleMorePage(phDbInfo, subscriberId, articleId)
-
     
     return output
-    
-@route('/redirect') 
-def recordSubscriberArticleAndRedirect():
+
+@route('/listPinnedArticle')
+def showListPinnedArticle():
     '''
-    /redirect?subscriberId=1&articleId=2&redirectUrl=http://www.google.com
+    /listPinnedArticle?subscriberId=1
     '''
     subscriberId = request.query.subscriberId
-    articleId = request.query.articleId
-    redirectUrl = request.query.redirectUrl
-    
-    'parse request header info'
-    header = ""
-    headerFields = request.headers.keys()
-    for field in headerFields:
-        header += str(field) + " | " + str(request.get_header(field)) + " || "
-    debug(header)
 
-    extraInfo = header
-    extraInfo += 'redirectUrl' + " | " + redirectUrl + " || "
-    
-    'record event'
-    category = Subscriber_ArticleEventCategory.extlinkClicked
-    status = dbBoolean.yes
-    recordSubscriberArticle(phDbInfo, subscriberId, articleId, 
-                                    extraInfo, category, status)
+    listArticleId = getListPinnedArticle(phDbInfo, subscriberId)
+    output = getListArticlePage(phDbInfo, listArticleId, subscriberId)
+
+    return output
+
+    return 0
         
-    'redirect'
-    redirect(redirectUrl)
-    
 @route('/signup')
 def signup():
     output = template('views/signup')

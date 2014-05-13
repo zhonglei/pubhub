@@ -171,8 +171,8 @@ class PhDatabase(Database):
         >>> phdb.close()
         '''
         if self.conn:
-            pass
-            
+
+            self.conn._execute('DROP VIEW pinnedSubscriber_ArticleStatus')
             self.conn._execute('DROP TABLE subscriber_articleEvent')
             self.conn._execute('DROP TABLE subscriber_article')
             self.conn._execute('DROP VIEW firstAuthor')
@@ -208,6 +208,7 @@ class PhDatabase(Database):
              
             self.createTableSubscriber_Article()
             self.createTableSubscriber_ArticleEvent()
+            self.createViewPinnedSubscriber_ArticleStatus()
 
     '===================================================='
     '==============create table begins==================='
@@ -444,6 +445,21 @@ class PhDatabase(Database):
         if self.conn:
             return self.conn._execute(query)
         return -1
+
+    def createViewPinnedSubscriber_ArticleStatus(self):
+        query='''CREATE VIEW pinnedSubscriber_ArticleStatus AS 
+                    SELECT * FROM subscriber_articleEvent 
+                    WHERE (subscriber_articleId, timestamp) IN 
+                        (SELECT subscriber_articleId, max(timestamp) 
+                         FROM subscriber_articleEvent WHERE 
+                         category = %s GROUP BY subscriber_articleId
+                        )
+              ''' % Subscriber_ArticleEventCategory.pinned
+        debug('query:\n'+query)
+        if self.conn:
+            return self.conn._execute(query)
+        return -1    
+        
         
     '===================================================='
     '================create table ends==================='
