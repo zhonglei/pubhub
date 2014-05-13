@@ -13,7 +13,7 @@ import pprint
 import time
 
 from phInfo import BiologyResearchInfo
-from phTools import replaceKeyValuePair
+from phTools import replaceKeyValuePair, singleStrip
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
@@ -619,9 +619,25 @@ class PhDatabase(Database):
     
     def fetchall(self,query,fields=None):
         debug('query:\n'+query)
-        ret, res = self.conn._fetchall(query,fields=None)
+        ret, res = self.conn._fetchall(query,fields)
         debug('fetched result:\n'+ pprint.pformat(res))        
         return (ret, res)
+    
+    def getSubscriber_ArticleStatus(self, subscriberId, articleId, category):        
+        _, res = self.fetchall(u'''SELECT status FROM subscriber_articleEvent
+                    LEFT JOIN subscriber_article 
+                    ON subscriber_articleEvent.subscriber_articleId 
+                          = subscriber_article.subscriber_articleId
+                    WHERE subscriberId = %s AND articleId = %s
+                    AND category = %s 
+                    ORDER BY timestamp DESC LIMIT 1''', 
+                    (subscriberId, str(articleId), category))
+        if res:
+            res = singleStrip(res)[0]
+        else:
+            res = dbBoolean.no
+        
+        return res
         
 def createMysqlDatetimeStr(t):
     '''
@@ -634,17 +650,17 @@ def createMysqlDatetimeStr(t):
     #return datetime.datetime.utcfromtimestamp(t)
 
 class Subscriber_ArticleEventCategory:
-    created = 1
-    pinned = 2
-    moreClicked = 3
-    extlinkClicked = 4
+    created = '1'
+    pinned = '2'
+    moreClicked = '3'
+    extlinkClicked = '4'
 
 class InterestCategory:
-    area = 1
-    generalJournal = 2
-    expertJournal = 3
-    keyword = 4
-    author = 5
+    area = '1'
+    generalJournal = '2'
+    expertJournal = '3'
+    keyword = '4'
+    author = '5'
 
 class dbBoolean:
     yes = 1

@@ -14,7 +14,7 @@ import sys
 import time
 
 from phInfo import phDbInfo, pubmedBacktrackSecondForNewSubscriber
-from phDatabaseApi import Subscriber_ArticleEventCategory
+from phDatabaseApi import Subscriber_ArticleEventCategory, dbBoolean
 from phController import getListArticlePage, recordSubscriberArticle, \
                          signUpSubscriber, queryPubmedAndStoreResults, \
                          getArticleMorePage
@@ -58,8 +58,11 @@ def showListArticle():
     output = getListArticlePage(phDbInfo, startTime, endTime, subscriberId)
     return output
 
-@route('/articleMore') #/articleMore?subscriberId=1&articleId=2
+@route('/articleMore')
 def showArticleMore():
+    '''
+    /articleMore?subscriberId=1&articleId=2
+    '''
     subscriberId = request.query.subscriberId
     articleId = request.query.articleId
 
@@ -74,20 +77,51 @@ def showArticleMore():
     
     'record event'
     recordSubscriberArticle(phDbInfo, subscriberId, articleId, extraInfo, 
-                            Subscriber_ArticleEventCategory.moreClicked)
+                            Subscriber_ArticleEventCategory.moreClicked,
+                            dbBoolean.yes)
     
     'display articleMore page'
-    
     output = getArticleMorePage(phDbInfo, subscriberId, articleId)
     return output
         
+@route('/pin')
+def pinArticle():
+    '''
+    /pin?subscriberId=1&articleId=2&status=0 
+    '''
+    subscriberId = request.query.subscriberId
+    articleId = request.query.articleId
+    status = request.query.status
+    
+    'parse request header info'
+    header = ""
+    headerFields = request.headers.keys()
+    for field in headerFields:
+        header += str(field) + " | " + str(request.get_header(field)) + " || "
+    debug(header)
+    
+    extraInfo = header  
+      
+    '1) update pin status'
+    category = Subscriber_ArticleEventCategory.pinned
+    recordSubscriberArticle(phDbInfo, subscriberId, articleId, extraInfo, 
+                            category, status)
 
-@route('/redirect') #/redirect?subscriberId=1&articleId=2&redirectUrl=http://www.google.com
+    '2) display articleMore page'
+    output = getArticleMorePage(phDbInfo, subscriberId, articleId)
+
+    
+    return output
+    
+@route('/redirect') 
 def recordSubscriberArticleAndRedirect():
+    '''
+    /redirect?subscriberId=1&articleId=2&redirectUrl=http://www.google.com
+    '''
     subscriberId = request.query.subscriberId
     articleId = request.query.articleId
     redirectUrl = request.query.redirectUrl
-
+    
     'parse request header info'
     header = ""
     headerFields = request.headers.keys()
@@ -99,7 +133,10 @@ def recordSubscriberArticleAndRedirect():
     extraInfo += 'redirectUrl' + " | " + redirectUrl + " || "
     
     'record event'
-    recordSubscriberArticle(phDbInfo, subscriberId, articleId, extraInfo, Subscriber_ArticleEventCategory.extlinkClicked)
+    category = Subscriber_ArticleEventCategory.extlinkClicked
+    status = dbBoolean.yes
+    recordSubscriberArticle(phDbInfo, subscriberId, articleId, 
+                                    extraInfo, category, status)
         
     'redirect'
     redirect(redirectUrl)
