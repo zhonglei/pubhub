@@ -1,3 +1,5 @@
+%name, listPinnedArticleStr = args
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -14,10 +16,6 @@
 	</h2>
 	<p> Hello {{name}}, </p>
 	<p> This week's top-notch bioscience papers are ready to view. Enjoy!!</p>
-	<p> We are persistently working towards improving our search quality. 
-	If the displayed results do not match your expectation, or if you have any
-	suggestions, we would greatly appreciate your feedback by replying to this 
-	email.
 	<p>Your Scooply team</p>
 
 %listQueryPhrase = [row[0] for row in rows] #first element is queryPhrase
@@ -33,9 +31,16 @@
 	%listQueryPhrase.insert(0, listQueryPhrase.pop(listQueryPhrase.index('Nature')))
 %end
 
-		<div class="outline">	
+		<div class="outline">
 			<h3>
-				<a name="">Summary</a>
+				What's New
+			</h3>
+			<p>
+				Now you can pin your favorite articles and view them <a href="{{listPinnedArticleStr}}">here</a>.
+			</p>
+
+			<h3>
+				Summary
 			</h3>
 					
 			<h4>
@@ -55,7 +60,7 @@
 	%rows2 = [row for row in rows if row[0] == q]
 	
 			<h3>
-				<a name="{{q}}">{{q}}</a>
+				{{q}}<a name="{{q}}"></a>
 			</h3>
 					
 	%for row in rows2:
@@ -63,7 +68,7 @@
 	
 				<div class="article_info">
 					<h4> 
-						<a href="{{articleLinkStr}}">{{ArticleTitle}}</a> <br>
+						<a href="{{articleLinkStr}}" target="_blank">{{ArticleTitle}}</a> <br>
 						{{authorField}} <br>
 						{{dayStr}} in <span class="label label-default">{{JournalTitle}}</span> <br>
 			%if queryPhrase != JournalTitle:
@@ -74,6 +79,14 @@
 	%end	
 
 %end
+		<h3>
+			Feedback
+		</h3>
+
+		<p> We are persistently working towards improving our search quality. 
+		If the displayed results do not match your expectation, or if you have any
+		suggestions, we would greatly appreciate your feedback by replying to this 
+		email.
 			
 		</div><!-- content_main-->
 

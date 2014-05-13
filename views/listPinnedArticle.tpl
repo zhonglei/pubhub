@@ -23,12 +23,12 @@
 		</h1>
 						
 		<div class="content_main">
-							
+
 	%for row in rows:
 		%queryPhrase, ArticleTitle, JournalTitle, dayStr, authorField, affiliation, articleLinkStr = row
 	
 				<div class="article_info">
-					<h3> <a href="{{articleLinkStr}}">{{ArticleTitle}}</a> </h3>
+					<h3> <a href="{{articleLinkStr}}" target="_blank">{{ArticleTitle}}</a> </h3>
 					<h4> {{authorField}} </h4>
 					<h4> 
 						{{dayStr}} in <span class="label label-default">{{JournalTitle}}</span>

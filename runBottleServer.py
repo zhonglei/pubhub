@@ -189,14 +189,13 @@ def do_signup():
      
     '====return===='
     if subscriberId == -1:
-        retMsg = "<h1>Oops... Looks like there are some issues.</h1>"
+        return "<h1>Oops... Looks like there are some issues.</h1>"
     elif subscriberId == -2:
-        retMsg = "<h1>Oops... Looks like this email is already registered." \
+        return "<h1>Oops... Looks like this email is already registered." \
                 +" Try to use a new one.</h1>"
-    else:
-        retMsg = "<h1>Congrats! You've signed up to Scoooply.</h1>"
-    
-    return retMsg
+    else:        
+        listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
+        redirect(listArticlePageUrl)
 
 'secret convenience function'
 ''

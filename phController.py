@@ -335,7 +335,7 @@ def queryPubmedAndStoreResults(dbInfo, queryStartTime, queryEndTime, subscriberI
         
         'query pubmed'
         pa = PubmedApi()
-        ldArticle, ldAuthor = pa.query(queryStr, 100)
+        ldArticle, ldAuthor = pa.query(queryStr, 50)
         
         for dArticle in ldArticle:
                                        
@@ -412,25 +412,31 @@ def getListArticleInTimeInterval(dbInfo, startTime, endTime, subscriberId):
                                       dbInfo['user'],dbInfo['password']))
     queryStartTime=time.time()
 
-    _, listArticleId = phdb.fetchall(u'''SELECT DISTINCT article.articleId
+    s = u'''SELECT DISTINCT article.articleId
     FROM article 
-    LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
+    JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
     WHERE subscriber_article.subscriberId = %s 
     AND article.DateCreated > '%s' 
     AND article.DateCreated < '%s'
-    ;''' % (subscriberId, startTime, endTime))
-    listArticleId = singleStrip(listArticleId)
-    #ORDER BY article.DateCreated DESC
+    ;''' % (subscriberId, startTime, endTime)
     
-    #FIXME ad hoc, revise
-    listArticleId = map(lambda x: int(x), listArticleId)
+    _, listArticleId = phdb.fetchall(s)
     
     timeElapsed = time.time()-queryStartTime
     if timeElapsed > 0.1:
         warning("getListArticleInTimeInterval 2 tables join takes %.2f sec!" % timeElapsed)
     
     phdb.close()
-    
+
+    if listArticleId is None:
+        listArticleId = []
+    else:        
+        listArticleId = singleStrip(listArticleId)
+        #ORDER BY article.DateCreated DESC
+        
+        #FIXME ad hoc, revise
+        listArticleId = map(lambda x: int(x), listArticleId)
+        
     return listArticleId
 
 def getListArticlePage(dbInfo, listArticleId, subscriberId, displayType = 'regular'):
@@ -447,9 +453,9 @@ def getListArticlePage(dbInfo, listArticleId, subscriberId, displayType = 'regul
 #     firstAuthor.lastName, firstAuthor.affiliation, lastAuthor.authorId, 
 #     lastAuthor.lastName, lastAuthor.affiliation, DoiId, PMID, subscriber_article.queryPhrase
 #     FROM article 
-#     LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
-#     LEFT JOIN firstAuthor ON article.articleId = firstAuthor.articleId 
-#     LEFT JOIN lastAuthor ON article.articleId = lastAuthor.articleId 
+#     JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
+#     JOIN firstAuthor ON article.articleId = firstAuthor.articleId 
+#     JOIN lastAuthor ON article.articleId = lastAuthor.articleId 
 #     WHERE subscriber_article.subscriberId = %s 
 #     AND article.DateCreated > '%s' 
 #     AND article.DateCreated < '%s'
@@ -469,12 +475,13 @@ def getListArticlePage(dbInfo, listArticleId, subscriberId, displayType = 'regul
         firstAuthor.lastName, firstAuthor.affiliation, lastAuthor.authorId, 
         lastAuthor.lastName, lastAuthor.affiliation, DoiId, PMID, subscriber_article.queryPhrase
         FROM article 
-        LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
-        LEFT JOIN firstAuthor ON article.articleId = firstAuthor.articleId 
-        LEFT JOIN lastAuthor ON article.articleId = lastAuthor.articleId 
-        WHERE article.articleId IN %s
+        JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
+        JOIN firstAuthor ON article.articleId = firstAuthor.articleId 
+        JOIN lastAuthor ON article.articleId = lastAuthor.articleId 
+        WHERE subscriber_article.subscriberId = %s 
+        AND article.articleId IN %s
         ORDER BY FIELD(article.articleId, %s
-        ;''' % (ls, ls[1:])
+        ;''' % (str(subscriberId), ls, ls[1:])
         
         '''
         Note above is similar to:
@@ -493,16 +500,6 @@ def getListArticlePage(dbInfo, listArticleId, subscriberId, displayType = 'regul
     firstName, lastName, email = res2[0]
 
     phdb.close()
-    
-    name = ''
-    if firstName:
-        name = firstName
-    elif lastName:
-        name = lastName
-    elif email:
-        name = email
-    else:
-        name = 'stranger'
     
     rows=[]
     for (articleId, ArticleTitle, JournalTitle, DateCreated, firstAuthorId, 
@@ -552,9 +549,25 @@ def getListArticlePage(dbInfo, listArticleId, subscriberId, displayType = 'regul
             
         rows.append((queryPhrase, ArticleTitle, JournalTitle, dayStr, authorField, 
                      affiliation, articleLinkStr))
+        
+    name = ''
+    if firstName:
+        name = firstName
+    elif lastName:
+        name = lastName
+    elif email:
+        name = email
+    else:
+        name = 'stranger'
+        
+    listPinnedArticleStr = 'http://'+webServerInfo['addr']+ '/' \
+                        'listPinnedArticle?subscriberId=%s' \
+                        % subscriberId
+    
+    args = (name,listPinnedArticleStr)
                 
     if displayType == 'email':
-        output = template('views/emailListArticle', rows = rows, name = name)
+        output = template('views/emailListArticle', rows = rows, args = args)
     elif displayType == 'pinned':
         output = template('views/listPinnedArticle', rows = rows)
     else: # 'regular'
@@ -571,7 +584,7 @@ def getArticleMorePage(dbInfo, subscriberId, articleId):
     Abstract, JournalISOAbbreviation, DateCreated, DoiId, PMID, 
     subscriber_article.queryPhrase
     FROM article 
-    LEFT JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
+    JOIN subscriber_article ON article.articleId = subscriber_article.articleId 
     WHERE subscriber_article.subscriberId = %s 
     AND article.articleId = %s
     ;''' % (str(subscriberId), str(articleId)))
@@ -627,10 +640,10 @@ def getArticleMorePage(dbInfo, subscriberId, articleId):
         PMIDLinkStr = ''
             
     if pinned == dbBoolean.no:
-        pinStr = 'Save'
+        pinStr = 'Pin'
         toPin = dbBoolean.yes
     else:
-        pinStr = 'Saved'
+        pinStr = 'Unpin'
         toPin = dbBoolean.no
         
     pinLinkStr = 'pin?subscriberId=%s&articleId=%s&status=%s' \
@@ -701,7 +714,7 @@ def signUpSubscriber(dbInfo, email, firstName, lastName, areaId, keywords):
         '==generalJournl=='
         _, listGeneralJournalTitle = phdb.fetchall('''
         SELECT DISTINCT journal.journalTitle FROM journal
-        LEFT JOIN journal_area ON journal.journalId = journal_area.journalId
+        JOIN journal_area ON journal.journalId = journal_area.journalId
         WHERE journal_area.areaId = %s AND journal.isGeneral = 1
         ''' % str(areaId))
         listGeneralJournalTitle = singleStrip(listGeneralJournalTitle)
@@ -714,7 +727,7 @@ def signUpSubscriber(dbInfo, email, firstName, lastName, areaId, keywords):
         '==expertJournal=='
         _, listExpertJournalTitle = phdb.fetchall('''
         SELECT DISTINCT journal.journalTitle FROM journal
-        LEFT JOIN journal_area ON journal.journalId = journal_area.journalId
+        JOIN journal_area ON journal.journalId = journal_area.journalId
         WHERE journal_area.areaId = %s AND journal.isGeneral = 0
         ''' % str(areaId))
         listExpertJournalTitle = singleStrip(listExpertJournalTitle)

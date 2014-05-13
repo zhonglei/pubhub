@@ -641,7 +641,7 @@ class PhDatabase(Database):
     
     def getSubscriber_ArticleStatus(self, subscriberId, articleId, category):        
         _, res = self.fetchall(u'''SELECT status FROM subscriber_articleEvent
-                    LEFT JOIN subscriber_article 
+                    JOIN subscriber_article 
                     ON subscriber_articleEvent.subscriber_articleId 
                           = subscriber_article.subscriber_articleId
                     WHERE subscriberId = %s AND articleId = %s
