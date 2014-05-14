@@ -18,8 +18,9 @@ from phDatabaseApi import Subscriber_ArticleEventCategory, dbBoolean
 from phController import getListArticlePage, recordSubscriberArticle, \
                          signUpSubscriber, queryPubmedAndStoreResults, \
                          getArticleMorePage, getListArticleInTimeInterval, \
-                         getListPinnedArticle, verifyPasswordAndGetSubscriberId
-
+                         getListPinnedArticle, verifyPasswordAndGetSubscriberId, \
+                         getSubscriberIdInCookie, deleteSubscriberIdInCookie, \
+                         setSubscriberIdInCookie
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
@@ -57,7 +58,7 @@ def showListArticle():
     endTime = now
 
     listArticleId = getListArticleInTimeInterval(phDbInfo, startTime, endTime, subscriberId)
-    output = getListArticlePage(phDbInfo, listArticleId, subscriberId)
+    output = getListArticlePage(phDbInfo, webServerInfo, listArticleId, subscriberId)
 
     return output
 
@@ -151,25 +152,37 @@ def showListPinnedArticle():
     subscriberId = request.query.subscriberId
 
     listArticleId = getListPinnedArticle(phDbInfo, subscriberId)
-    output = getListArticlePage(phDbInfo, listArticleId, subscriberId, displayType = 'pinned')
+    output = getListArticlePage(phDbInfo, webServerInfo, listArticleId, subscriberId, displayType = 'pinned')
 
     return output
 
     return 0
-        
+
 @route('/')
+def root():
+    subscriberId = getSubscriberIdInCookie(webServerInfo)
+
+    if subscriberId:
+        listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
+        output = (r'Welcome to Scooply! You have already signed in. Start exploring <a href="%s">here</a>.' +
+                  r' Or <a href="/signout">sign out</a>.') % listArticlePageUrl
+    else:
+        output = (r'Welcome to Scooply! <a href="/signin">Sign in</a> or ' +
+                  r'<a href="/signup">sign up</a>.')
+        
+    return output
+        
 @route('/signup')
 @route('/register')
-def signup():
-    
-    'try to get subscriberId from cookie'
-    subscriberId = request.get_cookie('subscriberId', secret=webServerInfo['secret'])
+def signup():    
+    subscriberId = getSubscriberIdInCookie(webServerInfo)
+
     if subscriberId:
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
         output = r'You have already signed in. <a href="/signout">Sign out</a> first.' \
                + r' Or start exploring <a href="%s">here</a>.' % listArticlePageUrl
-        return output    
-    
+        return output
+
     return template('views/signup')
 
 @route('/signup', method='POST')
@@ -200,8 +213,7 @@ def do_signup():
         return (r'Oops... Looks like this email has already been used. ' +
                 r'<a href="/signup">Try again</a> with a new one.')
     else:
-        response.set_cookie('subscriberId', str(subscriberId),
-                            secret=webServerInfo['secret'])        
+        setSubscriberIdInCookie(webServerInfo, subscriberId)
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
         return (r'You have successfully sign up! Now start exploring ' +
                 r'<a href="%s">here</a>.') % listArticlePageUrl
@@ -209,9 +221,8 @@ def do_signup():
 @route('/signin')
 @route('/login')
 def signin():
-    'try to get subscriberId from cookie'
-    subscriberId = request.get_cookie('subscriberId', 
-                                      secret=webServerInfo['secret'])
+    subscriberId = getSubscriberIdInCookie(webServerInfo)
+    
     if subscriberId:
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
         output = (r'You have already signed in. Start exploring <a href="%s">here</a>.' +
@@ -231,9 +242,8 @@ def do_signin():
     if not verified:
         return r'Either email or password is incorrect. <a href="/signin">Try again</a>.'        
         #redirect('/signin')
-    else:        
-        response.set_cookie('subscriberId', str(subscriberId),
-                            secret=webServerInfo['secret'])
+    else:
+        setSubscriberIdInCookie(webServerInfo, subscriberId)
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
         return r'You have signed in! Now start exploring <a href="%s">here</a>.' \
                                                             % listArticlePageUrl
@@ -242,8 +252,8 @@ def do_signin():
 @route('/signout')
 @route('/logout')
 @route('/signoff')
-def signout():
-    response.delete_cookie('subscriberId',secret=webServerInfo['secret'])
+def signout():    
+    deleteSubscriberIdInCookie(webServerInfo)
     output = (r'You have signed out. <a href="/signin">Sign in</a> or ' +
               r'<a href="/signup">sign up</a>.')
     return output

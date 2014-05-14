@@ -9,7 +9,7 @@ Created on May 3, 2014
 
 import sys
 
-from phInfo import phDbInfo, emailInfo
+from phInfo import phDbInfo, emailInfo, webServerInfo
 from phController import emailListArticleToSubscriber
     
 if __name__ == '__main__':
@@ -24,7 +24,7 @@ if __name__ == '__main__':
                 sys.exit()
     
     subscriberId = 3
-    emailListArticleToSubscriber(phDbInfo, emailInfo, subscriberId) 
+    emailListArticleToSubscriber(phDbInfo, webServerInfo, emailInfo, subscriberId) 
     
     print 'Done.'
     
