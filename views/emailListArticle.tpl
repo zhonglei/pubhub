@@ -11,12 +11,20 @@
     
 	<body>
 	
-	<h2>
-		Scooply /skoop-li/
-	</h2>
-	<p> Hello {{name}}, </p>
-	<p> This week's top-notch bioscience papers are ready to view. Enjoy!!</p>
-	<p>Your Scooply team</p>
+		<p> Hello {{name}}, </p>
+		<p> This week's top-notch bioscience papers are ready to view. Enjoy!!</p>
+		<p> We are persistently working towards improving our results quality. 
+		If the displayed results do not match your expectation, or if you have any
+		suggestions, we would greatly appreciate your feedback by replying to this 
+		email. </p>	
+		<p>
+			<b>What's New </b> - now you can pin your favorite papers and view them <a href="{{listPinnedArticleStr}}">here</a>.
+		</p>
+
+		<p> Your Scooply team <br>
+		<em> Scooply \'skoop-li\ : timely, relevant and potentially game-changing </em></p>
+
+		<hr>
 
 %listQueryPhrase = [row[0] for row in rows] #first element is queryPhrase
 %listQueryPhrase = list(set(listQueryPhrase)) # distinct
@@ -31,16 +39,10 @@
 	%listQueryPhrase.insert(0, listQueryPhrase.pop(listQueryPhrase.index('Nature')))
 %end
 
-		<div class="outline">
+		<div class="content_main">
+			
 			<h3>
-				What's New
-			</h3>
-			<p>
-				Now you can pin your favorite articles and view them <a href="{{listPinnedArticleStr}}">here</a>.
-			</p>
-
-			<h3>
-				Summary
+				This week's summary
 			</h3>
 					
 			<h4>
@@ -51,9 +53,7 @@
 %end
 				</ul>
 			</h4>		
-		</div>
 						
-		<div class="content_main">
 		
 %for q in listQueryPhrase:
 
@@ -79,14 +79,7 @@
 	%end	
 
 %end
-		<h3>
-			Feedback
-		</h3>
 
-		<p> We are persistently working towards improving our search quality. 
-		If the displayed results do not match your expectation, or if you have any
-		suggestions, we would greatly appreciate your feedback by replying to this 
-		email.
 			
 		</div><!-- content_main-->
 

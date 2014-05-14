@@ -13,7 +13,7 @@ from logging import debug
 import sys
 import time
 
-from phInfo import phDbInfo, pubmedBacktrackSecondForNewSubscriber
+from phInfo import phDbInfo, pubmedBacktrackSecondForNewSubscriber, webServerInfo
 from phDatabaseApi import Subscriber_ArticleEventCategory, dbBoolean
 from phController import getListArticlePage, recordSubscriberArticle, \
                          signUpSubscriber, queryPubmedAndStoreResults, \
@@ -27,10 +27,6 @@ level DEBUG, INFO
 # import logging
 # logging.basicConfig(format='%(name)s %(levelname)s: %(message)s',
 #                     level=logging.DEBUG)
-
-@route('/')
-def greet():
-    return '<h1>Scooply main page placeholder.</h1>'
 
 @route('/css/<filepath:path>')
 def serverStaticCss(filepath):
@@ -161,10 +157,20 @@ def showListPinnedArticle():
 
     return 0
         
+@route('/')
 @route('/signup')
+@route('/register')
 def signup():
-    output = template('views/signup')
-    return output
+    
+    'try to get subscriberId from cookie'
+    subscriberId = request.get_cookie('subscriberId', secret=webServerInfo['secret'])
+    if subscriberId:
+        listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
+        output = r'You have already signed in. <a href="/signout">Sign out</a> first.' \
+               + r' Or start exploring <a href="%s">here</a>.' % listArticlePageUrl
+        return output    
+    
+    return template('views/signup')
 
 @route('/signup', method='POST')
 def do_signup():
@@ -188,18 +194,31 @@ def do_signup():
      
     '====return===='
     if subscriberId == -1:
-        return "<h1>Oops... Looks like there are some issues.</h1>"
+        return (r'Oops... Looks like there are some issues. ' +
+                r'<a href="/signup">Try again</a>.')
     elif subscriberId == -2:
-        return "<h1>Oops... Looks like this email is already registered." \
-                +" Try to use a new one.</h1>"
-    else:        
+        return (r'Oops... Looks like this email has already been used. ' +
+                r'<a href="/signup">Try again</a> with a new one.')
+    else:
+        response.set_cookie('subscriberId', str(subscriberId),
+                            secret=webServerInfo['secret'])        
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
-        redirect(listArticlePageUrl)
+        return (r'You have successfully sign up! Now start exploring ' +
+                r'<a href="%s">here</a>.') % listArticlePageUrl
 
 @route('/signin')
+@route('/login')
 def signin():
-    output = template('views/signin')
-    return output
+    'try to get subscriberId from cookie'
+    subscriberId = request.get_cookie('subscriberId', 
+                                      secret=webServerInfo['secret'])
+    if subscriberId:
+        listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
+        output = (r'You have already signed in. Start exploring <a href="%s">here</a>.' +
+                  r' Or <a href="/signout">sign out</a>.') % listArticlePageUrl
+        return output
+     
+    return template('views/signin')
 
 @route('/signin', method='POST')
 def do_signin():
@@ -210,12 +229,24 @@ def do_signin():
     verified, subscriberId = verifyPasswordAndGetSubscriberId(phDbInfo, 
                                                               email, password)
     if not verified:
-        redirect('/signin')
+        return r'Either email or password is incorrect. <a href="/signin">Try again</a>.'        
+        #redirect('/signin')
     else:        
-        response.set_cookie('subscriberId', str(subscriberId))
-        time.sleep(5)
-        return '<h1>email: %s</h1><h1>password: %s</h1><h1>subscriberId: %s</h1>' \
-                % (email, password, request.get_cookie('subscriberId'))
+        response.set_cookie('subscriberId', str(subscriberId),
+                            secret=webServerInfo['secret'])
+        listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
+        return r'You have signed in! Now start exploring <a href="%s">here</a>.' \
+                                                            % listArticlePageUrl
+        #redirect(listArticlePageUrl)
+
+@route('/signout')
+@route('/logout')
+@route('/signoff')
+def signout():
+    response.delete_cookie('subscriberId',secret=webServerInfo['secret'])
+    output = (r'You have signed out. <a href="/signin">Sign in</a> or ' +
+              r'<a href="/signup">sign up</a>.')
+    return output
 
 @route('/artandilab')
 def artandilab():

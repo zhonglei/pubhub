@@ -24,8 +24,7 @@ if __name__ == '__main__':
                 sys.exit()
     
     subscriberId = 3
-    sinceDaysAgo = 7
-    emailListArticleToSubscriber(phDbInfo, emailInfo, subscriberId, sinceDaysAgo) 
+    emailListArticleToSubscriber(phDbInfo, emailInfo, subscriberId) 
     
     print 'Done.'
     

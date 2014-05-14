@@ -21,6 +21,7 @@
 		<h1>
 			Scooply /skoop-li/
 		</h1>
+		<p> <a href="/signout">Sign out</a> </p>
 
 %listQueryPhrase = [row[0] for row in rows] #first element is queryPhrase
 %listQueryPhrase = list(set(listQueryPhrase)) # distinct
