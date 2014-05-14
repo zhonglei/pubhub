@@ -9,7 +9,7 @@ Created on May 3, 2014
 
 import sys
 
-from phInfo import phDbInfo, emailInfo, webServerInfo
+from phInfo import phDbInfo, webServerInfo, emailInfo
 from phController import emailListArticleToSubscriber
     
 if __name__ == '__main__':

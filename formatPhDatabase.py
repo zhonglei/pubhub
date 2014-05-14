@@ -9,10 +9,9 @@ Created on May 2, 2014
 import sys
 import time
 
-from phInfo import phDbInfo
+from phInfo import phDbInfo, pubmedBacktrackSecondForNewSubscriber
 from phDatabaseApi import PhDatabase, MysqlConnection
 from phController import signUpSubscriber, queryPubmedAndStoreResults
-from phInfo import pubmedBacktrackSecondForNewSubscriber
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'

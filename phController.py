@@ -20,9 +20,9 @@ from email.mime.text import MIMEText
 
 from phTools import singleStrip, replaceKeyValuePair
 from pubmedApi import PubmedApi
-from phDatabaseApi import PhDatabase, MysqlConnection, createMysqlDatetimeStr
-from phDatabaseApi import dbBoolean, Subscriber_ArticleEventCategory, \
-                            InterestCategory
+from phDatabaseApi import PhDatabase, MysqlConnection, createMysqlDatetimeStr, \
+                          dbBoolean, Subscriber_ArticleEventCategory, \
+                          InterestCategory
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
@@ -527,11 +527,11 @@ def getListArticlePage(dbInfo, serverInfo, listArticleId, subscriberId, displayT
         elif lastAuthorAffiliation != '':
             affiliation = lastAuthorAffiliation
 
-#         if DoiId != '':
-#             www = 'http://dx.doi.org/' + DoiId
-#         else: 
-#             www = 'http://www.ncbi.nlm.nih.gov/pubmed/' + str(PMID)
-#         www = urllib2.quote(www.encode("ascii"))
+        if DoiId != '':
+            www = 'http://dx.doi.org/' + DoiId
+        else: 
+            www = 'http://www.ncbi.nlm.nih.gov/pubmed/' + str(PMID)
+        www = urllib2.quote(www.encode("ascii"))
             
         if displayType == 'email':
             
