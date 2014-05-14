@@ -7,8 +7,8 @@ Created on Apr 30, 2014
 @author: zhil2
 '''
 
-from bottle import route, run, request, static_file, redirect, template
-#from bottle import response, get, post
+from bottle import route, run, request, static_file, redirect, template, response
+#from bottle import get, post
 from logging import debug
 import sys
 import time
@@ -18,7 +18,7 @@ from phDatabaseApi import Subscriber_ArticleEventCategory, dbBoolean
 from phController import getListArticlePage, recordSubscriberArticle, \
                          signUpSubscriber, queryPubmedAndStoreResults, \
                          getArticleMorePage, getListArticleInTimeInterval, \
-                         getListPinnedArticle
+                         getListPinnedArticle, verifyPasswordAndGetSubscriberId
 
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
@@ -198,7 +198,24 @@ def do_signup():
 
 @route('/signin')
 def signin():
-    return '<h1>Scooply sign in page placeholder.</h1>'
+    output = template('views/signin')
+    return output
+
+@route('/signin', method='POST')
+def do_signin():
+    email = request.forms.get('email')
+    email += '@stanford.edu'    
+    password = request.forms.get('password')
+    
+    verified, subscriberId = verifyPasswordAndGetSubscriberId(phDbInfo, 
+                                                              email, password)
+    if not verified:
+        redirect('/signin')
+    else:        
+        response.set_cookie('subscriberId', str(subscriberId))
+        time.sleep(5)
+        return '<h1>email: %s</h1><h1>password: %s</h1><h1>subscriberId: %s</h1>' \
+                % (email, password, request.get_cookie('subscriberId'))
 
 @route('/artandilab')
 def artandilab():
