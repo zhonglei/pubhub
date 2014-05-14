@@ -170,8 +170,7 @@ def signup():
 def do_signup():
     email = request.forms.get('email')
     email += '@stanford.edu'    
-    #password = request.forms.get('password')
-    #passwordAgain = request.forms.get('passwordAgain')
+    password = request.forms.get('password')
     firstName = request.forms.get('firstName') or ""
     lastName = request.forms.get('lastName') or ""
     areaId = request.forms.get('areaId')
@@ -179,7 +178,7 @@ def do_signup():
     keywords = keywords.split('\r\n')
     
     '====sign up===='
-    subscriberId = signUpSubscriber(phDbInfo, email, firstName, lastName, areaId, keywords)
+    subscriberId = signUpSubscriber(phDbInfo, email, password, firstName, lastName, areaId, keywords)
 
     '====query Pubmed for new subscriber===='
     now = time.time()
@@ -197,35 +196,6 @@ def do_signup():
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
         redirect(listArticlePageUrl)
 
-'secret convenience function'
-''
-@route('/subscribe')
-def subscribe():
-    email = request.query.email
-    firstName = request.query.firstName or ''
-    lastName = request.query.lastName or ''
-    areaId = request.query.areaId
-    keywords = request.query.keywords
-    keywords = keywords.split('\r\n')
-    
-    '====sign up===='
-    subscriberId = signUpSubscriber(phDbInfo, email, firstName, lastName, areaId, keywords)
-
-    '====query Pubmed for new subscriber===='
-    now = time.time()
-    queryStartTime = now - pubmedBacktrackSecondForNewSubscriber
-    queryEndTime = now
-    queryPubmedAndStoreResults(phDbInfo, queryStartTime, queryEndTime, subscriberId)
-
-    '====return===='
-    if subscriberId == -1:
-        retMsg = "<h1>Subscription fails for unknown reason.</h1>"
-    elif subscriberId == -2:
-        retMsg = "<h1>Subscription fails. Use a different email address.</h1>"
-    else:
-        retMsg = "<h1>Subscription succeeds.</h1>"
-    return retMsg
-    
 @route('/signin')
 def signin():
     return '<h1>Scooply sign in page placeholder.</h1>'

@@ -61,15 +61,15 @@ if __name__ == '__main__':
         phdb.close()
 
         'Preload subscribers and query Pubmed'
-        subscriberId = signUpSubscriber(phDbInfo, 'zhonglei@stanford.edu', '', 'Artandi Lab', '5', 
+        subscriberId = signUpSubscriber(phDbInfo, 'zhonglei@stanford.edu', '123', '', 'Artandi Lab', '5', 
                          ['telomerase','telomere'])
         queryPubmedAndStoreResults(phDbInfo, queryStartTime, queryEndTime, subscriberId)
         
-        subscriberId = signUpSubscriber(phDbInfo, 'leeoz@stanford.edu', '', 'Chang Lab', '5', 
+        subscriberId = signUpSubscriber(phDbInfo, 'leeoz@stanford.edu', '123', '', 'Chang Lab', '5', 
                          ['noncoding RNA','lncRNA','chromatin'])
         queryPubmedAndStoreResults(phDbInfo, queryStartTime, queryEndTime, subscriberId)
         
-        subscriberId = signUpSubscriber(phDbInfo, 'lizhi1981@gmail.com', 'Zhi', 'Li', '1', 
+        subscriberId = signUpSubscriber(phDbInfo, 'lizhi1981@gmail.com', '123', 'Zhi', 'Li', '1', 
                          ['DNA sequencing'])
         queryPubmedAndStoreResults(phDbInfo, queryStartTime, queryEndTime, subscriberId)
 

@@ -23,17 +23,16 @@
 
 		<div class="content_main">
         
-	        <form action="/signup" method="post">
+	        <form action="/signup" method="post" onsubmit="return validate(this);">
 	        
 	            <h3>Sign up with your Stanford email address</h3>
 	            
 	            <p>
 	                Email: <input name="email" type="text" required />@stanford.edu <br>
 	                
-	                <!--
 	                Password: <input name="password" type="password" required/>  <br>
 	                Confirm password: <input name="passwordAgain" type="password" required />
-	                -->
+
 	            </p>
 	
 	            <h3>Tell us a bit more about yourself</h3>
@@ -85,6 +84,17 @@
 	<script type='text/javascript'>
 	$(document).ready(function() {
 	});
+	</script>
+	
+	<script type='text/javascript'>
+	function validate(form) {
+		var e = form.elements;		
+		/* validate passwords */
+		if(e['password'].value != e['passwordAgain'].value) {
+    		return false;
+  		}
+  		return true;
+	}
 	</script>
 	
 	<!-- Jasney-->
