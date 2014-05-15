@@ -1,100 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=UTF-8"> 
-        <title>Scooply</title>
-        <meta name="generator" content="Bootply" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-        <!--Bootstrap-->
-		<link href="css/bootstrap.min.css" rel="stylesheet">
-		<!--Jasny-->
-		  <link href="jasny-bootstrap/css/jasny-bootstrap.min.css" rel="stylesheet">
-		<!--- Style sheet for this template-->
-		<link href="css/scooply-v3.css" rel="stylesheet">
-        <!--[if lt IE 9]>
-          <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
-    </head>
-    
+	<head>
+	    <meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <meta name="description" content="">
+	    <meta name="author" content="Paul Laros">
+	    <link rel="shortcut icon" href="favicon.ico">
+	
+	    <title> Scooply [alpha] </title>
+	    
+	    <!-- Fonts -->
+	    <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro%3A400%2C400italic%2C700" rel="stylesheet">
+	    <link href="http://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+	    <!-- Bootstrap core CSS -->
+	    <link href="css/bootstrap.min.css" rel="stylesheet">
+	    <link href="css/font-awesome.min.css" rel="stylesheet">
+	    <link href="css/bootstrap-social.css" rel="stylesheet">
+	    <!-- Styles -->
+	    <link href="css/main.css" rel="stylesheet">
+	    <!-- Loading bar -->
+	    <script src="js/pace.min.js"></script>
+	    <!-- HTML5 shiv for IE8 support -->
+	    <!--[if lt IE 9]>
+	    	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	    <![endif]-->
+		<!-- JQuery-->
+			<script src="js/jquery-1.11.0.min.js"></script>
+		<script>
+			$(document).ready(function(){
+				$("#menu-container").hide();
+				$("#toggle-menu").click(function(){
+				$("#menu-container").slideToggle("50");
+				$(".main-sections").slideToggle("50");
+				});
+			});
+		</script>	
+	</head>
+	
+	%listQueryPhrase = [row[0] for row in rows] #first element is queryPhrase
+	%listQueryPhrase = list(set(listQueryPhrase)) # distinct
+	%#bring to print Nature, Science and Cell
+	%if 'Cell' in listQueryPhrase:
+	%	listQueryPhrase.insert(0, listQueryPhrase.pop(listQueryPhrase.index('Cell')))
+	%end
+	%if 'Science' in listQueryPhrase:
+		%listQueryPhrase.insert(0, listQueryPhrase.pop(listQueryPhrase.index('Science')))
+	%end
+	%if 'Nature' in listQueryPhrase:
+		%listQueryPhrase.insert(0, listQueryPhrase.pop(listQueryPhrase.index('Nature')))
+	%end
+
 	<body>
-	
-		<h1>
-			Scooply /skoop-li/
-		</h1>
-		<p> <a href="/signout">Sign out</a> </p>
-
-%listQueryPhrase = [row[0] for row in rows] #first element is queryPhrase
-%listQueryPhrase = list(set(listQueryPhrase)) # distinct
-%#bring to print Nature, Science and Cell
-%if 'Cell' in listQueryPhrase:
-%	listQueryPhrase.insert(0, listQueryPhrase.pop(listQueryPhrase.index('Cell')))
-%end
-%if 'Science' in listQueryPhrase:
-	%listQueryPhrase.insert(0, listQueryPhrase.pop(listQueryPhrase.index('Science')))
-%end
-%if 'Nature' in listQueryPhrase:
-	%listQueryPhrase.insert(0, listQueryPhrase.pop(listQueryPhrase.index('Nature')))
-%end
-
-		<div class="outline">				
-			<h4>
-				<ul>
-%for q in listQueryPhrase: 
-	%lenq = len([row for row in rows if row[0] == q])
-					<li><a href="#{{q}}">{{q}} ({{lenq}} new)</a></li>
-%end
-				</ul>
-			</h4>		
-		</div>
-						
-		<div class="content_main">
-		
-%for q in listQueryPhrase:
-
-	%rows2 = [row for row in rows if row[0] == q]
-	
-			<h3>
-				<a name="{{q}}">{{q}}</a>
-			</h3>
-					
-	%for row in rows2:
-		%queryPhrase, ArticleTitle, JournalTitle, dayStr, authorField, affiliation, articleLinkStr = row
-	
-				<div class="article_info">
-					<h3> <a href="{{articleLinkStr}}" target="_blank">{{ArticleTitle}}</a> </h3>
-					<h4> {{authorField}} </h4>
-					<h4> 
-						{{dayStr}} in <span class="label label-default">{{JournalTitle}}</span>
-					</h4>
-		%if queryPhrase != JournalTitle:
-					<h4> 
-						Alert on <span class="label label-default">{{queryPhrase}}</span> 
-					</h4>
-		%end
-				</div>
-	%end	
-
-%end
-
-
+		<!-- Fixed navbar -->
+	    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	     
+	        <div class="navbar-header">
+				<a rel="home" title="Scooply" href="/">
+					<h1 class="site-title"> Scooply [alpha] </h1>
+				</a>
+				<div id="toggle-menu" class="btn btn-primary btnMenu">
+					<i class="fa fa-align-justify"></i>
+				</div>			
+			</div>
 			
-		</div><!-- content_main-->
+			<div id="menu-container">
+				<div class="col-xs-6 col-ld-6">
+					<ul class="fa-ul">
 
-    
-	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
+						%for q in listQueryPhrase: 
+							%lenq = len([row for row in rows if row[0] == q])
+							<a href="#{{q}}"><li> {{q}} <span class="badge">{{lenq}}</span></li></a>
+						%end
+					
+					</ul>
+				</div>
+				<div class="col-xs-6 col-ld-6">
+					<ul>
+						<a href="#"><li> All <span class="badge">43</span></li></a>
+						<a href="#"><li> Pinned <span class="badge">25</span></li></a>
+						<a href="#"><li class="active-menu-item"> Settings </li></a>
+						<a href="#"><li> Feedback </li></a>
+						<a href="/signout"><li></i> Sign out </li></a>
 
-     <!-- JavaScript jQuery code from Bootply.com editor -->
-	<script type='text/javascript'>
-	$(document).ready(function() {
-	});
-	</script>
+					</ul>
+				</div>
+			</div><!-- menu-container -->
+
+	    </div>
 	
-	<!-- Jasney-->
-	<script src="jasny-bootstrap/js/jasny-bootstrap.min.js"></script>
+	    <div id="primary" class="container">
+	    	<div class="content">
+	    	
+	    		%for q in listQueryPhrase:
+					%rows2 = [row for row in rows if row[0] == q]
+	    		
+					<!-- Section title, could be either a journal or an alert-->
+					<div class="section-title">
+						<h1><a name="{{q}}"></a>{{q}}</h1>
+					</div>
 
-    </body>
+		        	<section class="post">
+
+						%for row in rows2:
+							%queryPhrase, ArticleTitle, JournalTitle, dayStr, authorField, affiliation, articleLinkStr = row
+							
+							<header class="entry-header">
+	
+								<h2 class="entry-title"><a href="{{articleLinkStr}}">{{ArticleTitle}}</a></h2>
+								<p> {{authorField}} </p>
+								<p class="entry-date"> 
+									{{dayStr}} in <a class="label label-danger" href="#">{{JournalTitle}}</a>
+									%if queryPhrase != JournalTitle:
+										 on <a class="label label-primary" href="#">{{queryPhrase}}</a> 								
+									%end
+								</p>
+							</header>
+							
+							<hr> 
+							
+				        %end #for row in rows2
+
+		        	</section> <!-- /.post -->
+			        				        				        	
+			    %end #for q in listQueryPhrase
+	
+							
+		        <footer class="footer">
+		          <p>© Scooply 2014. Web design powered by Von. </p>
+				</footer> <!-- /footer -->
+	
+	      	</div> <!-- class="content" -->
+	    </div> <!-- /#primary -->
+
+	</body>
 
 </html>

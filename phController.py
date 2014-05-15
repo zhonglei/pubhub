@@ -583,6 +583,7 @@ def getListArticlePage(dbInfo, serverInfo, listArticleId, subscriberId, displayT
     elif displayType == 'pinned':
         output = template('views/listPinnedArticle', rows = rows)
     else: # 'regular'
+        #output = template('views/v0_1/listArticle', rows = rows)
         output = template('views/listArticle', rows = rows)
     
     return output
@@ -652,10 +653,10 @@ def getArticleMorePage(dbInfo, subscriberId, articleId):
         PMIDLinkStr = ''
             
     if pinned == dbBoolean.no:
-        pinStr = 'Pin'
+        pinStr = 'Save'
         toPin = dbBoolean.yes
     else:
-        pinStr = 'Unpin'
+        pinStr = 'Unsave'
         toPin = dbBoolean.no
         
     pinLinkStr = 'pin?subscriberId=%s&articleId=%s&status=%s' \

@@ -31,19 +31,22 @@ level DEBUG, INFO
 
 @route('/css/<filepath:path>')
 def serverStaticCss(filepath):
+    #return static_file(filepath, root='static/v0_1/css')
     return static_file(filepath, root='static/css')
 
 @route('/fonts/<filepath:path>')
 def serverStaticFonts(filepath):
+    #return static_file(filepath, root='static/v0_1/fonts')
     return static_file(filepath, root='static/fonts')
 
 @route('/js/<filepath:path>')
 def serverStaticJs(filepath):
+    #return static_file(filepath, root='static/v0_1/js')
     return static_file(filepath, root='static/js')
 
-@route('/jasny-bootstrap/<filepath:path>')
-def serverStaticJasny(filepath):
-    return static_file(filepath, root='static/jasny-bootstrap')
+# @route('/jasny-bootstrap/<filepath:path>')
+# def serverStaticJasny(filepath):
+#     return static_file(filepath, root='static/v0_1/jasny-bootstrap')
 
 @route('/listArticle')
 def showListArticle():
@@ -252,7 +255,7 @@ def do_signin():
 @route('/signout')
 @route('/logout')
 @route('/signoff')
-def signout():    
+def signout():
     deleteSubscriberIdInCookie(webServerInfo)
     output = (r'You have signed out. <a href="/signin">Sign in</a> or ' +
               r'<a href="/signup">sign up</a>.')
@@ -261,7 +264,7 @@ def signout():
 @route('/artandilab')
 def artandilab():
     redirect('/listArticle?subscriberId=1')
-    
+
 @route('/changlab')
 def changlab():
     redirect('/listArticle?subscriberId=2')
@@ -273,7 +276,7 @@ if __name__ == '__main__':
 
     'if with argument --doctest-only, skip the rest'
     if len(sys.argv) > 1:
-        for a in sys.argv[1:]: 
+        for a in sys.argv[1:]:
             if a =='--doctest-only':
                 sys.exit()
     
