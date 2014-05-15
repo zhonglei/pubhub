@@ -1,0 +1,418 @@
+/*
+Theme Name: Von
+Theme Description: Minimalist Blog Theme
+Version: 1.0
+Author: Paul Laros
+Author URI: http://paullaros.nl/
+*/
+
+@import url(http://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed);
+
+html {
+	overflow-y: scroll;
+}
+
+html, body {
+	height: 100%;
+}
+
+body {
+	padding:0;
+	font-family: 'Roboto', sans-serif;
+	background: #F2F2F2;
+	font-size: 10pt;
+}
+
+h1, h2, h3, h4, h5, h6{
+  font-family: 'Roboto Condensed', sans-serif;
+}
+
+
+a, a:focus, a:hover {
+	color: #235A9F;
+	outline: none;
+	text-decoration: none;
+}
+
+.img-responsive {
+  margin: 0 0 1em;
+}
+
+.btn {
+  border-radius: 2px;
+}
+
+/* PACE 
+-------------------------------------------------------- */
+.pace .pace-progress {
+  background: #29d;
+  position: fixed;
+  z-index: 2000;
+  top: 0;
+  left: 0;
+  height: 2px;
+  -webkit-transition: width 1s;
+  -moz-transition: width 1s;
+  -o-transition: width 1s;
+  transition: width 1s;
+}
+
+.pace-inactive {
+  display: none;
+}
+
+/* Navbar
+-------------------------------------------------------- */
+
+.navbar-default
+{
+border: none;
+margin: 0;
+padding:0;
+padding-top: 10px;
+background:#2475B9;
+border-bottom: solid 3px #64A5DA;
+}
+
+.navbar-header{
+float:none;
+max-width: 860px;
+margin:0px auto;
+margin-bottom: 10px;
+
+display: block;
+position: relative;
+color:#FFF;
+text-align:left;
+
+}
+
+/* Site title: scooply */
+
+.navbar-header h1
+{
+font-size: 20pt;
+padding-left: 50px;
+}
+
+#toggle-menu {
+position:absolute;
+top: -5px;
+left:5px;
+background:#2881CC;
+font-size: 10pt;
+padding:0px;
+border-radius: 2px;
+border: 1px solid #3F627F;
+}
+
+#toggle-menu i{
+padding: 10px;
+}
+
+/*-- Horizontal line */
+
+hr {
+margin:0px;
+margin-top: 5px;
+margin-bottom: 10px;
+}
+
+
+/* SLIDE DOWN MENU 
+-------------------------------------------------------- */
+#menu-container{
+width: 100%;
+margin:0 auto;
+padding:0px;
+padding-top: 10px;
+color: #fff;
+font-size: 12pt;
+max-width: 860px;
+}
+
+#menu-container .badge {
+background: #D9534F;
+color: #fff;
+font-size: 8pt;
+border-radius: 10px;
+margin-left: 2px;
+}
+
+
+#menu-container ul{
+list-style-type: none;
+margin: 0;
+border-top: 1px solid #3F627F;
+padding:0;
+}
+
+#menu-container ul li{
+display: block;
+padding: 5px;
+border-bottom: 1px solid #3F627F;
+border-top: 1px solid #2881CC;
+}
+
+#menu-container ul li i{
+padding-right: 10px;
+}
+
+.active-menu-item{
+background: #2881CC;
+}
+
+#menu-container a{
+color: #fff;
+}
+#menu-container a: hover li{
+background-color: #2881CC;
+}
+#menu-container a: active li{
+background: #2881CC;
+}
+
+
+/* Main sections. Decided not to use for now
+.main-sections {
+margin: 0 auto;
+margin-top:5px;
+padding: 0;
+list-style-type: none;
+
+}
+.main-sections  li {
+ display: inline; 
+ margin: 0;
+ padding:0;
+ padding-right: 20px;
+ }
+
+.main-sections li a
+{
+margin:0;
+padding: 0;
+text-decoration: none;
+color: #fff;
+}
+
+.main-sections li a:hover
+{
+color: #eee;
+}
+.main-sections li a:active
+{
+color: #fff;
+border-bottom: solid 3px #fff;
+}
+
+*/
+
+/* Primary 
+-------------------------------------------------------- */
+#primary {
+  margin: 0 auto;
+  padding: 0px;
+}
+
+.header {
+  height: 50px;
+}
+
+/*.site-title {
+  font-size: 4em;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+
+  display: block;
+  background: #235A9F;
+
+}
+.site-title a {
+  color: #fff;
+}*/
+
+.site-title,
+.site-description {
+  margin: 0;
+  color: #fff;
+}
+
+/* Content */
+.content {
+  margin: 70px auto;
+  max-width: 860px;
+}
+
+/*.content-head {
+  color: #aaa;
+  border-bottom: 1px solid #eee;
+  padding: 0.4em 0;
+  font-size: 1.3em;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+} */
+
+/* For each section grouped by journal or alert */
+.section-title{
+margin-top:20px;
+margin-bottom: 0;
+padding-bottom:1px;
+}
+.section-title h1
+{
+font-size: 12pt;
+padding: 0;
+padding-left: 15px;
+padding-right: 15px;
+margin-bottom: 0px;
+color: #fff;
+display: inline;
+background: #64A5DA;
+}
+/* Post */
+.post, .comments {
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0px 1px 1px #aaa;
+  padding: 1em;
+  margin: 0px;
+}
+
+.entry-title {
+  color: #222;
+  font-size: 14pt;
+  margin: 0 0 0.1em;
+}
+
+.entry-title a {
+  color: #222;
+}
+
+.entry-avatar {
+  border-radius: 50%;
+  float: right;
+  margin-left: 1em;
+}
+
+.entry-abstract {
+  color: #344151;
+  letter-spacing: 0.01em;
+  font: 10pt;
+  border-top: 1px solid #ACD1F0;
+  padding-top: 10px;
+
+}
+
+.entry-meta {
+  color: #999;
+  margin: 0.5em 0 0.5em;
+}
+
+.entry-icon{
+display: block;
+text-align: right;
+}
+
+/* Footer */
+.footer {
+  margin: 0 auto;
+  padding: 1em;
+  border-top: 1px solid #DBDBDB;
+}
+
+.footer p {
+  color: #aaa;
+  font-size: 90%;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Secondary 
+-------------------------------------------------------- */
+#secondary {
+
+}
+.displayON
+{
+	display: block;
+}
+
+.displayOFF
+{
+	display: none;
+}
+
+/* Sidebar */
+.sidebar {
+	background: #1C171E;
+	height: 100%;
+	position: fixed;
+	left: 0;
+	overflow-y: auto;
+	z-index: 1100;
+	width: 250px;
+}
+
+.sidebar aside {
+  color: #C1C0C0;
+  margin: 2em 1em;
+}
+
+.sidebar aside p {
+  font-size: 1.1em;
+}
+
+.sidebar aside h4 {
+  color: #fff;
+}
+
+.sidebar aside div {
+  margin: 2em 0;
+}
+
+.sidebar ul {
+	padding-left: 20px;
+	list-style: none;
+}
+
+.sidebar ul li {
+	display: block;
+}
+
+.sidebar ul li a {
+	font-size: 1.5em;
+	color: #fff;
+}
+
+/* Socials 
+-------------------------------------------------------- */
+.socials-sidebar a {
+  background-color: #000;
+  border-color: #000;
+  margin: 3px;
+  width: 38px;
+}
+
+.socials-footer {
+  text-align: center;
+}
+
+.socials-footer a {
+  display: inline-block;
+  background-color: #D3D3D3;
+  border-color: #D3D3D3;
+  margin: 4px;
+  width: 38px;
+}
+
+/* Responsive styles */
+@media (max-width: 767px) {
+
+	#secondary {
+	
+/*    display: inline-block;*/
+	}
+
+}
