@@ -8,7 +8,7 @@
 	    <meta name="author" content="Paul Laros">
 	    <link rel="shortcut icon" href="favicon.ico">
 	
-	    <title> Scooply [alpha] </title>
+	    <title> Scooply </title>
 	    
 	    <!-- Fonts -->
 	    <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro%3A400%2C400italic%2C700" rel="stylesheet">
@@ -57,7 +57,7 @@
 	     
 	        <div class="navbar-header">
 				<a rel="home" title="Scooply" href="/">
-					<h1 class="site-title"> Scooply [alpha] </h1>
+					<h1 class="site-title"> Scooply </h1>
 				</a>
 				<div id="toggle-menu" class="btn btn-primary btnMenu">
 					<i class="fa fa-align-justify"></i>
@@ -70,15 +70,15 @@
 
 						%for q in listQueryPhrase: 
 							%lenq = len([row for row in rows if row[0] == q])
-							<a href="#{{q}}"><li> {{q}} <span class="badge">{{lenq}}</span></li></a>
+							<a href="#{{q}}"><li> {{q}} ({{lenq}})</li></a>
 						%end
 					
 					</ul>
 				</div>
 				<div class="col-xs-6 col-ld-6">
 					<ul>
-						<a href="#"><li> All <span class="badge">43</span></li></a>
-						<a href="#"><li> Pinned <span class="badge">25</span></li></a>
+						<a href="#"><li> All (43)</li></a>
+						<a href="#"><li> Pinned (25)</li></a>
 						<a href="#"><li class="active-menu-item"> Settings </li></a>
 						<a href="#"><li> Feedback </li></a>
 						<a href="/signout"><li></i> Sign out </li></a>
@@ -94,10 +94,11 @@
 	    	
 	    		%for q in listQueryPhrase:
 					%rows2 = [row for row in rows if row[0] == q]
+					%lenq =len(rows2)
 	    		
 					<!-- Section title, could be either a journal or an alert-->
 					<div class="section-title">
-						<h1><a name="{{q}}"></a>{{q}}</h1>
+						<h1><a name="{{q}}"></a>{{q}} ({{lenq}})</span> </h1>
 					</div>
 
 		        	<section class="post">
@@ -110,9 +111,9 @@
 								<h2 class="entry-title"><a href="{{articleLinkStr}}">{{ArticleTitle}}</a></h2>
 								<p> {{authorField}} </p>
 								<p class="entry-date"> 
-									{{dayStr}} in <a class="label label-danger" href="#">{{JournalTitle}}</a>
+									{{dayStr}} in <span class="label label-danger">{{JournalTitle}}</span>
 									%if queryPhrase != JournalTitle:
-										 on <a class="label label-primary" href="#">{{queryPhrase}}</a> 								
+										 on <span class="label label-warning">{{queryPhrase}}</span> 								
 									%end
 								</p>
 							</header>

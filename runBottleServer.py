@@ -167,13 +167,14 @@ def root():
 
     if subscriberId:
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
-        output = (r'Welcome to Scooply! You have already signed in. Start exploring <a href="%s">here</a>.' +
-                  r' Or <a href="/signout">sign out</a>.') % listArticlePageUrl
+        output = (r'You have already signed in. Start exploring <a href="%s">here</a>,' +
+                  r' or <a href="/signout">sign out</a>.') % listArticlePageUrl
     else:
-        output = (r'Welcome to Scooply! <a href="/signin">Sign in</a> or ' +
+        output = (r'<a href="/signin">Sign in</a> or ' +
                   r'<a href="/signup">sign up</a>.')
         
-    return output
+    #return output
+    return template('views/simple', output = output)
         
 @route('/signup')
 @route('/register')
@@ -182,10 +183,13 @@ def signup():
 
     if subscriberId:
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
-        output = r'You have already signed in. <a href="/signout">Sign out</a> first.' \
-               + r' Or start exploring <a href="%s">here</a>.' % listArticlePageUrl
-        return output
+        output = r'You have already signed in. <a href="/signout">Sign out</a> first,' \
+               + r' or start exploring <a href="%s">here</a>.' % listArticlePageUrl
+        
+        #return output
+        return template('views/simple', output = output)
 
+    #return output
     return template('views/signup')
 
 @route('/signup', method='POST')
@@ -210,16 +214,20 @@ def do_signup():
      
     '====return===='
     if subscriberId == -1:
-        return (r'Oops... Looks like there are some issues. ' +
+        output = (r'Oops... Looks like there are some issues. ' +
                 r'<a href="/signup">Try again</a>.')
     elif subscriberId == -2:
-        return (r'Oops... Looks like this email has already been used. ' +
+        output = (r'Oops... Looks like this email has already been used. ' +
                 r'<a href="/signup">Try again</a> with a new one.')
     else:
         setSubscriberIdInCookie(webServerInfo, subscriberId)
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
-        return (r'You have successfully sign up! Now start exploring ' +
+        output = (r'You have successfully sign up! Now start exploring ' +
                 r'<a href="%s">here</a>.') % listArticlePageUrl
+    
+    #return output
+    return template('views/simple', output = output)
+
 
 @route('/signin')
 @route('/login')
@@ -230,7 +238,9 @@ def signin():
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
         output = (r'You have already signed in. Start exploring <a href="%s">here</a>.' +
                   r' Or <a href="/signout">sign out</a>.') % listArticlePageUrl
-        return output
+
+        #return output
+        return template('views/simple', output = output)
      
     return template('views/signin')
 
@@ -243,13 +253,20 @@ def do_signin():
     verified, subscriberId = verifyPasswordAndGetSubscriberId(phDbInfo, 
                                                               email, password)
     if not verified:
-        return r'Either email or password is incorrect. <a href="/signin">Try again</a>.'        
+        output = r'Either email or password is incorrect. <a href="/signin">Try again</a>.'        
+        #return output
+        return template('views/simple', output = output)
+
         #redirect('/signin')
     else:
         setSubscriberIdInCookie(webServerInfo, subscriberId)
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
-        return r'You have signed in! Now start exploring <a href="%s">here</a>.' \
+        output = r'You have signed in! Now start exploring <a href="%s">here</a>.' \
                                                             % listArticlePageUrl
+
+        #return output
+        return template('views/simple', output = output)
+
         #redirect(listArticlePageUrl)
 
 @route('/signout')
@@ -257,9 +274,10 @@ def do_signin():
 @route('/signoff')
 def signout():
     deleteSubscriberIdInCookie(webServerInfo)
-    output = (r'You have signed out. <a href="/signin">Sign in</a> or ' +
+    output = (r'You have signed out. <br> <a href="/signin">Sign in</a> or ' +
               r'<a href="/signup">sign up</a>.')
-    return output
+    #return output
+    return template('views/simple', output = output)
 
 @route('/artandilab')
 def artandilab():

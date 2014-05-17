@@ -319,7 +319,10 @@ def queryPubmedAndStoreResults(dbInfo, queryStartTime, queryEndTime, subscriberI
     (True, 2L)
     >>> verifyPasswordAndGetSubscriberId(doctestDbInfo, 'henrylee17@yahoo.com', '123')
     (False, None)
-    
+    >>> phdb = PhDatabase(MysqlConnection(doctestDbInfo['dbName'],doctestDbInfo['ip'],doctestDbInfo['user'],doctestDbInfo['password']))
+    >>> phdb.fetchall('SELECT articleId, PMID, DoiId FROM article where PMID = 24805242')
+    (0, ((25L, 24805242L, u'10.1038/nature13309'),))
+    >>> phdb.close()    
     '''
  
     timeStr = createPubmedTimeStr(queryStartTime, queryEndTime)
@@ -353,6 +356,8 @@ def queryPubmedAndStoreResults(dbInfo, queryStartTime, queryEndTime, subscriberI
                                        
             'record article'
             dArticle['articleId'] = None #prepare to get LAST_INSERT_ID
+            
+            debug('dArticle: '+str(dArticle))
             
             try:
                 articleId = phdb.insertOneReturnLastInsertId('article', dArticle) 

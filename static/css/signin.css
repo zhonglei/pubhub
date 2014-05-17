@@ -1,4 +1,6 @@
-@import url(http://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed);
+/* @import url(http://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed); */
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro%3A400%2C400italic%2C700);
+@import url(http://fonts.googleapis.com/css?family=Varela+Round);
 
 html {
 	overflow-y: scroll;
@@ -49,7 +51,30 @@ padding-top: 7px;
 font-size: 30pt;
 }
 
+.sitetitle-center {
+text-align: center;
+padding-right: 10px;
+}
+.sitetitle-center h1{
+font-size: 23pt;
+}
+.sitetitle-center h2{
+font-size: 13pt;
+}
 
+.maintext-wrapper{
+padding: 10px;
+margin-bottom: 10px;
+background: #ffffff;
+color: #000000;
+}
+.maintext-center{
+text-align: center;
+margin-top: -15px;
+}
+.maintext-center h2{
+font-size: 13pt;
+}
 
 .form-signin .form-signin-heading,
 .form-signin .checkbox {
@@ -71,5 +96,10 @@ font-size: 30pt;
   margin-bottom: -1px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
+}
+
+.jumbotron{
+background: #2475B9;
+color: #fff;
 }
 

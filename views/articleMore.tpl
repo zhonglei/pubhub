@@ -10,7 +10,7 @@
 	    <meta name="author" content="Paul Laros">
 	    <link rel="shortcut icon" href="favicon.ico">
 	
-	    <title> Scooply [alpha] -- {{ArticleTitle}} </title>
+	    <title> Scooply -- {{ArticleTitle}} </title>
 	    
 	    <!-- Fonts -->
 	    <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro%3A400%2C400italic%2C700" rel="stylesheet">
@@ -46,7 +46,7 @@
 	     
 	        <div class="navbar-header">
 				<a rel="home" title="Scooply" href="/">
-					<h1 class="site-title"> Scooply [alpha] </h1>
+					<h1 class="site-title"> Scooply </h1>
 				</a>
 				<div id="toggle-menu" class="btn btn-primary btnMenu">
 					<i class="fa fa-align-justify"></i>
@@ -87,20 +87,20 @@
 	
 								<h2 class="entry-title">{{ArticleTitle}}</h2>
 								<p class="entry-date"> 
-									{{dayStr}} in <a class="label label-danger" href="#">{{JournalTitle}}</a>
+									{{dayStr}} in <span class="label label-danger">{{JournalTitle}}</span>
 									%if queryPhrase != JournalTitle:
-										 on <a class="label label-primary" href="#">{{queryPhrase}}</a> 								
+										 on <span class="label label-warning">{{queryPhrase}}</span> 								
 									%end
 								</p>
-																
+
 								<p> 
 									%if DoiIdLinkStr != '':
-										 <a class="label label-primary" href="{{DoiIdLinkStr}}"> View in {{JournalTitle}} </a> &nbsp;
+										 <a class="label label-primary" href="{{DoiIdLinkStr}}">View in {{JournalTitle}}</a> &nbsp;
 									%end
 									%if PMIDLinkStr != '':
-										 <a class="label label-primary" href="{{PMIDLinkStr}}"> View in PubMed </a> &nbsp;
+										 <a class="label label-primary" href="{{PMIDLinkStr}}">View in PubMed</a> &nbsp;
 									%end
-										 <a class="label label-primary" href="{{pinLinkStr}}"> {{pinStr}} </a> &nbsp;
+										 <a class="label label-primary" href="{{pinLinkStr}}">{{pinStr}}</a> &nbsp;
 										 %#<a href="{{listLinkStr}}"> List </a>				
 								</p>								
 								
@@ -109,11 +109,11 @@
 								%else:
 								%	authorPrefix = 'Author'
 								%end
-								<p> <b>{{authorPrefix}}:</b> {{authorStr}} </p>
+								<p> <strong>{{authorPrefix}}:</strong> {{authorStr}} </p>
 				
-								<p> <b>Affiliation:</b> {{affiliation}} </p>
+								<p> <strong>Affiliation:</strong> {{affiliation}} </p>
 				
-								<p> <b>Abstract:</b> {{Abstract}} </p>
+								<p> <strong>Abstract:</strong> {{Abstract}} </p>
 				
 							  	<div class="entry-icon">
 									<span class="glyphicon glyphicon-trash"></span> &nbsp;&nbsp;
