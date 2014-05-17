@@ -138,6 +138,28 @@ def replaceKeyValuePair(db, listDict, tableName, keyOld, keyNew):
         debug(d)
         
     return rf
+
+def getSubscriberDisplayedName(firstName, lastName, email):
+    '''
+    Examples:
+    >>> getSubscriberDisplayedName('Zhi','Li','zhili@gmail.com')
+    'Zhi'
+    >>> getSubscriberDisplayedName('','','zhili@gmail.com')
+    'zhili@gmail.com'
+    >>> getSubscriberDisplayedName('','Li','zhili@gmail.com')
+    'Li'
+    '''
+    name = ''
+    if firstName:
+        name = firstName
+    elif lastName:
+        name = lastName
+    elif email:
+        name = email
+    else:
+        name = 'Stranger'
+
+    return name
                     
 if __name__ == '__main__':
     import doctest

@@ -20,7 +20,7 @@ from phController import getListArticlePage, recordSubscriberArticle, \
                          getArticleMorePage, getListArticleInTimeInterval, \
                          getListPinnedArticle, verifyPasswordAndGetSubscriberId, \
                          getSubscriberIdInCookie, deleteSubscriberIdInCookie, \
-                         setSubscriberIdInCookie
+                         setSubscriberIdInCookie, getSubscriberName
 '''
 format '%(asctime)s %(name)s %(levelname)s: %(message)s'
 level DEBUG, INFO
@@ -167,8 +167,9 @@ def root():
 
     if subscriberId:
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
-        output = (r'You have already signed in. Start exploring <a href="%s">here</a>,' +
-                  r' or <a href="/signout">sign out</a>.') % listArticlePageUrl
+        subscriberName = getSubscriberName(phDbInfo, subscriberId)
+        output = (r'Welcome %s! Start exploring <a href="%s">here</a>,' +
+                  r' or <a href="/signout">sign out</a>.') % (subscriberName, listArticlePageUrl)
     else:
         output = (r'<a href="/signin">Sign in</a> or ' +
                   r'<a href="/signup">sign up</a>.')
@@ -183,8 +184,10 @@ def signup():
 
     if subscriberId:
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
-        output = r'You have already signed in. <a href="/signout">Sign out</a> first,' \
-               + r' or start exploring <a href="%s">here</a>.' % listArticlePageUrl
+        subscriberName = getSubscriberName(phDbInfo, subscriberId)
+        output = r'You have already signed in, %s. <a href="/signout">Sign out</a> first,' \
+               + r' or start exploring <a href="%s">here</a>.' % (subscriberName, 
+                                                                  listArticlePageUrl)
         
         #return output
         return template('views/simple', output = output)
@@ -222,8 +225,9 @@ def do_signup():
     else:
         setSubscriberIdInCookie(webServerInfo, subscriberId)
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
-        output = (r'You have successfully sign up! Now start exploring ' +
-                r'<a href="%s">here</a>.') % listArticlePageUrl
+        subscriberName = getSubscriberName(phDbInfo, subscriberId)
+        output = (r'You have successfully sign up, %s! Now start exploring ' +
+                r'<a href="%s">here</a>.') % (subscriberName, listArticlePageUrl)
     
     #return output
     return template('views/simple', output = output)
@@ -236,8 +240,10 @@ def signin():
     
     if subscriberId:
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
-        output = (r'You have already signed in. Start exploring <a href="%s">here</a>.' +
-                  r' Or <a href="/signout">sign out</a>.') % listArticlePageUrl
+        subscriberName = getSubscriberName(phDbInfo, subscriberId)
+        output = (r'You have already signed in, %s. Start exploring <a href="%s">here</a>.' +
+                  r' Or <a href="/signout">sign out</a>.') % (subscriberName, 
+                                                              listArticlePageUrl)
 
         #return output
         return template('views/simple', output = output)
@@ -261,8 +267,10 @@ def do_signin():
     else:
         setSubscriberIdInCookie(webServerInfo, subscriberId)
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
-        output = r'You have signed in! Now start exploring <a href="%s">here</a>.' \
-                                                            % listArticlePageUrl
+        subscriberName = getSubscriberName(phDbInfo, subscriberId)
+        output = r'You have signed in, %s! Now start exploring <a href="%s">here</a>.' \
+                                                            % (subscriberName, 
+                                                               listArticlePageUrl)
 
         #return output
         return template('views/simple', output = output)
@@ -273,9 +281,11 @@ def do_signin():
 @route('/logout')
 @route('/signoff')
 def signout():
+    subscriberId = getSubscriberIdInCookie(webServerInfo)
+    subscriberName = getSubscriberName(phDbInfo, subscriberId)
     deleteSubscriberIdInCookie(webServerInfo)
-    output = (r'You have signed out. <br> <a href="/signin">Sign in</a> or ' +
-              r'<a href="/signup">sign up</a>.')
+    output = (r'You have signed out, %s. <br> <a href="/signin">Sign in</a> or ' +
+              r'<a href="/signup">sign up</a>.') % subscriberName
     #return output
     return template('views/simple', output = output)
 
