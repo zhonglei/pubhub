@@ -99,6 +99,8 @@ font-size: 13pt;
 }
 
 .jumbotron{
+margin-top: -10px;
+margin-bottom: -10px;
 background: #2475B9;
 color: #fff;
 }
