@@ -56,12 +56,15 @@
 	    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
 	     
 	        <div class="navbar-header">
-				<a rel="home" title="Scooply" href="/">
-					<h1 class="site-title"> Scooply </h1>
-				</a>
+				
+				<h1 class="site-title"> 
+					<a rel="home" title="Scooply" href="/">Scooply </a>
+				</h1>
+				
 				<div id="toggle-menu" class="btn btn-primary btnMenu">
 					<i class="fa fa-align-justify"></i>
-				</div>			
+				</div>		
+					
 			</div>
 			
 			<div id="menu-container">

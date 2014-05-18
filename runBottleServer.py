@@ -168,7 +168,7 @@ def root():
     if subscriberId:
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
         subscriberName = getSubscriberName(phDbInfo, subscriberId)
-        output = (r'Welcome %s! Start exploring <a href="%s">here</a>,' +
+        output = (r'Welcome %s! <br>Start exploring <a href="%s">here</a>,' +
                   r' or <a href="/signout">sign out</a>.') % (subscriberName, listArticlePageUrl)
     else:
         output = (r'<a href="/signin">Sign in</a> or ' +
@@ -200,35 +200,41 @@ def do_signup():
     email = request.forms.get('email')
     email += '@stanford.edu'    
     password = request.forms.get('password')
-    firstName = request.forms.get('firstName') or ""
-    lastName = request.forms.get('lastName') or ""
-    areaId = request.forms.get('areaId')
-    keywords = request.forms.get('keywords')
-    keywords = keywords.split('\r\n')
+    passwordAgain = request.forms.get('passwordAgain')
+    phd = request.forms.get('phd')
     
-    '====sign up===='
-    subscriberId = signUpSubscriber(phDbInfo, email, password, firstName, lastName, areaId, keywords)
-
-    '====query Pubmed for new subscriber===='
-    now = time.time()
-    queryStartTime = now - pubmedBacktrackSecondForNewSubscriber
-    queryEndTime = now
-    queryPubmedAndStoreResults(phDbInfo, queryStartTime, queryEndTime, subscriberId)
-     
-    '====return===='
-    if subscriberId == -1:
-        output = (r'Oops... Looks like there are some issues. ' +
-                r'<a href="/signup">Try again</a>.')
-    elif subscriberId == -2:
-        output = (r'Oops... Looks like this email has already been used. ' +
-                r'<a href="/signup">Try again</a> with a new one.')
+    if password != passwordAgain:
+        output = (r'Oops... Looks like the passwords do not match. ' +
+                r'<a href="/signup">Try again</a>.')        
     else:
-        setSubscriberIdInCookie(webServerInfo, subscriberId)
-        listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
-        subscriberName = getSubscriberName(phDbInfo, subscriberId)
-        output = (r'You have successfully sign up, %s! Now start exploring ' +
-                r'<a href="%s">here</a>.') % (subscriberName, listArticlePageUrl)
-    
+        firstName = request.forms.get('firstName') or ""
+        lastName = request.forms.get('lastName') or ""
+        areaId = request.forms.get('areaId')
+        keywords = request.forms.get('keywords')
+        keywords = keywords.split('\r\n')
+        '====sign up===='
+        subscriberId = signUpSubscriber(phDbInfo, email, password, firstName, lastName, areaId, keywords)
+     
+        '====query Pubmed for new subscriber===='
+        now = time.time()
+        queryStartTime = now - pubmedBacktrackSecondForNewSubscriber
+        queryEndTime = now
+        queryPubmedAndStoreResults(phDbInfo, queryStartTime, queryEndTime, subscriberId)
+          
+        '====return===='
+        if subscriberId == -1:
+            output = (r'Oops... Looks like there are some issues. ' +
+                    r'<a href="/signup">Try again</a>.')
+        elif subscriberId == -2:
+            output = (r'Oops... Looks like this email has already been used. ' +
+                    r'<a href="/signup">Try again</a> with a new one.')
+        else:
+            setSubscriberIdInCookie(webServerInfo, subscriberId)
+            listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
+            subscriberName = getSubscriberName(phDbInfo, subscriberId)
+            output = (r'You have successfully sign up, %s! Now start exploring ' +
+                    r'<a href="%s">here</a>.') % (subscriberName, listArticlePageUrl)
+
     #return output
     return template('views/simple', output = output)
 
@@ -268,7 +274,7 @@ def do_signin():
         setSubscriberIdInCookie(webServerInfo, subscriberId)
         listArticlePageUrl = 'listArticle?subscriberId=%s' % str(subscriberId)
         subscriberName = getSubscriberName(phDbInfo, subscriberId)
-        output = r'You have signed in, %s! Now start exploring <a href="%s">here</a>.' \
+        output = r'You have signed in, %s! <br>Now start exploring <a href="%s">here</a>.' \
                                                             % (subscriberName, 
                                                                listArticlePageUrl)
 

@@ -1,42 +1,120 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=UTF-8"> 
-        <title>Scooply</title>
-        <meta name="generator" content="Bootply" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-        <!--Bootstrap-->
-		<link href="css/bootstrap.min.css" rel="stylesheet">
-		<!--Jasny-->
-		  <link href="jasny-bootstrap/css/jasny-bootstrap.min.css" rel="stylesheet">
-		<!--- Style sheet for this template-->
-		<link href="css/scooply-v3.css" rel="stylesheet">
-        <!--[if lt IE 9]>
-          <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
-    </head>
+
+<div class="col-xs-12 col-md-12 maintext-left">
+
+    <form class="navbar-form navbar-left" action="/signup" method="post">
+	
+        <div class="form-group">
+	        <h3 class="form-signin-heading">Sign up with your SUID</h3>
     
-	<body>
+        	<h4 class="form-signin-heading"><input name="email" type="text" autocapitalize="off" autocorrect="off" class="form-control" placeholder="suid" required>@stanford.edu</h4>
+        	<h4 class="form-signin-heading"> <input name="password" type="password" class="form-control" placeholder="Password" required>  </h4>
+        	<h4 class="form-signin-heading"> <input name="passwordAgain" type="password" class="form-control" placeholder="Retype password" required>  </h4>
+	
+			<hr>
+	
+	        <h3 class="form-signin-heading">Tell us about yourself</h3>
 
+	        <h4 class="form-signin-heading">
+		        I work as a
+	            <div class="btn-group">
+	            	<button data-toggle="dropdown" class="btn btn-default dropdown-toggle">Ph.D. student <span class="caret"></span></button>
+	              	<ul class="dropdown-menu">
+	                	<li>
+	                  		<input type="radio" name="phd" id="phd1" value="1" checked>
+	                  		<label for="phd1">Ph.D.</label>
+	                	</li>
+	                	<li>
+	                  		<input type="radio" name="phd" id="phd2" value="2">
+	                  		<label for="phd2">Postdoc</label>
+	                	</li>
+	              	</ul>
+	            </div>
+			</h4>
 
-        <h1>You are invited to Scooply's alpha test!</h1>
-
-		<div class="content_main">
-        
-	        <form action="/signup" method="post" onsubmit="return validate(this);">
+	        <h4 class="form-signin-heading">
+		        <p>My primary research interest is in </p>
+	            <div class="btn-group">
+	            	<button data-toggle="dropdown" class="btn btn-default dropdown-toggle">Bioinformatics and comput. genomics<span class="caret"></span></button>
+	              	<ul class="dropdown-menu">
+	                	<li>
+	                  		<input type="radio" name="areaId" id="area1" value="1" checked>
+	                  		<label for="area1">Bioinformatics and comput. genomics</label>
+	                	</li>
+	                	<li>
+	                  		<input type="radio" name="areaId" id="area2" value="2">
+	                  		<label for="area2">Biophysics and bioengineering</label>
+	                	</li>
+	                	<li>
+	                  		<input type="radio" name="areaId" id="area3" value="3">
+	                  		<label for="area3">Dev. / stem cell biology and genetics</label>
+	                	</li>
+	                	<li>
+	                  		<input type="radio" name="areaId" id="area4" value="4">
+	                  		<label for="area4">Microbiology and immunology</label>
+	                	</li>
+	                	<li>
+	                  		<input type="radio" name="areaId" id="area5" value="5">
+	                  		<label for="area5">Biochemistry, cell / molecular biology</label>
+	                	</li>
+	                	<li>
+	                  		<input type="radio" name="areaId" id="area6" value="6">
+	                  		<label for="area6">Neurosciences</label>
+	                	</li>
+	                	<li>
+	                  		<input type="radio" name="areaId" id="area7" value="7">
+	                  		<label for="area7">Clinical sciences</label>
+	                	</li>
+	              	</ul>
+	            </div>
+			</h4>
+			
+			<hr>
+			
+	        <h3 class="form-signin-heading">Set up your alerts</h3>
 	        
-	            <h3>Sign up with your Stanford email address</h3>
-	            
-	            <p>
-	                Email: <input name="email" type="text" required />@stanford.edu <br>
-	                
-	                Password: <input name="password" type="password" required/>  <br>
-	                Confirm password: <input name="passwordAgain" type="password" required />
+	        <h4 class="form-signin-heading">
+		        <p>I'd like to get Scooply alerts on </p>
+	            <textarea class="form-control" name="keywords" rows="8" required placeholder="For example: telomeres and telomerase, noncoding RNA, mechanisms of aging. Please type each topic in a separate line."></textarea>
+			</h4>
 
-	            </p>
+			
+			
+	        
+		</div>
+		
+        <h4 class="form-signin-heading"><button class="btn btn-lg btn-primary btn-block" type="submit" >Sign up</button></h4>
+        <h4 class="form-signin-heading">Already signed up? <a href="/signin">Sign in</a></h4>
+    
+    </form>
+    
+</div>
+
+
+%rebase sitetitle title='Scooply sign up'
+
+<!--    
+
+	        <h4 class="form-signin-heading">
+		        I work as a
 	
+	            <div class="btn-group">
+	              <button data-toggle="dropdown" class="btn btn-default dropdown-toggle">Ph.D. student <span class="caret"></span></button>
+	              <ul class="dropdown-menu">
+	                <li>
+	                  <input type="radio" id="ex1_1" value="1" checked>
+	                  <label for="ex1_1">Ph.D. student</label>
+	                </li>
+	                <li>
+	                  <input type="radio" id="ex1_2" value="2">
+	                  <label for="ex1_2">Postdoc research scientist</label>
+	                </li>
+	              </ul>
+	            </div>
+
+			</h4>
+
+
 	            <h3>Tell us a bit more about yourself</h3>
-	
 	            <p>
 	                <b>What's your name?</b><br>
 	                First: <input name="firstName" type="text" /> Last: <input name="lastName" type="text" />
@@ -60,32 +138,6 @@
 	                <textarea name="keywords" rows="8" cols="50" required placeholder="For example: telomeres and telomerase, noncoding RNA, mechanisms of aging. Please type each topic in a separate line."></textarea>
 	            </p>
 	            
-	            <h3></h3>
-	            
-	            <p>
-	            	<!-- 
-	            	By clicking on Sign up, you agree to Scooply's terms & conditions and privacy policy <br> 
-	            	-->
-	
-	                <input value="Sign up" type="submit" /> <br>
-	                Already have an account? <a href="/signin">Sign in</a>
-	            </p>
-	            
-	        </form>
-        
-		</div>
-        
-	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
-
-     <!-- JavaScript jQuery code from Bootply.com editor -->
-	<script type='text/javascript'>
-	$(document).ready(function() {
-	});
-	</script>
-	
 	<script type='text/javascript'>
 	function validate(form) {
 		var e = form.elements;		
@@ -95,11 +147,8 @@
   		}
   		return true;
 	}
-	</script>
+	</script>	
 	
-	<!-- Jasney-->
-	<script src="jasny-bootstrap/js/jasny-bootstrap.min.js"></script>
+	onsubmit="return validate(this);"            
 
-    </body>
-
-</html>        
+-->
