@@ -198,19 +198,19 @@ def createDayStr(DateCreated, now = None):
     >>> createDayStr(datetime.fromtimestamp(1399531960 - 3600*24), datetime.fromtimestamp(1399531966))
     '1 day ago'
     '''
-    if now is None:
-        now = time.time()
-    else:
-        now = int(now.strftime('%s'))
-    daysElapsed = int((now-int(DateCreated.strftime('%s')))/24/3600)
-    if daysElapsed == 0:
-        dayStr = 'Today'
-    elif daysElapsed == 1:
-        dayStr = '1 day ago'
-    else:
-        dayStr = '%d days ago' % daysElapsed
+    #if now is None:
+    #    now = time.time()
+    #else:
+    #    now = int(now.strftime('%s'))
+    #daysElapsed = int((now-int(DateCreated.strftime('%s')))/24/3600)
+    #if daysElapsed == 0:
+    #    dayStr = 'Today'
+    #elif daysElapsed == 1:
+    #    dayStr = '1 day ago'
+    #else:
+    #    dayStr = '%d days ago' % daysElapsed
 
-    return dayStr
+    return 'Yesterday'
 
 def createAuthorStr(listFirstLastAuthorName):
     '''

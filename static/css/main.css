@@ -64,48 +64,56 @@ a, a:focus, a:hover {
 /* Navbar
 -------------------------------------------------------- */
 
-.navbar-default
+.navbar
 {
+position: fixed;
+top: 0;
+width: 100%;
+min-height: 50px;
 border: none;
 margin: 0;
 padding: 0;
-padding-top: 10px;
 background:#2475B9;
 /* border-bottom: solid 3px #64A5DA; */
+opacity: 0.95;
 }
 
 .navbar-header{
 float:none;
+margin: 0;
+padding:0;
 max-width: 860px;
 margin:0px auto;
-margin-bottom: 12px;
-
 display: block;
 position: relative;
 color:#FFF;
 text-align:left;
-
 }
 
 /* Site title: scooply */
 
 .navbar-header h1
 {
+margin-top:10px;
+padding:0;
 font-size: 20pt;
-padding-left: 12px;
+padding-left:50px;
+
 }
 
 #toggle-menu {
 position:absolute; 
-top: 1px;
-right:14px;
-/* background:#2881CC; */
-background:#2475B9;
+top: 0px;
+left: 0px;
+/*background:#2475B9; */
 font-size: 16pt;
-padding:0px;
-border-radius: 3px;
-/* border: 1px solid #3F627F; */
-border: 0px solid #FFFFFF;
+padding:10px;
+margin: 0;
+display: inline;
+}
+
+.toggle-menu-down{
+background: #7EC4FF;
 }
 
 #toggle-menu i{
@@ -124,15 +132,24 @@ margin-bottom: 10px;
 /* SLIDE DOWN MENU 
 -------------------------------------------------------- */
 #menu-container{
-width: 100%;
-margin:0 auto;
 padding:0px;
-padding-top: 10px;
 color: #fff;
 font-size: 12pt;
+position:fixed;
+top: 50px;
+width: 100%;
+background: #7EC4FF;
+border-bottom: 5px solid #7EC4FF;
+border-top: 5px solid #7EC4FF;
+
+}
+
+.menu-dropdown{
+margin: 0px auto;
 max-width: 860px;
 }
 
+/*
 #menu-container .badge {
 background: #D9534F;
 color: #fff;
@@ -140,20 +157,25 @@ font-size: 8pt;
 border-radius: 15px;
 margin-left: 2px;
 }
-
+*/
 
 #menu-container ul{
 list-style-type: none;
 margin: 0;
-border-top: 1px solid #3F627F;
+/* border-top: 1px solid #3F627F; */
 padding:0;
 }
 
 #menu-container ul li{
 display: block;
 padding: 5px;
+color: #fff;
+font-size: 16pt;
+/*
 border-bottom: 1px solid #3F627F;
 border-top: 1px solid #2881CC;
+*/
+
 }
 
 #menu-container ul li i{
@@ -164,14 +186,13 @@ padding-right: 10px;
 background: #2881CC;
 }
 
-#menu-container a{
-color: #fff;
-}
 #menu-container a: hover li{
+color: #fff;
 background-color: #2881CC;
 }
 #menu-container a: active li{
 background: #2881CC;
+color: #fff;
 }
 
 
@@ -217,9 +238,7 @@ border-bottom: solid 3px #fff;
   padding: 0px;
 }
 
-.header {
-  height: 50px;
-}
+
 
 /*.site-title {
   font-size: 4em;
@@ -230,15 +249,18 @@ border-bottom: solid 3px #fff;
   background: #235A9F;
 
 }
+*/
+
 .site-title a {
   color: #fff;
-}*/
+}
 
 .site-title,
 .site-description {
   margin: 0;
   color: #fff;
 }
+
 
 /* Content */
 .content {

@@ -31,8 +31,9 @@
 			$(document).ready(function(){
 				$("#menu-container").hide();
 				$("#toggle-menu").click(function(){
-				$("#menu-container").slideToggle("50");
-				$(".main-sections").slideToggle("50");
+				$("#menu-container").fadeToggle("100");
+				$("#toggle-menu").toggleClass("toggle-menu-down");
+				$("#toggle-button").toggleClass("fa-rotate-90");
 				});
 			});
 		</script>	
@@ -53,45 +54,48 @@
 
 	<body>
 		<!-- Fixed navbar -->
-	    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	    <div class="navbar" role="navigation">
 	     
-	        <div class="navbar-header">
-				
-				<h1 class="site-title"> 
-					<a rel="home" title="Scooply" href="/">Scooply </a>
-				</h1>
-				
-				<div id="toggle-menu" class="btn btn-primary btnMenu">
-					<i class="fa fa-align-justify"></i>
-				</div>		
+	       
+				<div class="navbar-header">
+					<h1 class="site-title"> 
+						<a rel="home" title="Scooply" href="/">Scooply </a>
+					</h1>
 					
-			</div>
-			
-			<div id="menu-container">
-				<div class="col-xs-6 col-ld-6">
-					<ul class="fa-ul">
-
-						%for q in listQueryPhrase: 
-							%lenq = len([row for row in rows if row[0] == q])
-							<a href="#{{q}}"><li> {{q}} ({{lenq}})</li></a>
-						%end
-					
-					</ul>
+					<div id="toggle-menu">
+						<i id="toggle-button" class="fa fa-bars"></i>
+					</div>		
 				</div>
-				<div class="col-xs-6 col-ld-6">
-					<ul>
-						<a href="#"><li> All (43)</li></a>
-						<a href="#"><li> Pinned (25)</li></a>
-						<a href="#"><li class="active-menu-item"> Settings </li></a>
-						<a href="#"><li> Feedback </li></a>
-						<a href="/signout"><li></i> Sign out </li></a>
+			
+			</div>
+	
+			<div id="menu-container">
+				<div class="menu-dropdown">
+					<div class="col-xs-12 col-md-6">
+						<ul class="fa-ul">
+							<a href="#"><li> All (43)</li></a>
+							%for q in listQueryPhrase: 
+								%lenq = len([row for row in rows if row[0] == q])
+								<a href="#{{q}}"><li> {{q}} ({{lenq}})</li></a>
+							%end
+						
+						</ul>
+					</div>
+					<div class="col-xs-12 col-md-6">
+						<ul>
+							
+							<a href="#"><li> Saved (25)</li></a>
+							<a href="#"><li class="active-menu-item"> Settings </li></a>
+							<a href="#"><li> Feedback </li></a>
+							<a href="/signout"><li></i> Sign out </li></a>
 
-					</ul>
+						</ul>
+					</div>
+				asdfffffffffffffffffasdf
 				</div>
 			</div><!-- menu-container -->
 
-	    </div>
-	
+			
 	    <div id="primary" class="container">
 	    	<div class="content">
 	    	
