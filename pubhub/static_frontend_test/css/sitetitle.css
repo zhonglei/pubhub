@@ -1,0 +1,107 @@
+/* @import url(http://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed); */
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro%3A400%2C400italic%2C700);
+@import url(http://fonts.googleapis.com/css?family=Varela+Round);
+
+html {
+	overflow-y: scroll;
+}
+
+html, body {
+	height: 100%;
+}
+
+body {
+	padding:0;
+	font-family: 'Roboto', sans-serif;
+	font-size: 10pt;
+}
+
+.main-content{
+margin:0 auto;
+padding:0;
+
+}
+
+.sitetitle-wrapper{
+padding: 20px;
+margin-bottom: 20px;
+background: #2475B9;
+color: #fff;
+
+}
+
+.sitetitle-left {
+text-align: right;
+padding-right: 10px;
+border-right: 5px solid #fff;
+}
+
+.sitetitle-left h1{
+font-size: 40pt;
+}
+
+.sitetitle-right{
+text-align: left;
+padding-left: 10px;
+padding-right: 100px;
+padding-top: 7px;
+}
+
+.sitetitle-right h1{
+font-size: 30pt;
+}
+
+.sitetitle-center {
+text-align: center;
+padding-right: 10px;
+}
+.sitetitle-center h1{
+font-size: 23pt;
+}
+.sitetitle-center h2{
+font-size: 13pt;
+}
+
+.maintext-wrapper{
+padding: 10px;
+margin-bottom: 10px;
+background: #ffffff;
+color: #000000;
+}
+.maintext-center{
+text-align: center;
+margin-top: -15px;
+}
+.maintext-center h2{
+font-size: 13pt;
+}
+
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+  margin-bottom: 10px;
+}
+
+.form-signin .form-control {
+	display: inline-block;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.jumbotron{
+margin-top: -10px;
+margin-bottom: -10px;
+background: #2475B9;
+color: #fff;
+}
+

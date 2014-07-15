@@ -1,0 +1,65 @@
+
+@import url('http://fonts.googleapis.com/css?family=Roboto');
+
+
+/* Customize container */
+@media (min-width: 768px) {
+.body {
+    max-width: 730px;
+  }
+}
+
+
+.wrapper_main
+{
+	margin:5px auto;
+	border:1px solid red;
+}
+
+
+
+.header_top{
+	border:1px solid blue;
+	text-align:center;
+}
+
+.header_top button{
+float: left;
+}
+
+.content_main{
+
+}
+.article_info
+{
+	padding:5px;
+	margin-bottom: 5px;
+}
+.article_info h3 h4 {
+	font-family: 'Roboto', 'sans-serif';
+}
+
+.article_info  h3 {
+font-size: 12pt;
+margin:0px;
+
+}
+
+.article_info  h4  {
+font-size: 10pt;
+margin-top:5px;
+}
+
+
+.alignleft {
+	float: left;
+}
+
+.alignright {
+	float: right;
+}
+
+
+
+
+    

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	    <meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <meta name="description" content="">
+	    <meta name="author" content="Paul Laros">
+	    <link rel="shortcut icon" href="favicon.ico">
+	
+	    <title> Scooply -- article list</title>
+	    
+	    <!-- Fonts -->
+	    <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro%3A400%2C400italic%2C700" rel="stylesheet">
+	    <link href="http://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+	    <!-- Bootstrap core CSS -->
+	    <link href="css/bootstrap.min.css" rel="stylesheet">
+	    <link href="css/font-awesome.min.css" rel="stylesheet">
+	    <!-- Styles -->
+	    <link href="css/main.css" rel="stylesheet">
+	    <!-- HTML5 shiv for IE8 support -->
+	    <!--[if lt IE 9]>
+	    	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	    <![endif]-->
+		<!-- JQuery-->
+		<script src="js/jquery-1.11.0.min.js"></script>
+		<!-- Main Javascript file -->
+        <script src="js/scooply_main.js"> </script>  
+		<script src="js/analytics.js"></script>
+	
+	</head>
+	
+	<body>
+	
+		<!-- Fixed navbar -->
+        <div class="navbar" role="navigation"> 
+            <div class="navbar-header">
+                <h1 class="site-title"> 
+                    <a rel="home" title="Scooply" href="/"> Scooply </a>
+                </h1>		
+
+                <div id="toggle-menu">
+                    <i id="toggle-button" class="fa fa-bars"></i>
+                </div>		
+
+            </div>
+
+            <div id="menu-container">
+                <div class="menu-dropdown">
+                    <div class="col-xs-12 col-md-6">
+                        <ul class="fa-ul">
+
+                            %sum = 0
+                            %for queryPhrase, count in listQueryPhraseAndCount:
+                                %sum += count
+                            %end
+                            %if 'All' == active:
+                                <a href="listArticle" class><li class="active-menu-item">All ({{sum}})</li></a>
+                            %else:
+                                <a href="listArticle" class><li>All ({{sum}})</li></a>
+                            %end
+
+                            %for queryPhrase, count in listQueryPhraseAndCount:
+                                %if queryPhrase == active:
+                                    <a href="listArticle?queryPhrase={{queryPhrase}}"><li class="active-menu-item">{{queryPhrase}} ({{count}})</li></a>
+                                %else:
+                                    <a href="listArticle?queryPhrase={{queryPhrase}}"><li>{{queryPhrase}} ({{count}})</li></a>
+                                %end				
+                            %end
+
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-6">
+                    <ul>
+
+                        %if 'Pinned' == active:
+                            <a href="listPinnedArticle"><li class="active-menu-item">Saved ({{nPinned}})</li></a>
+                        %else:
+                            <a href="listPinnedArticle"><li>Saved ({{nPinned}})</li></a>
+                        %end	
+
+                        %if 'Settings' == active:
+                            <!--
+                            <a href="settings"><li class="active-menu-item">Settings</li></a>
+                            -->
+                        %else:
+                            <!--
+                            <a href="settings"><li>Settings</li></a>
+                            -->
+                        %end
+
+                        <a href="signout"><li> Sign out </li></a>
+
+                    </ul>
+                </div>
+            </div><!-- menu-container -->
+
+        </div>
+
+	
+	    <div id="primary" class="container">
+	    	<div class="content">
+                    <!-- Section title, could be either a journal or an alert-->
+                    <!--
+                    <div class="section-title">
+                        <h1>Nature Advanced Online</h1>
+                    </div>
+                    -->    
+                    <section class="post">
+                        <a class="button"><i class="fa fa-backward"></i> Back to article list</a>
+
+                        <header class="entry-header">
+                            <div class="entry-control entry-control-bookmark">
+                                <a href=""><i class="fa fa-bookmark"></i></a>
+                            </div>
+                            <div class="entry-control entry-control-external-link ">
+                                <a  href=""><i class="fa fa-external-link-square"></i></a>
+                            </div>
+
+                            
+                            <h1>Genome sequencing of normal cells reveals developmental lineages and mutational processes</h1>
+                            <ul class="entry-caption">
+                                <li class="entry-author"><i class="fa fa-user"></i> Saha et al, Nabeel <em>Bardeesy lab</em></li>
+                                <li class="entry-date"><i class="fa fa-clock-o"></i>5 days ago in <em>Nature</em></li>
+                            </ul>          
+                        </header>
+                        
+                        <a  class="button"><i class="fa fa-external-link-square"></i> View on Nature.com</a>
+                                          
+                        <p class="entry-abstract">
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus eget lacus sem. Curabitur posuere convallis eros, quis tincidunt purus tincidunt sed. In vitae lacus vitae metus ultricies egestas id ut massa. Vestibulum accumsan faucibus sem, eu sollicitudin quam tempor eget. Duis vitae enim eget ante consectetur rhoncus non nec mi. Nullam gravida lacus velit, sit amet pellentesque risus lacinia quis. Ut volutpat, quam bibendum fringilla ullamcorper, nunc lacus consequat odio, et vehicula turpis leo sit amet orci. Cras vel mi vel ante vehicula egestas. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer sagittis ipsum non magna laoreet, nec luctus libero feugiat.
+
+            Fusce et commodo felis. Curabitur eu tempor ipsum, quis lacinia orci. Proin lobortis eget urna sit amet pretium. Donec a tincidunt tortor. Donec venenatis risus sit amet orci ullamcorper tincidunt. Curabitur eget mi a tortor lobortis vehicula ac vel massa. Vestibulum in libero eget velit accumsan luctus. Sed eget nisl malesuada, dignissim enim eget, hendrerit erat.
+
+            Nunc nibh dui, consectetur vitae semper vel, aliquet et leo. Sed adipiscing bibendum augue, eu pharetra justo adipiscing non. Curabitur porttitor arcu quis erat interdum, eu scelerisque neque sagittis. Cras venenatis mattis ipsum a molestie. Proin vel mi massa. Nunc iaculis tristique mi. Aliquam molestie nisi sed velit porta, sed sodales ante placerat. Ut id sagittis dolor. Duis ac lorem dignissim, fringilla turpis quis, pulvinar dui.
+
+            Vestibulum consequat dolor nec congue placerat. Cras accumsan nisl sit amet interdum rhoncus. In tincidunt bibendum felis, sit amet blandit velit viverra at. Ut rhoncus arcu et ultricies bibendum. Ut ac varius massa, ut pellentesque dolor. Etiam sit amet nisi a eros sodales convallis. Nullam at congue tellus. Donec ut tempor lectus, non consectetur magna. Donec vehicula felis vitae purus blandit feugiat vel dapibus nulla. In faucibus neque in aliquet blandit. Curabitur quis neque ipsum. Morbi ante nibh, pretium vitae quam ac, tempus cursus mi. Curabitur laoreet nisl dignissim dictum bibendum.
+
+            Donec vitae tincidunt quam. Vestibulum enim nisl, hendrerit pharetra ornare vitae, mattis id neque. Suspendisse iaculis nisi ac lorem aliquet cursus. Pellentesque dictum massa ut euismod vehicula. Integer metus felis, eleifend eget elit sed, volutpat bibendum sem. Proin elit velit, venenatis id sagittis sit amet, porta vitae lacus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Cras lacinia quam massa, sed ornare orci condimentum nec. Mauris egestas purus nec felis cursus suscipit.
+                        </p>
+                        <a>Next article</a>
+                    </section>
+                
+            
+		        <footer class="footer">
+		          <p>© Scooply 2014. Web design powered by Von. </p>
+				</footer> <!-- /footer -->
+				
+	
+	      	</div> <!-- class="content" -->
+	    </div> <!-- /#primary -->
+
+	</body>
+
+</html>
